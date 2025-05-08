@@ -15,19 +15,11 @@ export async function deploy() {
   const { appClient, result } = await factory.deploy({ onUpdate: 'append', onSchemaBreak: 'append' })
 
   // If app was just created fund the app account
-  if (['create', 'replace'].includes(result.operationPerformed)) {
-    await algorand.send.payment({
-      amount: (1).algo(),
-      sender: deployer.addr,
-      receiver: appClient.appAddress,
-    })
-  }
-
-  const method = 'hello'  
-  const response = await appClient.send.hello({
-    args: { name: 'world' },
-  })
-  console.log(
-    `Called ${method} on ${appClient.appClient.appName} (${appClient.appClient.appId}) with name = world, received: ${response.return}`,
-  )
+  // if (['create', 'replace'].includes(result.operationPerformed)) {
+  //   await algorand.send.payment({
+  //     amount: (1).algo(),
+  //     sender: deployer.addr,
+  //     receiver: appClient.appAddress,
+  //   })
+  // }
 }

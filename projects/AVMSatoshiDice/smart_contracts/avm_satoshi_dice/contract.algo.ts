@@ -1,7 +1,692 @@
-import { Contract } from '@algorandfoundation/algorand-typescript'
+import {
+  arc4,
+  assert,
+  Asset,
+  biguint,
+  BigUint,
+  BoxMap,
+  Contract,
+  Global,
+  gtxn,
+  itxn,
+  op,
+  Txn,
+  uint64,
+} from '@algorandfoundation/algorand-typescript'
+import { Address, Bool, methodSelector, UintN256, UintN64 } from '@algorandfoundation/algorand-typescript/arc4'
+
+class GameStruct extends arc4.Struct<{
+  /**
+   * Balance of the game. Anyone can create a game and deposit there any balance. The token is determined by other fields
+   */
+  balance: UintN256
+  /**
+   * Asset id. If native token then 0, if arc200 token, the app id, if asa the asset id.
+   */
+  assetId: UintN64
+  isNativeToken: Bool
+  isASAToken: Bool
+  isArc200Token: Bool
+  /**
+   * Time when someone last played the game
+   */
+  lastPlayedTime: UintN64
+  /**
+   * Time when someone last won at the game
+   */
+  lastWinTime: UintN64
+  /**
+   * Time when someone last won at the game
+   */
+  lastWinAmount: UintN256
+  /**
+   * Biggest win time
+   */
+  biggestWinTime: UintN64
+  /**
+   * Biggest win amount
+   */
+  biggestWinAmount: UintN256
+
+  /**
+   * Win ratio is defined by the game creator. It is the ratio which reduces the probability of winning. This is expressed as decimal with base 1_000_000
+   *
+   * Value 1_000_000 means 1_000_000/1_000_000 = 1.. if player chosen probability of winning 50%, the end probability is 50%
+   * Value 200_000 means 200_000/1_000_000 = 0.2.. if player chosen probability of winning 50%, the end probability is 50%*0.2=10%
+   * Value 0 means 0/1_000_000 = 0.. if player chosen probability of winning 0%, the end probability is 50%*0=0%
+   *
+   * Win ratio is public and game creators should compete on who provides higher probability of winning.
+   */
+  winRatio: UintN64
+  /**
+   * Owner of the game. Person who can do free deposit or withdrawal from the game.
+   */
+  owner: Address
+}> {}
+
+class AddressAssetStruct extends arc4.Struct<{
+  /**
+   * Asset id. If native token then 0, if arc200 token, the app id, if asa the asset id.
+   */
+  assetId: UintN64
+  /**
+   * Owner of the game. Person who can do free deposit or withdrawal from the game.
+   */
+  owner: Address
+}> {}
+
+class PlayStruct extends arc4.Struct<{
+  /**
+   * 1 - initiated
+   * 2 - won
+   * 3 - lost
+   */
+  state: UintN64
+  /**
+   * Player can choose probability of winning.
+   *
+   * Value 1_000_000 means 1_000_000/1_000_000 = 1.. Player wins all the time.
+   * Value 200_000 means 200_000/1_000_000 = 0.2 .. Player wins every 5th time.
+   * Value 0 means 0/1_000_000 = 1.. Player never wins.
+   *
+   * Each game has modifiers on the player selection probability.
+   * If winRatio of game is 200_000 and user selected winProbability to be 200_000, the end probability is 0,2*0,2 = 4%
+   *
+   * winProbability is also multiplication factor for the win.
+   *
+   * If the play deposit was 100 tokens, with value 1_000_000 (1) the withdrawal will be 100
+   * If the play deposit was 100 tokens, with value 500_000 (0.5) the withdrawal will be 200
+   * If the play deposit was 100 tokens, with value 100_000 (0.1) the withdrawal will be 1000
+   * If the play deposit was 100 tokens, with value 0 (0.1) the player lost the game
+   *
+   */
+  winProbability: UintN64
+  /**
+   * The round in which the game was played. The verification for random number comparision is done in the round + 1.
+   *
+   * User can claim win only within round + 100 rounds
+   */
+  round: UintN64
+  /**
+   * The user deposit for the play
+   */
+  deposit: UintN256
+  /**
+   * The game asset id
+   */
+  assetId: UintN64
+  /**
+   * The game creator
+   */
+  gameCreator: Address
+  /**
+   * Owner of the play. Person who did play the game.
+   */
+  owner: Address
+}> {}
 
 export class AvmSatoshiDice extends Contract {
-  public hello(name: string): string {
-    return `Hello, ${name}`
+  public games = BoxMap<AddressAssetStruct, GameStruct>({ keyPrefix: 'g' })
+  public plays = BoxMap<Address, PlayStruct>({ keyPrefix: 'p' })
+  public allDeposits = BoxMap<UintN64, UintN256>({ keyPrefix: 'd' })
+
+  /**
+   * Create new game or deposit by the owner more assets to the game.
+   *
+   * @param txnDeposit Deposit transaction
+   * @param winRatio Win ratio.. 1_000_000 for user probability, 200_000 for 0.2 factor of the user probability, 0 for no win
+   */
+  @arc4.abimethod()
+  public CreateGameWithNativeToken(txnDeposit: gtxn.PaymentTxn, winRatio: UintN64): void {
+    const sender = new arc4.Address(txnDeposit.sender)
+    const assetId = new UintN64(0)
+    assert(winRatio.native <= 1_000_000, 'Win probability must be below 1 000 000')
+
+    const fee: uint64 = txnDeposit.amount / 40 //2.5%
+    const deposit: uint64 = txnDeposit.amount - fee
+    let prevDeposit: UintN256 = new UintN256(0)
+    if (this.allDeposits(assetId).exists) {
+      prevDeposit = this.allDeposits(assetId).value
+    }
+
+    this.allDeposits(assetId).value = new UintN256(prevDeposit.native + BigUint(deposit))
+
+    assert(txnDeposit.receiver === Global.currentApplicationAddress, 'Receiver must be the gas station app')
+
+    const key = new AddressAssetStruct({
+      assetId: assetId,
+      owner: sender,
+    })
+    if (this.games(key).exists) {
+      assert(this.games(key).value.isNativeToken === new Bool(true), 'The previous game was not for the native token')
+      assert(this.games(key).value.isASAToken === new Bool(false), 'The previous game was ASA token')
+      assert(this.games(key).value.assetId === assetId, 'The previous game was not for the native token')
+      assert(this.games(key).value.winRatio === winRatio, 'It is not possible to change the win ratio')
+
+      // do more deposit to the user game
+      const oldBalance = this.games(key).value.balance
+      this.games(key).value.balance = new UintN256(oldBalance.native + BigUint(deposit))
+    } else {
+      // new game
+      const newValue = new GameStruct({
+        balance: new UintN256(BigUint(deposit)),
+        assetId: assetId,
+        isArc200Token: new Bool(false),
+        isNativeToken: new Bool(true),
+        isASAToken: new Bool(false),
+
+        lastPlayedTime: new UintN64(0),
+        lastWinTime: new UintN64(0),
+        lastWinAmount: new UintN256(0),
+        biggestWinAmount: new UintN256(0),
+        biggestWinTime: new UintN64(0),
+
+        winRatio: winRatio,
+        owner: sender,
+      })
+      this.games(key).value = newValue.copy()
+    }
+  }
+  /**
+   * Anyone can optin this contract to his ASA if he deposits 10 native tokens
+   *
+   * @param txnDeposit Deposit tx
+   * @param assetId Assset id
+   */
+  @arc4.abimethod()
+  public OptInToASA(txnDeposit: gtxn.PaymentTxn, assetId: UintN64) {
+    assert(
+      txnDeposit.receiver === Global.currentApplicationAddress,
+      'Receiver of the optin fee must be the current smart contract',
+    )
+    assert(txnDeposit.amount === 10_000_000, 'Opt in fee for new asset is 10 native tokens')
+
+    if (!Global.currentApplicationAddress.isOptedIn(Asset(assetId.native))) {
+      itxn
+        .assetTransfer({
+          xferAsset: assetId.native,
+          assetAmount: 0,
+          assetReceiver: Global.currentApplicationAddress,
+          fee: 0,
+        })
+        .submit()
+    }
+  }
+
+  /**
+   * Create new game or deposit by the owner more assets to the game.
+   *
+   * @param txnDeposit Deposit transaction
+   * @param winRatio Win ratio.. 1_000_000 for user probability, 200_000 for 0.2 factor of the user probability, 0 for no win
+   */
+  @arc4.abimethod()
+  public CreateGameWithASAToken(txnDeposit: gtxn.AssetTransferTxn, winRatio: UintN64): void {
+    const sender = new arc4.Address(txnDeposit.sender)
+    assert(winRatio.native <= 1_000_000, 'Win probability must be below 1 000 000')
+    const assetId = new UintN64(txnDeposit.xferAsset.id)
+
+    const fee: uint64 = txnDeposit.assetAmount / 40 //2.5%
+    const deposit: uint64 = txnDeposit.assetAmount - fee
+    let prevDeposit: UintN256 = new UintN256(0)
+    if (this.allDeposits(assetId).exists) {
+      prevDeposit = this.allDeposits(assetId).value
+    }
+
+    this.allDeposits(assetId).value = new UintN256(prevDeposit.native + BigUint(deposit))
+
+    assert(txnDeposit.assetReceiver === Global.currentApplicationAddress, 'Receiver must be the gas station app')
+
+    const key = new AddressAssetStruct({
+      assetId: assetId,
+      owner: sender,
+    })
+    if (this.games(key).exists) {
+      assert(this.games(key).value.isNativeToken === new Bool(false), 'The previous game was for the native token')
+      assert(this.games(key).value.isArc200Token === new Bool(false), 'The previous game was for the arc200 token')
+      assert(this.games(key).value.isASAToken === new Bool(true), 'The previous game was not for the ASA token')
+      assert(this.games(key).value.assetId === assetId, 'The previous game was not for the same token')
+      assert(this.games(key).value.winRatio === winRatio, 'It is not possible to change the win ratio')
+
+      // do more deposit to the user game
+      const oldBalance = this.games(key).value.balance
+      this.games(key).value.balance = new UintN256(oldBalance.native + BigUint(deposit))
+    } else {
+      // new game
+      const newValue = new GameStruct({
+        balance: new UintN256(BigUint(deposit)),
+        assetId: assetId,
+        isArc200Token: new Bool(false),
+        isNativeToken: new Bool(false),
+        isASAToken: new Bool(true),
+
+        lastPlayedTime: new UintN64(0),
+        lastWinTime: new UintN64(0),
+        lastWinAmount: new UintN256(0),
+        biggestWinAmount: new UintN256(0),
+        biggestWinTime: new UintN64(0),
+
+        winRatio: winRatio,
+        owner: sender,
+      })
+      this.games(key).value = newValue.copy()
+    }
+  }
+
+  /**
+   * Create new game or deposit by the owner more assets to the game.
+   *
+   * @param txnDeposit Deposit transaction
+   * @param winRatio Win ratio.. 1_000_000 for user probability, 200_000 for 0.2 factor of the user probability, 0 for no win
+   */
+  @arc4.abimethod()
+  public CreateGameWithArc200Token(assetId: UintN64, amount: UintN256, winRatio: UintN64): void {
+    const sender = new arc4.Address(Txn.sender)
+    assert(winRatio.native <= 1_000_000, 'Win probability must be below 1 000 000')
+
+    const fee: biguint = amount.native / BigUint(40) //2.5%
+    const deposit: biguint = amount.native - fee
+    let prevDeposit: UintN256 = new UintN256(0)
+    if (this.allDeposits(assetId).exists) {
+      prevDeposit = this.allDeposits(assetId).value
+    }
+
+    this.allDeposits(assetId).value = new UintN256(prevDeposit.native + BigUint(deposit))
+
+    // perform the deposit
+    itxn
+      .applicationCall({
+        appId: assetId.native,
+        appArgs: [
+          methodSelector('arc200_transferFrom(address,address,uint256)bool'),
+          new Address(Txn.sender),
+          new Address(Global.currentApplicationAddress),
+          amount,
+        ],
+      })
+      .submit()
+
+    const key = new AddressAssetStruct({
+      assetId: assetId,
+      owner: sender,
+    })
+    if (this.games(key).exists) {
+      assert(this.games(key).value.isNativeToken === new Bool(false), 'The previous game was for the native token')
+      assert(this.games(key).value.isArc200Token === new Bool(true), 'The previous game was NOT for the arc200 token')
+      assert(this.games(key).value.isASAToken === new Bool(false), 'The previous game was for the ASA token')
+      assert(this.games(key).value.assetId === assetId, 'The previous game was not for the same token')
+      assert(this.games(key).value.winRatio === winRatio, 'It is not possible to change the win ratio')
+
+      // do more deposit to the user game
+      const oldBalance = this.games(key).value.balance
+      this.games(key).value.balance = new UintN256(oldBalance.native + BigUint(deposit))
+    } else {
+      // new game
+      const newValue = new GameStruct({
+        balance: new UintN256(deposit),
+        assetId: assetId,
+        isArc200Token: new Bool(true),
+        isNativeToken: new Bool(false),
+        isASAToken: new Bool(false),
+
+        lastPlayedTime: new UintN64(0),
+        lastWinTime: new UintN64(0),
+        lastWinAmount: new UintN256(0),
+        biggestWinAmount: new UintN256(0),
+        biggestWinTime: new UintN64(0),
+
+        winRatio: winRatio,
+        owner: sender,
+      })
+      this.games(key).value = newValue.copy()
+    }
+  }
+  /**
+   * Starts new game play
+   *
+   * Player selects win probability and the data is stored to the player's box storage.
+   *
+   * @param txnDeposit Deposit
+   * @param game The
+   * @param winProbability
+   */
+  @arc4.abimethod()
+  public StartGameWithNativeToken(
+    txnDeposit: gtxn.PaymentTxn,
+    game: AddressAssetStruct,
+    winProbability: UintN64,
+  ): void {
+    const sender = new arc4.Address(txnDeposit.sender)
+    const assetId = new UintN64(0)
+    assert(Txn.sender === txnDeposit.sender, 'Sender of the app call must be the same as sender of the deposit')
+    assert(game.assetId === assetId, 'Asset id in the tx does not match the game asset id')
+    assert(this.games(game).exists, 'The game does not exist')
+    assert(this.games(game).value.assetId === assetId, 'This game must be played with native token')
+    assert(winProbability.native <= 1_000_000, 'Win probability must be below 1 000 000')
+
+    if (this.plays(sender).exists) {
+      // user already played some game. Lets check if he does not have any pending game.
+      assert(this.plays(sender).value.state.native > 1, 'Your previous game has not yet been claimed')
+      // if the prev state is 2 or 3 (win or loose) we can override this game
+    } else {
+      // new game
+    }
+
+    // lets check if the game has enough money for potential win scenario
+    // 100_000_000 * 1_000_000 / 200_000 = 500_000_000
+
+    const winAmount = new UintN256(BigUint((txnDeposit.amount * 1_000_000) / winProbability.native))
+    assert(
+      this.games(game).value.balance.native >= winAmount.native,
+      'The game does not have enough balance for your win scenario',
+    )
+
+    let prevDeposit: UintN256 = new UintN256(0)
+    if (this.allDeposits(assetId).exists) {
+      prevDeposit = this.allDeposits(assetId).value
+    }
+    this.allDeposits(assetId).value = new UintN256(prevDeposit.native + BigUint(txnDeposit.amount))
+
+    const newValue = new PlayStruct({
+      round: new UintN64(Global.round),
+      state: new UintN64(1),
+      winProbability: winProbability,
+      deposit: new UintN256(BigUint(txnDeposit.amount)),
+      owner: sender,
+      gameCreator: game.owner,
+      assetId: game.assetId,
+    })
+
+    this.plays(sender).value = newValue.copy()
+  }
+
+  /**
+   * Starts new game play
+   *
+   * Player selects win probability and the data is stored to the player's box storage.
+   *
+   * @param txnDeposit Deposit
+   * @param game The
+   * @param winProbability
+   */
+  @arc4.abimethod()
+  public StartGameWithASAToken(
+    txnDeposit: gtxn.AssetTransferTxn,
+    game: AddressAssetStruct,
+    winProbability: UintN64,
+  ): void {
+    const sender = new arc4.Address(txnDeposit.sender)
+    const assetId = new UintN64(txnDeposit.xferAsset.id)
+    assert(Txn.sender === txnDeposit.sender, 'Sender of the app call must be the same as sender of the deposit')
+    assert(game.assetId.native === assetId.native, 'Asset id in the tx does not match the game asset id')
+    assert(this.games(game).exists, 'The game does not exist')
+    assert(this.games(game).value.assetId === assetId, 'This game must be played with native token')
+    assert(winProbability.native <= 1_000_000, 'Win probability must be below 1 000 000')
+
+    if (this.plays(sender).exists) {
+      // user already played some game. Lets check if he does not have any pending game.
+      assert(this.plays(sender).value.state.native > 1, 'Your previous game has not yet been claimed')
+      // if the prev state is 2 or 3 (win or loose) we can override this game
+    } else {
+      // new game
+    }
+
+    // lets check if the game has enough money for potential win scenario
+    // 100_000_000 * 1_000_000 / 200_000 = 500_000_000
+
+    const winAmount = new UintN256(BigUint((txnDeposit.assetAmount * 1_000_000) / winProbability.native))
+    assert(
+      this.games(game).value.balance.native >= winAmount.native,
+      'The game does not have enough balance for your win scenario',
+    )
+
+    let prevDeposit: UintN256 = new UintN256(0)
+    if (this.allDeposits(assetId).exists) {
+      prevDeposit = this.allDeposits(assetId).value
+    }
+    this.allDeposits(assetId).value = new UintN256(prevDeposit.native + BigUint(txnDeposit.assetAmount))
+
+    const newValue = new PlayStruct({
+      round: new UintN64(Global.round),
+      state: new UintN64(1),
+      winProbability: winProbability,
+      deposit: new UintN256(BigUint(txnDeposit.assetAmount)),
+      owner: sender,
+      gameCreator: game.owner,
+      assetId: game.assetId,
+    })
+
+    this.plays(sender).value = newValue.copy()
+  }
+
+  /**
+   * Starts new game play
+   *
+   * Player selects win probability and the data is stored to the player's box storage.
+   *
+   * @param txnDeposit Deposit
+   * @param game The
+   * @param winProbability
+   */
+  @arc4.abimethod()
+  public StartGameWithArc200Token(
+    amount: UintN256,
+    assetId: UintN64,
+    game: AddressAssetStruct,
+    winProbability: UintN64,
+  ): void {
+    const sender = new arc4.Address(Txn.sender)
+    assert(game.assetId === assetId, 'Asset id in the tx does not match the game asset id')
+    assert(this.games(game).exists, 'The game does not exist')
+    assert(this.games(game).value.assetId === assetId, 'This game must be played with native token')
+    assert(winProbability.native <= 1_000_000, 'Win probability must be below 1 000 000')
+
+    if (this.plays(sender).exists) {
+      // user already played some game. Lets check if he does not have any pending game.
+      assert(this.plays(sender).value.state.native > 1, 'Your previous game has not yet been claimed')
+      // if the prev state is 2 or 3 (win or loose) we can override this game
+    } else {
+      // new game
+    }
+
+    // lets check if the game has enough money for potential win scenario
+    // 100_000_000 * 1_000_000 / 200_000 = 500_000_000
+
+    // perform the deposit
+    itxn
+      .applicationCall({
+        appId: game.assetId.native,
+        appArgs: [
+          methodSelector('arc200_transferFrom(address,address,uint256)bool'),
+          new Address(Txn.sender),
+          new Address(Global.currentApplicationAddress),
+          amount,
+        ],
+      })
+      .submit()
+
+    const winAmount = new UintN256((amount.native * BigUint(1_000_000)) / BigUint(winProbability.native))
+    assert(
+      this.games(game).value.balance.native >= winAmount.native,
+      'The game does not have enough balance for your win scenario',
+    )
+
+    let prevDeposit: UintN256 = new UintN256(0)
+    if (this.allDeposits(assetId).exists) {
+      prevDeposit = this.allDeposits(assetId).value
+    }
+    this.allDeposits(assetId).value = new UintN256(prevDeposit.native + amount.native)
+
+    const newValue = new PlayStruct({
+      round: new UintN64(Global.round),
+      state: new UintN64(1),
+      winProbability: winProbability,
+      deposit: new UintN256(amount.native),
+      owner: sender,
+      gameCreator: game.owner,
+      assetId: game.assetId,
+    })
+
+    this.plays(sender).value = newValue.copy()
+  }
+
+  /**
+   * Returns the current state of the game
+   *
+   * @returns the current game
+   */
+  @arc4.abimethod({ readonly: true })
+  public Game(creator: Address, assetId: UintN64): GameStruct {
+    const key = new AddressAssetStruct({
+      assetId: assetId,
+      owner: creator,
+    })
+    assert(this.games(key).exists, 'Did not found the game')
+    return this.games(key).value
+  }
+  /**
+   * Returns the active user box
+   *
+   * @returns the current player game
+   */
+  @arc4.abimethod({ readonly: true })
+  public MyGame(): PlayStruct {
+    const sender = new arc4.Address(Txn.sender)
+    assert(this.plays(sender).exists, 'Did not found the game you are playing')
+    return this.plays(sender).value
+  }
+
+  /**
+   * Claim the game.
+   *
+   * If user won, he receives the assets
+   *
+   * If user lost, the game is funded with more balance
+   */
+  @arc4.abimethod()
+  public ClaimGame(): void {
+    const sender = new arc4.Address(Txn.sender)
+    assert(this.plays(sender).exists, 'Did not found the game you are playing')
+    const play = this.plays(sender).value.copy()
+
+    const key = new AddressAssetStruct({
+      assetId: play.assetId,
+      owner: play.gameCreator,
+    })
+    assert(this.games(key).exists, 'Did not found the game')
+    const game = this.games(key).value.copy()
+
+    // player did not claim the tx in time
+    // 100 rounds @ 1 sec is ~ 2 minutes, at 2.7 sec its 4-5 min
+    if (play.round.native < Global.round - 100) {
+      this.LooseGame(key, game, play, sender)
+      return
+    }
+
+    game.lastPlayedTime = new UintN64(Global.latestTimestamp)
+
+    // MAIN LOGIC OF THE APPLICATION IS HERE
+
+    // seed is 256 bit number generated from prev block data
+    const seed = BigUint(op.Block.blkSeed(play.round.native + 1))
+    // lets take number from (0,1 with 6 decimal places)
+    const rand0_1: biguint = seed % BigUint(1_000_000)
+
+    // 200_000 * 900_000 / 1_000_000 = 180_000 (if player choose to play with win ration 0,2 and game has win ratio 0,9, we compare it to 0,18.. if rand(0,1) <= 0,18 then player won)
+    const winThreshold: uint64 = (play.winProbability.native * game.winRatio.native) / 1_000_000
+    if (rand0_1 < BigUint(winThreshold)) {
+      // win
+      // 100_000 * 1_000_000 / 1_000_000
+      const winAmount: biguint = BigUint(
+        (play.deposit.native * BigUint(1_000_000)) / BigUint(play.winProbability.native),
+      )
+
+      game.lastWinAmount = new UintN256(winAmount)
+      game.lastWinTime = new UintN64(Global.latestTimestamp)
+      if (winAmount > game.biggestWinAmount.native) {
+        game.biggestWinAmount = new UintN256(winAmount)
+        game.biggestWinTime = new UintN64(Global.latestTimestamp)
+      }
+
+      if (game.isNativeToken.native) {
+        // native token
+
+        let prevDeposit: UintN256 = new UintN256(0)
+        if (this.allDeposits(key.assetId).exists) {
+          prevDeposit = this.allDeposits(key.assetId).value
+        }
+        assert(prevDeposit.native >= winAmount, 'There is not enough money in the sc to cover this win tx')
+        this.allDeposits(key.assetId).value = new UintN256(prevDeposit.native - winAmount)
+
+        assert(game.balance.native >= winAmount, 'There is not enough money in the sc to cover this win tx')
+        this.games(key).value.balance = new UintN256(game.balance.native - winAmount)
+
+        this.plays(sender).value.state = new UintN64(2) // mark the state of the game 2 - win
+
+        itxn
+          .payment({
+            sender: Global.currentApplicationAddress,
+            receiver: play.owner.native,
+            amount: new UintN64(winAmount).native,
+            fee: 0,
+          })
+          .submit()
+      }
+
+      if (game.isASAToken.native) {
+        // ASA token
+
+        let prevDeposit: UintN256 = new UintN256(0)
+        if (this.allDeposits(key.assetId).exists) {
+          prevDeposit = this.allDeposits(key.assetId).value
+        }
+        assert(prevDeposit.native >= winAmount, 'There is not enough money in the sc to cover this win tx')
+        this.allDeposits(key.assetId).value = new UintN256(prevDeposit.native - winAmount)
+
+        assert(game.balance.native >= winAmount, 'There is not enough money in the sc to cover this win tx')
+        this.games(key).value.balance = new UintN256(game.balance.native - winAmount)
+
+        this.plays(sender).value.state = new UintN64(2) // mark the state of the game 2 - win
+
+        itxn
+          .assetTransfer({
+            sender: Global.currentApplicationAddress,
+            assetReceiver: play.owner.native,
+            assetAmount: new UintN64(winAmount).native,
+            xferAsset: game.assetId.native,
+            fee: 0,
+          })
+          .submit()
+      }
+      if (game.isArc200Token.native) {
+        let prevDeposit: UintN256 = new UintN256(0)
+        if (this.allDeposits(key.assetId).exists) {
+          prevDeposit = this.allDeposits(key.assetId).value
+        }
+        assert(prevDeposit.native >= winAmount, 'There is not enough money in the sc to cover this win tx')
+        this.allDeposits(key.assetId).value = new UintN256(prevDeposit.native - winAmount)
+
+        assert(game.balance.native >= winAmount, 'There is not enough money in the sc to cover this win tx')
+        this.games(key).value.balance = new UintN256(game.balance.native - winAmount)
+
+        this.plays(sender).value.state = new UintN64(2) // mark the state of the game 2 - win
+
+        // ARC 200
+        itxn
+          .applicationCall({
+            appId: game.assetId.native,
+            appArgs: [methodSelector('arc200_transfer(address,uint256)bool'), play.owner, new UintN256(winAmount)],
+            fee: 0,
+          })
+          .submit()
+      }
+    } else {
+      // loose
+      this.LooseGame(key, game, play, sender)
+    }
+  }
+  // internal method to mark the game as lost and set the correct balances to the game
+  private LooseGame(key: AddressAssetStruct, game: GameStruct, play: PlayStruct, sender: Address) {
+    this.games(key).value.balance = new UintN256(game.balance.native + play.deposit.native)
+    this.plays(sender).value.state = new UintN64(3) // mark the state of the game 3 - loose
   }
 }
