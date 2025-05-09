@@ -1,0 +1,95 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  
+  body {
+    @apply antialiased;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center px-4 py-2 rounded-lg font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background transition-colors;
+  }
+  
+  .btn-primary {
+    @apply bg-primary-600 hover:bg-primary-700 text-white focus:ring-primary-500;
+  }
+  
+  .btn-secondary {
+    @apply bg-secondary-600 hover:bg-secondary-700 text-white focus:ring-secondary-500;
+  }
+  
+  .btn-accent {
+    @apply bg-accent-600 hover:bg-accent-700 text-white focus:ring-accent-500;
+  }
+  
+  .btn-success {
+    @apply bg-success-600 hover:bg-success-700 text-white focus:ring-success-500;
+  }
+  
+  .btn-error {
+    @apply bg-error-600 hover:bg-error-700 text-white focus:ring-error-500;
+  }
+  
+  .btn-outline {
+    @apply border border-gray-600 hover:bg-gray-800 text-white focus:ring-gray-500;
+  }
+  
+  .card {
+    @apply bg-background rounded-xl shadow-lg overflow-hidden;
+  }
+  
+  .input {
+    @apply bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500;
+  }
+  
+  .select {
+    @apply bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500;
+  }
+  
+  .label {
+    @apply block text-sm font-medium text-gray-400 mb-1;
+  }
+  
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+  
+  .badge-primary {
+    @apply bg-primary-100 text-primary-800;
+  }
+  
+  .badge-secondary {
+    @apply bg-secondary-100 text-secondary-800;
+  }
+  
+  .badge-accent {
+    @apply bg-accent-100 text-accent-800;
+  }
+  
+  .neon-border {
+    @apply border border-transparent;
+    box-shadow: 0 0 5px theme('colors.primary.400'), 0 0 20px theme('colors.primary.600');
+  }
+  
+  .neon-border-success {
+    @apply border border-transparent;
+    box-shadow: 0 0 5px theme('colors.success.400'), 0 0 20px theme('colors.success.600');
+  }
+  
+  .neon-border-error {
+    @apply border border-transparent;
+    box-shadow: 0 0 5px theme('colors.error.400'), 0 0 20px theme('colors.error.600');
+  }
+  
+  .neon-border-accent {
+    @apply border border-transparent;
+    box-shadow: 0 0 5px theme('colors.accent.400'), 0 0 20px theme('colors.accent.600');
+  }
+}

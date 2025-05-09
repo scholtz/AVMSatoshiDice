@@ -58,7 +58,7 @@ describe('AvmSatoshiDice contract', () => {
   }
 
   test('createGameWithNativeToken', async () => {
-    const testAccount = await localnet.context.generateAccount({ initialFunds: AlgoAmount.Algo(100) })
+    const testAccount = await localnet.context.generateAccount({ initialFunds: AlgoAmount.Algo(10000) })
     const { client } = await deploy(testAccount)
 
     const result = await client.send.createGameWithNativeToken({

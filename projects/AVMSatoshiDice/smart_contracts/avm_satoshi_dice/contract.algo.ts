@@ -5,8 +5,11 @@ import {
   biguint,
   BigUint,
   BoxMap,
+  bytes,
   Contract,
+  err,
   Global,
+  GlobalState,
   gtxn,
   itxn,
   op,
@@ -24,8 +27,17 @@ class GameStruct extends arc4.Struct<{
    * Asset id. If native token then 0, if arc200 token, the app id, if asa the asset id.
    */
   assetId: UintN64
+  /**
+   * If true, the asset id is equal to 0 and native token is used.
+   */
   isNativeToken: Bool
+  /**
+   * If true, the token id is the ASA id.
+   */
   isASAToken: Bool
+  /**
+   * If true, the token id is the arc200 token app id.
+   */
   isArc200Token: Bool
   /**
    * Time when someone last played the game
@@ -131,6 +143,185 @@ export class AvmSatoshiDice extends Contract {
   public allDeposits = BoxMap<UintN64, UintN256>({ keyPrefix: 'd' })
 
   /**
+   * Version of the smart contract
+   */
+  version = GlobalState<string>({ key: 'scver' })
+  /**
+   * addressUdpater from global biatec configuration is allowed to update application
+   */
+  @arc4.abimethod({ allowActions: 'UpdateApplication' })
+  updateApplication(newVersion: string): boolean {
+    assert(Global.creatorAddress === Txn.sender, 'Only creator can update application')
+    this.version.value = newVersion
+    return true
+  }
+  /**
+   * Creator can perfom key registration for this LP pool
+   */
+  @arc4.abimethod()
+  public sendOnlineKeyRegistration(
+    voteKey: bytes,
+    selectionKey: bytes,
+    stateProofKey: bytes,
+    voteFirst: uint64,
+    voteLast: uint64,
+    voteKeyDilution: uint64,
+    fee: uint64,
+  ): bytes {
+    assert(Global.creatorAddress === Txn.sender, 'Only creator can use this method')
+    const itxnResult = itxn
+      .keyRegistration({
+        selectionKey: selectionKey,
+        stateProofKey: stateProofKey,
+        voteFirst: voteFirst,
+        voteKeyDilution: voteKeyDilution,
+        voteLast: voteLast,
+        voteKey: voteKey,
+        fee: fee,
+      })
+      .submit()
+    return itxnResult.txnId
+  }
+
+  /**
+   * Biatec can withdraw service fees. The current balance
+   *
+   * @param amount Amout to send
+   * @param receiver Receiver
+   * @param note Note
+   * @returns
+   */
+  @arc4.abimethod()
+  public withdraw(receiver: Address, amount: UintN256, assetId: UintN64, isArc200Token: Bool): void {
+    const key = new AddressAssetStruct({
+      assetId: assetId,
+      owner: new Address(Txn.sender),
+    })
+
+    if (this.games(key).exists) {
+      const game = this.games(key).value.copy()
+
+      let toWithdrawIncludingFee: biguint = amount.native
+      if (toWithdrawIncludingFee === BigUint(0)) {
+        toWithdrawIncludingFee = game.balance.native
+      }
+      const fee: biguint = toWithdrawIncludingFee / BigUint(40)
+      const toWithdrawNet: biguint = toWithdrawIncludingFee - fee
+
+      assert(
+        game.balance.native >= toWithdrawIncludingFee,
+        'Game creator can withdraw from the game only the game deposit',
+      )
+
+      this.games(key).value.balance = new UintN256(game.balance.native - toWithdrawIncludingFee)
+      this.allDeposits(assetId).value = new UintN256(this.allDeposits(assetId).value.native - toWithdrawNet)
+
+      if (game.isNativeToken.native) {
+        itxn
+          .payment({
+            amount: new UintN64(toWithdrawNet).native,
+            receiver: receiver.native,
+            note: 'user withdrawal',
+            fee: 0,
+          })
+          .submit()
+      }
+      if (game.isASAToken.native) {
+        itxn
+          .assetTransfer({
+            xferAsset: game.assetId.native,
+            assetAmount: new UintN64(toWithdrawNet).native,
+            assetReceiver: receiver.native,
+            note: 'user withdrawal',
+            fee: 0,
+          })
+          .submit()
+      }
+      if (game.isArc200Token.native) {
+        // ARC 200
+        itxn
+          .applicationCall({
+            appId: game.assetId.native,
+            appArgs: [methodSelector('arc200_transfer(address,uint256)bool'), receiver, new UintN256(toWithdrawNet)],
+            fee: 0,
+            note: 'user withdrawal',
+          })
+          .submit()
+      }
+    } else {
+      // box does not exists
+      if (Global.creatorAddress === Txn.sender) {
+        // global deployer can perform fee transfer
+
+        if (assetId.native === 0) {
+          const maxWithdrawableBalance: uint64 =
+            Global.currentApplicationAddress.balance -
+            Global.currentApplicationAddress.minBalance -
+            new UintN64(this.allDeposits(assetId).value.native).native
+          assert(amount.native <= BigUint(maxWithdrawableBalance), 'maxWithdrawableBalance is less then requested')
+          let toWidraw: uint64 = new UintN64(amount.native).native
+          if (toWidraw === 0) {
+            toWidraw = maxWithdrawableBalance
+          }
+
+          itxn
+            .payment({
+              amount: new UintN64(toWidraw).native,
+              receiver: receiver.native,
+              note: 'admin withdrawal',
+              fee: 0,
+            })
+            .submit()
+        } else if (isArc200Token.native) {
+          // arc200 withdrawal
+          // TODO .. check the balance
+          // const balance =  itxn
+          //   .applicationCall({
+          //     appId: assetId.native,
+          //     appArgs: [
+          //       methodSelector('arc200_balanceOf(address)uint256'),
+          //       new Address(Global.currentApplicationAddress)
+          //     ],
+          //   })
+          //   .submit()
+          //
+          // THERE IS SECURITY ISSUE NOW.. ADMIN CAN WITHDRAW ANY AMOUNT OF ARC200
+          // how to do arc200_balanceOf within the smart contract?
+          itxn
+            .applicationCall({
+              appId: assetId.native,
+              appArgs: [methodSelector('arc200_transfer(address,uint256)bool'), receiver, amount],
+              fee: 0,
+              note: 'admin withdrawal',
+            })
+            .submit()
+        } else {
+          // asa
+          const balance = Asset(assetId.native).balance(Global.currentApplicationAddress)
+          const maxWithdrawableBalance: uint64 = balance - new UintN64(this.allDeposits(assetId).value.native).native
+          assert(amount.native <= BigUint(maxWithdrawableBalance), 'maxWithdrawableBalance is less then requested')
+          let toWidraw: uint64 = new UintN64(amount.native).native
+          if (toWidraw === 0) {
+            toWidraw = maxWithdrawableBalance
+          }
+
+          itxn
+            .assetTransfer({
+              xferAsset: assetId.native,
+              assetAmount: new UintN64(toWidraw).native,
+              assetReceiver: receiver.native,
+              note: 'admin withdrawal',
+              fee: 0,
+            })
+            .submit()
+        }
+      } else {
+        err('The game for this asset does not exists')
+      }
+    }
+  }
+
+  /**
    * Create new game or deposit by the owner more assets to the game.
    *
    * @param txnDeposit Deposit transaction
@@ -161,11 +352,11 @@ export class AvmSatoshiDice extends Contract {
       assert(this.games(key).value.isNativeToken === new Bool(true), 'The previous game was not for the native token')
       assert(this.games(key).value.isASAToken === new Bool(false), 'The previous game was ASA token')
       assert(this.games(key).value.assetId === assetId, 'The previous game was not for the native token')
-      assert(this.games(key).value.winRatio === winRatio, 'It is not possible to change the win ratio')
 
       // do more deposit to the user game
       const oldBalance = this.games(key).value.balance
       this.games(key).value.balance = new UintN256(oldBalance.native + BigUint(deposit))
+      this.games(key).value.winRatio = winRatio
     } else {
       // new game
       const newValue = new GameStruct({
@@ -245,11 +436,11 @@ export class AvmSatoshiDice extends Contract {
       assert(this.games(key).value.isArc200Token === new Bool(false), 'The previous game was for the arc200 token')
       assert(this.games(key).value.isASAToken === new Bool(true), 'The previous game was not for the ASA token')
       assert(this.games(key).value.assetId === assetId, 'The previous game was not for the same token')
-      assert(this.games(key).value.winRatio === winRatio, 'It is not possible to change the win ratio')
 
       // do more deposit to the user game
       const oldBalance = this.games(key).value.balance
       this.games(key).value.balance = new UintN256(oldBalance.native + BigUint(deposit))
+      this.games(key).value.winRatio = winRatio
     } else {
       // new game
       const newValue = new GameStruct({
@@ -314,11 +505,11 @@ export class AvmSatoshiDice extends Contract {
       assert(this.games(key).value.isArc200Token === new Bool(true), 'The previous game was NOT for the arc200 token')
       assert(this.games(key).value.isASAToken === new Bool(false), 'The previous game was for the ASA token')
       assert(this.games(key).value.assetId === assetId, 'The previous game was not for the same token')
-      assert(this.games(key).value.winRatio === winRatio, 'It is not possible to change the win ratio')
 
       // do more deposit to the user game
       const oldBalance = this.games(key).value.balance
       this.games(key).value.balance = new UintN256(oldBalance.native + BigUint(deposit))
+      this.games(key).value.winRatio = winRatio
     } else {
       // new game
       const newValue = new GameStruct({

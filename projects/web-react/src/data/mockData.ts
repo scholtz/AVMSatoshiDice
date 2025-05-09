@@ -1,0 +1,118 @@
+import { Game, Token } from '../types';
+
+export const tokens: Token[] = [
+  {
+    id: '1',
+    name: 'Algorand',
+    type: 'native',
+    symbol: 'ALGO',
+  },
+  {
+    id: '2',
+    name: 'USD Coin',
+    type: 'asa',
+    symbol: 'USDC',
+  },
+  {
+    id: '3',
+    name: 'DeFi Token',
+    type: 'arc200',
+    symbol: 'DFT',
+  },
+  {
+    id: '4',
+    name: 'Algorand Standard Asset',
+    type: 'asa',
+    symbol: 'ASA',
+  },
+];
+
+export const games: Game[] = [
+  {
+    id: '1',
+    name: 'High Roller',
+    token: tokens[0],
+    balance: 10000,
+    winRatio: 60,
+    createdAt: '2024-09-01T10:00:00Z',
+    lastPlayTime: '2024-09-15T14:30:00Z',
+    lastWinTime: '2024-09-15T14:30:00Z',
+    biggestWin: {
+      amount: 2000,
+      time: '2024-09-10T18:45:00Z',
+    },
+    owner: 'XYZABC123456789',
+  },
+  {
+    id: '2',
+    name: 'Safe Bet',
+    token: tokens[1],
+    balance: 50000,
+    winRatio: 90,
+    createdAt: '2024-08-15T09:00:00Z',
+    lastPlayTime: '2024-09-15T12:00:00Z',
+    lastWinTime: '2024-09-14T22:15:00Z',
+    biggestWin: {
+      amount: 1800,
+      time: '2024-09-05T16:30:00Z',
+    },
+    owner: 'ABCDEF987654321',
+  },
+  {
+    id: '3',
+    name: 'Risk Taker',
+    token: tokens[2],
+    balance: 25000,
+    winRatio: 30,
+    createdAt: '2024-09-05T15:00:00Z',
+    lastPlayTime: '2024-09-15T08:45:00Z',
+    lastWinTime: null,
+    biggestWin: null,
+    owner: 'MNOPQR456789123',
+  },
+  {
+    id: '4',
+    name: 'Beginner\'s Luck',
+    token: tokens[0],
+    balance: 5000,
+    winRatio: 50,
+    createdAt: '2024-09-10T11:30:00Z',
+    lastPlayTime: '2024-09-14T20:00:00Z',
+    lastWinTime: '2024-09-14T20:00:00Z',
+    biggestWin: {
+      amount: 500,
+      time: '2024-09-13T19:15:00Z',
+    },
+    owner: 'GHIJKL654321987',
+  },
+  {
+    id: '5',
+    name: 'USDC Jackpot',
+    token: tokens[1],
+    balance: 100000,
+    winRatio: 20,
+    createdAt: '2024-08-20T13:00:00Z',
+    lastPlayTime: '2024-09-15T10:30:00Z',
+    lastWinTime: '2024-09-12T14:45:00Z',
+    biggestWin: {
+      amount: 10000,
+      time: '2024-09-01T21:00:00Z',
+    },
+    owner: 'STUVWX789123456',
+  },
+  {
+    id: '6',
+    name: 'DeFi Dreams',
+    token: tokens[2],
+    balance: 75000,
+    winRatio: 40,
+    createdAt: '2024-09-03T16:15:00Z',
+    lastPlayTime: '2024-09-15T09:15:00Z',
+    lastWinTime: '2024-09-15T09:15:00Z',
+    biggestWin: {
+      amount: 5000,
+      time: '2024-09-14T11:30:00Z',
+    },
+    owner: 'DEFGHI321654987',
+  },
+];

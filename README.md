@@ -1,22 +1,5 @@
 # AVMSatoshiDice
 
-Welcome to your new AlgoKit project!
+I want to create web site for project AVM Satoshi Dice. The important is that the design must be professional looking. Please use the tailwind to style the css. The AVM Satoshi Dice project is the Game engine where Game creator can create a game where he defines the win ratio and game token which can be native token, asa, or arc200 token. Now player can start a game play. Player sets the win probability for his action. The input to the backend is the amount of tokens user is willing to play with and number from 1 to 1000000 where 1000000 is the 100% probability of winning.  If the probability of winning is 20%, if the user win the game, he receives his deposit devided by 0.2 so for example on deposit 100 tokens he receives back 500 so he won 400. User can select the game which he wants to play. Each game will have different balance (in token) and win ratio. The game details can show also information about last play time, last win time, biggest win amount and biggest win time and owner of the game. The games should be sorted by the win ratio attribute and then balance and should be filterable by the token. User cannot play the game where his win would be higher then the balance. The game play consists of two actions - first user places the deposit, and in few seconds he tries to claim the price. Owner of the game has option to deposit to the game more tokens or he can withdraw tokens. When user wins, the fireworks must be shown.
 
-This is your workspace root. A `workspace` in AlgoKit is an orchestrated collection of standalone projects (backends, smart contracts, frontend apps and etc).
-
-By default, `projects_root_path` parameter is set to `projects`. Which instructs AlgoKit CLI to create a new directory under `projects` directory when new project is instantiated via `algokit init` at the root of the workspace.
-
-## Getting Started
-
-To get started refer to `README.md` files in respective sub-projects in the `projects` directory.
-
-To learn more about algokit, visit [documentation](https://github.com/algorandfoundation/algokit-cli/blob/main/docs/algokit.md).
-
-### GitHub Codespaces
-
-To get started execute:
-
-1. `algokit generate devcontainer` - invoking this command from the root of this repository will create a `devcontainer.json` file with all the configuration needed to run this project in a GitHub codespace. [Run the repository inside a codespace](https://docs.github.com/en/codespaces/getting-started/quickstart) to get started.
-2. `algokit init` - invoke this command inside a github codespace to launch an interactive wizard to guide you through the process of creating a new AlgoKit project
-
-Powered by [Copier templates](https://copier.readthedocs.io/en/stable/).
+Web will be in vue.js, use @vueuse/motion for dynamic element of the website. Please do the professional design.
