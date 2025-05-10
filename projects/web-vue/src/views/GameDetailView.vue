@@ -1,29 +1,38 @@
 <script setup lang="ts">
+import { useWallet } from "@txnlab/use-wallet-vue";
+import algosdk from "algosdk";
 import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { AvmSatoshiDiceClient } from "../../../AVMSatoshiDice/smart_contracts/artifacts/avm_satoshi_dice/AvmSatoshiDiceClient";
 import AppButton from "../components/common/AppButton.vue";
 import AppLoader from "../components/common/AppLoader.vue";
 import GameDetails from "../components/game/GameDetails.vue";
+import { useAppStore } from "../stores/app";
 import { useGameStore } from "../stores/game";
 
 const route = useRoute();
 const router = useRouter();
+const appStore = useAppStore();
 const gameStore = useGameStore();
 
 const isLoading = ref(true);
 const gameId = route.params.id as string;
 
-onMounted(() => {
-  // Simulate API loading
-  setTimeout(() => {
-    gameStore.setCurrentGame(gameId);
-    isLoading.value = false;
+const { activeAddress, transactionSigner } = useWallet();
+onMounted(async () => {
+  console.log("gamelist onmounted");
+  if (!activeAddress.value) return;
+  const client = new AvmSatoshiDiceClient({
+    algorand: appStore.getAlgorandClient(),
+    appId: appStore.state.appId,
+    defaultSender: algosdk.decodeAddress(activeAddress.value),
+    defaultSigner: transactionSigner,
+  });
+  await gameStore.loadGames(client);
 
-    // If game not found, redirect to home
-    if (!gameStore.currentGame) {
-      router.push("/");
-    }
-  }, 1000);
+  gameStore.setCurrentGame(gameId);
+  console.log("gamelist onmounted done");
+  isLoading.value = false;
 });
 
 const playGame = () => {
@@ -32,8 +41,8 @@ const playGame = () => {
 </script>
 
 <template>
-  <div>
-    <div class="mb-6 flex items-center justify-between">
+  <div class="w-full">
+    <div class="mb-6 flex items-center justify-between w-full">
       <div class="flex items-center space-x-2">
         <AppButton @click="router.push('/')" variant="outline" class="px-3 py-1.5">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">

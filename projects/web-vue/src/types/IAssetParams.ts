@@ -7,7 +7,7 @@ export interface IAssetParams {
   /**
    * The asset Type
    */
-  type: "native" | "asa" | "arc200";
+  type: "native" | "asa" | "arc200" | "other";
 
   /**
    * The address that created this asset. This is the address where the parameters

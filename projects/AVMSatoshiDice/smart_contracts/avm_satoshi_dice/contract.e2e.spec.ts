@@ -116,6 +116,7 @@ describe('AvmSatoshiDice contract', () => {
 
     const dummyAccount1 = await localnet.context.generateAccount({ initialFunds: AlgoAmount.Algo(100) }) // generate new tx on chain, so that we move one block further
     const dummyAccount2 = await localnet.context.generateAccount({ initialFunds: AlgoAmount.Algo(100) }) // generate new tx on chain, so that we move one block further
+    const dummyAccount3 = await localnet.context.generateAccount({ initialFunds: AlgoAmount.Algo(100) }) // generate new tx on chain, so that we move one block further
 
     await client.send.claimGame({
       args: {},
@@ -240,6 +241,7 @@ describe('AvmSatoshiDice contract', () => {
 
     const dummyAccount1 = await localnet.context.generateAccount({ initialFunds: AlgoAmount.Algo(100) }) // generate new tx on chain, so that we move one block further
     const dummyAccount2 = await localnet.context.generateAccount({ initialFunds: AlgoAmount.Algo(100) }) // generate new tx on chain, so that we move one block further
+    const dummyAccount3 = await localnet.context.generateAccount({ initialFunds: AlgoAmount.Algo(100) }) // generate new tx on chain, so that we move one block further
 
     console.log('claimGame')
     await client.send.claimGame({
@@ -277,7 +279,7 @@ describe('AvmSatoshiDice contract', () => {
           sender: deployerAccount.addr,
           assetName: 'ASA',
           decimals: 6,
-          total: 1_000_000_000n * 1_000_000n,
+          total: 1_000_000_000_000_000n,
           unitName: 'ASA',
           suggestedParams: await localnet.context.algod.getTransactionParams().do(),
         }),
@@ -384,6 +386,7 @@ describe('AvmSatoshiDice contract', () => {
 
     const dummyAccount1 = await localnet.context.generateAccount({ initialFunds: AlgoAmount.Algo(100) }) // generate new tx on chain, so that we move one block further
     const dummyAccount2 = await localnet.context.generateAccount({ initialFunds: AlgoAmount.Algo(100) }) // generate new tx on chain, so that we move one block further
+    const dummyAccount3 = await localnet.context.generateAccount({ initialFunds: AlgoAmount.Algo(100) }) // generate new tx on chain, so that we move one block further
 
     console.log('claimGame')
     await client.send.claimGame({
@@ -445,6 +448,7 @@ describe('AvmSatoshiDice contract', () => {
 
       const dummyAccount1 = await localnet.context.generateAccount({ initialFunds: AlgoAmount.Algo(100) }) // generate new tx on chain, so that we move one block further
       const dummyAccount2 = await localnet.context.generateAccount({ initialFunds: AlgoAmount.Algo(100) }) // generate new tx on chain, so that we move one block further
+      const dummyAccount3 = await localnet.context.generateAccount({ initialFunds: AlgoAmount.Algo(100) }) // generate new tx on chain, so that we move one block further
 
       await client.send.claimGame({
         args: {},
@@ -516,6 +520,7 @@ describe('AvmSatoshiDice contract', () => {
 
       const dummyAccount1 = await localnet.context.generateAccount({ initialFunds: AlgoAmount.Algo(100) }) // generate new tx on chain, so that we move one block further
       const dummyAccount2 = await localnet.context.generateAccount({ initialFunds: AlgoAmount.Algo(100) }) // generate new tx on chain, so that we move one block further
+      const dummyAccount3 = await localnet.context.generateAccount({ initialFunds: AlgoAmount.Algo(100) }) // generate new tx on chain, so that we move one block further
 
       await client.send.claimGame({
         args: {},
@@ -640,6 +645,7 @@ describe('AvmSatoshiDice contract', () => {
 
       const dummyAccount1 = await localnet.context.generateAccount({ initialFunds: AlgoAmount.Algo(100) }) // generate new tx on chain, so that we move one block further
       const dummyAccount2 = await localnet.context.generateAccount({ initialFunds: AlgoAmount.Algo(100) }) // generate new tx on chain, so that we move one block further
+      const dummyAccount3 = await localnet.context.generateAccount({ initialFunds: AlgoAmount.Algo(100) }) // generate new tx on chain, so that we move one block further
 
       await client.send.claimGame({
         args: {},

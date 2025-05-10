@@ -15,6 +15,7 @@
   "dependencies": {
     "@agoralabs-sh/avm-web-provider": "^1.7.0",
     "@blockshake/defly-connect": "^1.2.1",
+    "@fireworks-js/vue": "^2.10.8",
     "@headlessui/vue": "^1.7.23",
     "@magic-ext/algorand": "^23.20.0",
     "@perawallet/connect": "^1.4.2",

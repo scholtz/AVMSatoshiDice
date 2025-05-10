@@ -28,7 +28,7 @@ useMotion(gameCardRef, {
 });
 
 const formattedBalance = computed(() => {
-  return (Number(props.game.game.balance) / 10 ** props.game.token.decimals).toLocaleString();
+  return (Number(props.game.game.balance) / 10 ** Number(props.game.token.decimals)).toLocaleString();
 });
 
 const formattedWinRatio = computed(() => {
@@ -37,7 +37,7 @@ const formattedWinRatio = computed(() => {
 
 const lastPlayedFormatted = computed(() => {
   if (!props.game.game.lastPlayedTime) return "Never played";
-  return new Date(Number(props.game.game.lastPlayedTime)).toLocaleString();
+  return new Date(Number(props.game.game.lastPlayedTime * 1000n)).toLocaleString();
 });
 
 const viewGameDetails = () => {

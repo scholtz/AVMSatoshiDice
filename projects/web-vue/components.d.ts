@@ -8,11 +8,13 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    Abbr: typeof import('./src/components/Abbr.vue')['default']
     AppButton: typeof import('./src/components/common/AppButton.vue')['default']
     AppLoader: typeof import('./src/components/common/AppLoader.vue')['default']
     AuthScreen: typeof import('./src/components/AuthScreen.vue')['default']
     Button: typeof import('primevue/button')['default']
     Fireworks: typeof import('./src/components/effects/Fireworks.vue')['default']
+    FireworksEffect: typeof import('./src/components/effects/FireworksEffect.vue')['default']
     GameCard: typeof import('./src/components/game/GameCard.vue')['default']
     GameCreate: typeof import('./src/components/game/GameCreate.vue')['default']
     GameDetails: typeof import('./src/components/game/GameDetails.vue')['default']

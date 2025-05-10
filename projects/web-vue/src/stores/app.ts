@@ -20,6 +20,8 @@ interface IToken2Balance {
   [key: string]: bigint;
 }
 interface IAssetHolding {
+  assetName: string;
+  decimals: number;
   /**
    * (a) number of units held.
    */
@@ -49,13 +51,13 @@ export interface IState {
   configuration: AppConfigurationV1 | null;
 
   assetId: bigint;
-  tokenType: "native" | "asa" | "arc200";
+  tokenType: "native" | "asa" | "arc200" | "other";
   userBalance: bigint;
   assetDecimals: number;
   assetHolding: IAssetHolding[];
 }
 const defaultState: IState = {
-  appId: 1003n,
+  appId: 6029n,
   // algodHost: "https://mainnet-api.algonode.cloud",
   // algodPort: 443,
   // algodToken: "",
@@ -107,9 +109,29 @@ export const useAppStore = defineStore("app", () => {
       },
     });
   };
+  const loadAllUserAssets = async (activeAddress: ComputedRef<string | null>) => {
+    if (!activeAddress.value) {
+      return;
+    }
+    const algorandClient = getAlgorandClient();
+    const info = await algorandClient.client.algod.accountInformation(activeAddress.value).do();
+    const allAssets = [];
+    for (let asset of info?.assets ?? []) {
+      const assetInfo = await getAssetAsync(asset.assetId, algorandClient);
+      const assetData = {
+        amount: asset.amount,
+        assetId: asset.assetId,
+        isFrozen: asset.isFrozen,
+        assetName: assetInfo.name ?? "ASA" + asset.assetId,
+        decimals: assetInfo.decimals,
+      };
+      allAssets.push(assetData);
+    }
+    state.assetHolding = allAssets;
+  };
   const updateBalance = async (
     assetId: string | number | bigint,
-    tokenType: "native" | "asa" | "arc200",
+    tokenType: "native" | "asa" | "arc200" | "other",
     activeAddress: ComputedRef<string | null>,
     transactionSigner: (txnGroup: algosdk.Transaction[], indexesToSign: number[]) => Promise<Uint8Array[]>,
     chainId: "mainnet-v1.0" | "aramidmain-v1.0" | "testnet-v1.0" | "betanet-v1.0" | "voimain-v1.0" | "fnet-v1" | "dockernet-v1",
@@ -118,7 +140,8 @@ export const useAppStore = defineStore("app", () => {
     console.log("activeAddress.value", activeAddress.value);
     //state.
     const extendedTokenId = `${chainId}-${assetId}`;
-    state.assetId = BigInt(assetId);
+    const assetIdBigint = BigInt(assetId);
+    state.assetId = assetIdBigint;
     state.tokenType = tokenType;
 
     if (!activeAddress.value) {
@@ -136,13 +159,14 @@ export const useAppStore = defineStore("app", () => {
     if (state.tokenType == "asa" && state.assetId > 0n) {
       const info = await algorandClient.client.algod.accountInformation(activeAddress.value).do();
       console.log("info", info);
-      state.assetHolding =
-        info.assets?.map((i) => {
-          return { amount: i.amount, assetId: i.amount, isFrozen: i.isFrozen };
-        }) ?? [];
       if (info.assets) {
-        state.userBalance = info.assets[Number(state.assetId)].amount ?? 0n;
-        state.token2balance[extendedTokenId] = info.assets[Number(state.assetId)].amount ?? 0n;
+        console.log(
+          "info.assets.find((a) => a.assetId == assetIdBigint)",
+          assetIdBigint,
+          info.assets.find((a) => a.assetId == assetIdBigint),
+        );
+        state.userBalance = info.assets.find((a) => a.assetId == assetIdBigint)?.amount ?? 0n;
+        state.token2balance[extendedTokenId] = state.userBalance;
       }
 
       const assetInfo = await getAssetAsync(state.assetId, algorandClient);
@@ -169,7 +193,7 @@ export const useAppStore = defineStore("app", () => {
     }
     console.log("updateBalance", state);
   };
-  return { state, getBalanceForToken, updateBalance, getAlgorandClient };
+  return { state, loadAllUserAssets, getBalanceForToken, updateBalance, getAlgorandClient };
 });
 
 export const resetConfiguration = () => {

@@ -1,10 +1,12 @@
 <script setup lang="ts">
+import { AlgoAmount } from "@algorandfoundation/algokit-utils/types/amount";
 import { useWallet } from "@txnlab/use-wallet-vue";
 import algosdk, { makeAssetTransferTxnWithSuggestedParamsFromObject, makePaymentTxnWithSuggestedParamsFromObject } from "algosdk";
 import { useToast } from "primevue";
 import { computed, onMounted, reactive, watch } from "vue";
 import { useRouter } from "vue-router";
 import { AvmSatoshiDiceClient } from "../../../../AVMSatoshiDice/smart_contracts/artifacts/avm_satoshi_dice/AvmSatoshiDiceClient";
+import { getAssetAsync } from "../../scripts/algorand/getAssetAsync";
 import { useAppStore } from "../../stores/app";
 import { useGameStore } from "../../stores/game";
 import AppButton from "../common/AppButton.vue";
@@ -24,18 +26,20 @@ const state = reactive({
 });
 
 onMounted(async () => {
-  await appStore.updateBalance(state.assetId, state.tokenType, activeAddress, transactionSigner);
+  await appStore.updateBalance(state.assetId, state.tokenType, activeAddress, transactionSigner, appStore.state.env);
+  await appStore.loadAllUserAssets(activeAddress);
+  // check all user's tokens
 });
 watch(
   () => state.assetId,
   async () => {
-    await appStore.updateBalance(state.assetId, state.tokenType, activeAddress, transactionSigner);
+    await appStore.updateBalance(state.assetId, state.tokenType, activeAddress, transactionSigner, appStore.state.env);
   },
 );
 watch(
   () => state.tokenType,
   async () => {
-    await appStore.updateBalance(state.assetId, state.tokenType, activeAddress, transactionSigner);
+    await appStore.updateBalance(state.assetId, state.tokenType, activeAddress, transactionSigner, appStore.state.env);
   },
 );
 
@@ -63,7 +67,7 @@ const handleSubmit = async () => {
     const amountUint = BigInt(state.initialDeposit * 10 ** appStore.state.assetDecimals);
     if (state.tokenType == "native") {
       console.log("executing native deposit");
-      await client.send.createGameWithNativeToken({
+      const ret = await client.send.createGameWithNativeToken({
         args: {
           txnDeposit: makePaymentTxnWithSuggestedParamsFromObject({
             amount: amountUint,
@@ -74,32 +78,72 @@ const handleSubmit = async () => {
           winRatio: winRatioUint,
         },
       });
+      if (ret.return) {
+        gameStore.updateGame({
+          game: ret.return,
+          id: `${activeAddress.value}-${state.assetId}`,
+          idObj: { assetId: BigInt(state.assetId), owner: activeAddress.value },
+          token: await getAssetAsync(state.assetId, appStore.getAlgorandClient()),
+        });
+      }
       console.log("executing native deposit done");
     }
     if (state.tokenType == "asa") {
       console.log("executing asa deposit");
-      await client.send.createGameWithAsaToken({
-        args: {
-          txnDeposit: makeAssetTransferTxnWithSuggestedParamsFromObject({
-            assetIndex: state.assetId,
-            amount: amountUint,
-            receiver: algosdk.encodeAddress(client.appAddress.publicKey),
-            sender: activeAddress.value,
-            suggestedParams: await client.algorand.client.algod.getTransactionParams().do(),
-          }),
-          winRatio: winRatioUint,
-        },
-      });
+      const group = await client
+        .newGroup()
+        .optInToAsa({
+          args: {
+            assetId: state.assetId,
+            txnDeposit: makePaymentTxnWithSuggestedParamsFromObject({
+              amount: 10_000_000,
+              receiver: algosdk.encodeAddress(client.appAddress.publicKey),
+              sender: activeAddress.value,
+              suggestedParams: await client.algorand.client.algod.getTransactionParams().do(),
+            }),
+          },
+          staticFee: AlgoAmount.MicroAlgo(2000),
+        })
+        .createGameWithAsaToken({
+          args: {
+            txnDeposit: makeAssetTransferTxnWithSuggestedParamsFromObject({
+              assetIndex: state.assetId,
+              amount: amountUint,
+              receiver: algosdk.encodeAddress(client.appAddress.publicKey),
+              sender: activeAddress.value,
+              suggestedParams: await client.algorand.client.algod.getTransactionParams().do(),
+            }),
+            winRatio: winRatioUint,
+          },
+        })
+        .send({});
+
+      if (group.returns[1]) {
+        gameStore.updateGame({
+          game: group.returns[1],
+          id: `${activeAddress.value}-${state.assetId}`,
+          idObj: { assetId: BigInt(state.assetId), owner: activeAddress.value },
+          token: await getAssetAsync(state.assetId, appStore.getAlgorandClient()),
+        });
+      }
     }
     if (state.tokenType == "arc200") {
       console.log("executing arc200 deposit");
-      client.send.createGameWithArc200Token({
+      const ret = await client.send.createGameWithArc200Token({
         args: {
           amount: amountUint,
           assetId: state.assetId,
           winRatio: winRatioUint,
         },
       });
+      if (ret.return) {
+        gameStore.updateGame({
+          game: ret.return,
+          id: `${activeAddress.value}-${state.assetId}`,
+          idObj: { assetId: BigInt(state.assetId), owner: activeAddress.value },
+          token: await getAssetAsync(state.assetId, appStore.getAlgorandClient()),
+        });
+      }
     }
 
     state.isCreating = false;
@@ -118,7 +162,7 @@ const handleSubmit = async () => {
 </script>
 
 <template>
-  <div class="card border border-gray-800">
+  <MainPanel>
     <div class="bg-gradient-to-r from-primary-900 to-background-dark p-4 border-b border-gray-800">
       <h3 class="text-lg font-semibold text-white">Create New Game</h3>
     </div>
@@ -132,7 +176,9 @@ const handleSubmit = async () => {
           will win depends on the probability which he is willing to risk. If he selects 50% probability, it is likely that every second
           game he is going to win with double of his deposit. Setting game win ratio to 90% will mean that if user selects 50% probabilty,
           his probability of winning will be 45%. As creator you can deposit and withdraw from the game deposit as you like with applied fee
-          2.5%. If the asset you want to add is ASA, there is fixed charge 10 {{ appStore.state.nativeTokenName }}.
+          2.5%. If the asset you want to add is ASA, there is fixed charge 10 {{ appStore.state.nativeTokenName }}. Protocol receives
+          additional 20% fee from the profit of the deposit from the user failed play. The profit fee is calculated from the game win ratio
+          (1-win ratio)*0.2.
         </p>
         <div class="grid grid-cols-1 gap-6" :class="state.tokenType == 'native' ? 'md:grid-cols-2' : 'md:grid-cols-3'">
           <div>
@@ -174,7 +220,7 @@ const handleSubmit = async () => {
               placeholder="Select ASA from your account"
               title="To add ASA to this list, get some asset first"
             >
-              <option v-for="asset in appStore.state.assetHolding" :value="asset.assetId">{{ asset.assetId }}</option>
+              <option v-for="asset in appStore.state.assetHolding" :value="asset.assetId">{{ asset.assetName }}</option>
             </select>
           </div>
 
@@ -244,12 +290,12 @@ const handleSubmit = async () => {
 
             <div class="flex justify-between">
               <span class="text-gray-400">Initial Balance:</span>
-              <span class="text-white">{{ state.initialDeposit }} {{ appStore.state.tokenName }}</span>
+              <span class="text-white">{{ state.initialDeposit.toLocaleString() }} {{ appStore.state.tokenName }}</span>
             </div>
 
             <div class="flex justify-between">
               <span class="text-gray-400">Win Ratio:</span>
-              <span class="text-white">{{ state.winRatio }}%</span>
+              <span class="text-white">{{ state.winRatio.toFixed(4) }}%</span>
             </div>
           </div>
         </div>
@@ -264,5 +310,5 @@ const handleSubmit = async () => {
         </div>
       </form>
     </div>
-  </div>
+  </MainPanel>
 </template>

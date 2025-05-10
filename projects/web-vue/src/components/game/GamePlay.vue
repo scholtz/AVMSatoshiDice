@@ -1,14 +1,19 @@
 <script setup lang="ts">
+import { AlgoAmount } from "@algorandfoundation/algokit-utils/types/amount";
 import { useWallet } from "@txnlab/use-wallet-vue";
-import algosdk, { makePaymentTxnWithSuggestedParamsFromObject } from "algosdk";
+import algosdk, { makeAssetTransferTxnWithSuggestedParamsFromObject, makePaymentTxnWithSuggestedParamsFromObject } from "algosdk";
 import { useToast } from "primevue";
 import { computed, onMounted, reactive, ref, watch } from "vue";
-import { AvmSatoshiDiceClient } from "../../../../AVMSatoshiDice/smart_contracts/artifacts/avm_satoshi_dice/AvmSatoshiDiceClient";
+import { useRoute } from "vue-router";
+import {
+  AvmSatoshiDiceClient,
+  PlayStruct,
+} from "../../../../AVMSatoshiDice/smart_contracts/artifacts/avm_satoshi_dice/AvmSatoshiDiceClient";
 import { useAppStore } from "../../stores/app";
 import { IGameStruct, useGameStore } from "../../stores/game";
 import AppButton from "../common/AppButton.vue";
 import AppLoader from "../common/AppLoader.vue";
-import Fireworks from "../effects/Fireworks.vue";
+import FireworksEffect from "../effects/FireworksEffect.vue";
 const toast = useToast();
 
 const props = defineProps<{
@@ -18,10 +23,95 @@ const props = defineProps<{
 const appStore = useAppStore();
 const emit = defineEmits(["play-complete"]);
 
+const route = useRoute();
 const { activeAddress, transactionSigner } = useWallet();
+
+const checkCurrentRound = async () => {
+  try {
+    if (!gameStore) return;
+    if (!gameStore.currentGamePlay) return;
+    console.log("checkCurrentRound", gameStore.currentGamePlay.state);
+    if (gameStore.currentGamePlay.state == 1n) {
+      const client = appStore.getAlgorandClient();
+      const params = await client.client.algod.getTransactionParams().do();
+      state.currentRound = params.firstValid;
+    }
+  } catch (e) {
+    console.error("checkCurrentRound error", e);
+  }
+};
+async function startRoundChecker() {
+  while (true) {
+    await checkCurrentRound();
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+  }
+}
+startRoundChecker();
+
 onMounted(async () => {
-  await appStore.updateBalance(props.game.token.id, props.game.token.type, activeAddress, transactionSigner);
+  await appStore.updateBalance(props.game.token.id, props.game.token.type, activeAddress, transactionSigner, appStore.state.env);
+  await checkCurrentGameState();
+  if (route.name == "game-play-overview") {
+    if (gameStore.currentGamePlay?.state == 1n) {
+      state.gamePlayStep = 3;
+    } else {
+      await goToProof();
+    }
+  }
 });
+function bufferToDecimal(buf: Buffer): bigint {
+  let result = 0n;
+  for (const byte of buf) {
+    result = (result << 8n) + BigInt(byte);
+  }
+  return result;
+}
+const goToProof = async () => {
+  if (!gameStore.currentGamePlay) throw Error("Game play not found");
+
+  const algorand = appStore.getAlgorandClient();
+  const round = await algorand.client.algod.block(gameStore.currentGamePlay.round + 2n).do();
+  state.seedInB64 = Buffer.from(round.block.header.seed).toString("base64");
+  state.seedInHex = Buffer.from(round.block.header.seed).toString("hex");
+  state.seedInDec = bufferToDecimal(Buffer.from(round.block.header.seed));
+
+  state.gamePlayStep = 4;
+
+  if (state.play?.state == 2n) {
+    showFireworks.value = true;
+  }
+};
+
+const checkCurrentGameState = async (moveToCheckOnResult: boolean = false) => {
+  try {
+    if (!activeAddress.value) return;
+    const client = new AvmSatoshiDiceClient({
+      algorand: appStore.getAlgorandClient(),
+      appId: appStore.state.appId,
+      defaultSender: algosdk.decodeAddress(activeAddress.value),
+      defaultSigner: transactionSigner,
+    });
+
+    const play = await client.myGame({ args: {} });
+    if (play) {
+      state.play = play;
+      if (play.state == 1n) {
+        // unclaimed
+        state.gamePlayStep = 3;
+      }
+      gameStore.setLastGamePlay(play);
+      if (moveToCheckOnResult) {
+        if (play.state == 1n) {
+          state.gamePlayStep = 3;
+        } else {
+          await goToProof();
+        }
+      }
+    }
+  } catch (e: any) {
+    console.error(e);
+  }
+};
 
 const gameStore = useGameStore();
 const state = reactive({
@@ -31,17 +121,38 @@ const state = reactive({
   isClaiming: false,
   gamePlayStep: 1, // 1: Setup, 2: Deposit, 3: Claim, 4: Result
   errorMessage: "",
+  play: undefined as undefined | PlayStruct,
+  currentRound: undefined as undefined | bigint,
+  seedInHex: undefined as undefined | string,
+  seedInB64: undefined as undefined | string,
+  seedInDec: undefined as undefined | bigint,
 });
 
 const showFireworks = ref(false);
 
 const tokenBalance = computed(() => {
-  return appStore.getBalanceForToken(props.game.token.id);
+  return appStore.getBalanceForToken(props.game.token.id, appStore.state.env);
+});
+const cannotClaim = computed(() => {
+  if (state.isClaiming) return true;
+  if (!state.play) return true;
+  if (!state.currentRound) return true;
+  return state.currentRound < state.play.round + 2n;
 });
 
 const potentialWinAmount = computed(() => {
   const probabilityDecimal = state.winProbability / 100;
   return Math.floor(state.depositAmount / probabilityDecimal);
+});
+
+const gameProofPlayerBigint = computed(() => {
+  if (!gameStore?.currentGamePlay) return 0n;
+  if (!props?.game?.game?.winRatio) return 0n;
+  return (gameStore.currentGamePlay.winProbability * props.game.game.winRatio) / 1_000_000n;
+});
+const gameProofRand01Bigint = computed(() => {
+  if (!state.seedInDec) return 0n;
+  return state.seedInDec % 1000000n;
 });
 const potentialNetWinAmount = computed(() => {
   const probabilityDecimal = state.winProbability / 100;
@@ -56,7 +167,7 @@ const probabilityIncludingWinRatioPercentage = computed(() => {
 });
 
 const maxPossibleWin = computed(() => {
-  return Number(props.game.game.balance) / 10 ** props.game.token.decimals;
+  return Number(props.game.game.balance) / 10 ** Number(props.game.token.decimals) / 2;
 });
 
 const canAffordBet = computed(() => {
@@ -87,12 +198,12 @@ watch(
 
 const validatePlayability = () => {
   if (!canAffordBet.value) {
-    state.errorMessage = "Insufficient token balance for this bet";
+    state.errorMessage = "Insufficient token balance for this deposit";
     return false;
   }
 
   if (!canWinAmount.value) {
-    state.errorMessage = "Potential win amount exceeds game balance";
+    state.errorMessage = "Potential win amount exceeds 50% of the game balance";
     return false;
   }
 
@@ -126,18 +237,45 @@ const startPlay = async () => {
       defaultSigner: transactionSigner,
     });
     if (props.game.token.type == "native") {
-      await client.send.startGameWithNativeToken({
+      const ret = await client.send.startGameWithNativeToken({
         args: {
           game: props.game.idObj,
           txnDeposit: makePaymentTxnWithSuggestedParamsFromObject({
-            amount: BigInt(state.depositAmount * 10 ** props.game.token.decimals),
+            amount: BigInt(state.depositAmount * 10 ** Number(props.game.token.decimals)),
             receiver: algosdk.encodeAddress(client.appAddress.publicKey),
             sender: activeAddress.value,
             suggestedParams: await client.algorand.client.algod.getTransactionParams().do(),
           }),
           winProbability: BigInt(state.winProbability * 10000),
         },
+        //staticFee: AlgoAmount.MicroAlgo(2000),
+        maxFee: AlgoAmount.MicroAlgo(4000),
       });
+      if (ret.return) {
+        state.play = ret.return;
+        gameStore.setLastGamePlay(state.play);
+      }
+    }
+    if (props.game.token.type == "asa") {
+      const ret = await client.send.startGameWithAsaToken({
+        args: {
+          game: props.game.idObj,
+          txnDeposit: makeAssetTransferTxnWithSuggestedParamsFromObject({
+            assetIndex: props.game.idObj.assetId,
+            amount: BigInt(state.depositAmount * 10 ** Number(props.game.token.decimals)),
+            receiver: algosdk.encodeAddress(client.appAddress.publicKey),
+            sender: activeAddress.value,
+            suggestedParams: await client.algorand.client.algod.getTransactionParams().do(),
+          }),
+          winProbability: BigInt(state.winProbability * 10000),
+        },
+        //staticFee: AlgoAmount.MicroAlgo(2000),
+        maxFee: AlgoAmount.MicroAlgo(4000),
+      });
+      if (ret.return) {
+        state.play = ret.return;
+        gameStore.setLastGamePlay(state.play);
+      }
     }
 
     // do the deposit
@@ -145,7 +283,70 @@ const startPlay = async () => {
     state.gamePlayStep = 3;
   } catch (e: any) {
     state.isDepositing = false;
+    console.error(e);
+    state.errorMessage = e.message;
+    toast.add({
+      severity: "error",
+      detail: e.message ?? e,
+      life: 10000,
+    });
+    await checkCurrentGameState(true);
+  }
+};
+
+const handleClaim = async () => {
+  state.isClaiming = true;
+
+  try {
+    // Create game play record
+    if (!activeAddress.value) throw Error("Active Address is missing");
+    if (!state.play) throw Error("Cannot find current game");
+    const client = new AvmSatoshiDiceClient({
+      algorand: appStore.getAlgorandClient(),
+      appId: appStore.state.appId,
+      defaultSender: algosdk.decodeAddress(activeAddress.value),
+      defaultSigner: transactionSigner,
+    });
+    const params = await client.algorand.client.algod.getTransactionParams().do();
+    const firstValid = state.play.round > params.firstValid - 900n ? state.play.round + 3n : params.firstValid;
+    const lastValid = firstValid + 1000n;
+
+    if (props.game.token.type == "native") {
+      const ret = await client.send.claimGame({
+        args: {},
+        firstValidRound: firstValid,
+        lastValidRound: lastValid,
+        staticFee: AlgoAmount.MicroAlgo(2000),
+        maxFee: AlgoAmount.MicroAlgo(4000),
+      });
+      console.log("claimGame.ret", ret);
+      if (ret.return) {
+        state.play = ret.return;
+        gameStore.setLastGamePlay(state.play);
+      }
+    }
+    if (props.game.token.type == "asa") {
+      const ret = await client.send.claimGame({
+        args: {},
+        firstValidRound: firstValid,
+        lastValidRound: lastValid,
+        staticFee: AlgoAmount.MicroAlgo(2000),
+        maxFee: AlgoAmount.MicroAlgo(4000),
+      });
+      console.log("claimGame.ret", ret);
+      if (ret.return) {
+        state.play = ret.return;
+        gameStore.setLastGamePlay(state.play);
+      }
+    }
+    await appStore.updateBalance(props.game.token.id, props.game.token.type, activeAddress, transactionSigner, appStore.state.env);
+    // do the deposit
+    state.isClaiming = false;
+    await goToProof();
+  } catch (e: any) {
+    state.isClaiming = false;
     state.gamePlayStep = 3;
+    await checkCurrentGameState(true);
     console.error(e);
     state.errorMessage = e.message;
     toast.add({
@@ -156,23 +357,7 @@ const startPlay = async () => {
   }
 };
 
-const handleDeposit = () => {
-  if (!gameStore.currentGamePlay) return;
-
-  state.isDepositing = true;
-  // do the deposit
-  state.isDepositing = false;
-};
-
-const handleClaim = () => {
-  if (!gameStore.currentGamePlay) return;
-
-  state.isClaiming = true;
-
-  state.isClaiming = false;
-};
-
-const resetGame = () => {
+const resetGameClick = () => {
   state.depositAmount = 1000;
   state.winProbability = 50;
   state.gamePlayStep = 1;
@@ -180,11 +365,24 @@ const resetGame = () => {
   state.errorMessage = "";
   emit("play-complete");
 };
+const playAgainClick = async () => {
+  if (!state.play) {
+    resetGameClick();
+    return;
+  }
+
+  state.depositAmount = Number(state.play.deposit) / 10 ** props.game.token.decimals;
+  state.winProbability = Number(state.play.winProbability) / 10000;
+  state.gamePlayStep = 1;
+  showFireworks.value = false;
+  state.errorMessage = "";
+  await startPlay();
+};
 </script>
 
 <template>
-  <div>
-    <Fireworks :active="showFireworks" intensity="high" :duration="6000" />
+  <div class="w-full">
+    <FireworksEffect v-if="showFireworks"></FireworksEffect>
 
     <MainPanel>
       <div class="bg-gradient-to-r from-primary-900 to-background-dark p-4 border-b border-gray-800 flex items-center justify-between">
@@ -207,6 +405,20 @@ const resetGame = () => {
       <div class="p-6">
         <!-- Step 1: Setup -->
         <div v-if="state.gamePlayStep === 1" class="space-y-6">
+          <div class="md:grid grid-cols-1 md:grid-cols-6 lg:grid-cols-12 gap-2 hidden">
+            <Button @click="state.winProbability = 0.1">Multiplier<br />1000x</Button>
+            <Button @click="state.winProbability = 1">Multiplier<br />100x</Button>
+            <Button @click="state.winProbability = 2">Multiplier<br />50x</Button>
+            <Button @click="state.winProbability = 4">Multiplier<br />25x</Button>
+            <Button @click="state.winProbability = 10">Multiplier<br />10x</Button>
+            <Button @click="state.winProbability = 33.3333">Multiplier<br />3x</Button>
+            <Button @click="state.winProbability = 50">Multiplier<br />2x</Button>
+            <Button @click="state.winProbability = 66.6666">Multiplier<br />1.5x</Button>
+            <Button @click="state.winProbability = 83.3333">Multiplier<br />1.2x</Button>
+            <Button @click="state.winProbability = 90.909">Multiplier<br />1.1x</Button>
+            <Button @click="state.winProbability = 95.238">Multiplier<br />1.05x</Button>
+            <Button @click="state.winProbability = 99.0099">Multiplier<br />1.01x</Button>
+          </div>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label class="label" for="state.depositAmount">Deposit Amount ({{ game.token.unitName }})</label>
@@ -282,7 +494,7 @@ const resetGame = () => {
             </div>
 
             <div v-if="!canWinAmount" class="text-sm text-error-500">
-              Potential win amount exceeds game balance. Adjust your bet or probability.
+              Potential win amount exceeds 50% of the game balance. Adjust your deposit or probability.
             </div>
           </div>
 
@@ -326,7 +538,7 @@ const resetGame = () => {
           </div>
 
           <div>
-            <AppButton @click="state.gamePlayStep = 1" variant="primary" :disabled="state.isDepositing" class="px-8"> Cancel </AppButton>
+            <AppButton @click="state.gamePlayStep = 1" variant="primary" class="px-8"> Cancel </AppButton>
           </div>
         </div>
 
@@ -334,10 +546,22 @@ const resetGame = () => {
         <div v-else-if="state.gamePlayStep === 3" class="text-center py-6 space-y-6">
           <div class="mb-6">
             <div class="text-xl font-medium text-white mb-2">Claim Winnings</div>
-            <p class="text-gray-400">Try your luck! Click the button below to see if you've won.</p>
+            <p class="text-gray-400">
+              Try your luck! Click the button below to see if you've won. Make sure to claim within 100 rounds from the play start!
+            </p>
           </div>
 
           <div class="bg-background-dark rounded-lg p-4 mx-auto max-w-md">
+            <div class="flex justify-between items-center mb-3">
+              <span class="text-gray-400">Game round:</span>
+              <span class="font-semibold text-white"> {{ state.play?.round }} </span>
+            </div>
+
+            <div class="flex justify-between items-center mb-3">
+              <span class="text-gray-400">Current round:</span>
+              <span class="font-semibold text-white"> {{ state.currentRound }} </span>
+            </div>
+
             <div class="flex justify-between items-center mb-3">
               <span class="text-gray-400">Deposit Amount:</span>
               <span class="font-semibold text-white"> {{ state.depositAmount }} {{ game.token.unitName }} </span>
@@ -348,14 +572,18 @@ const resetGame = () => {
               <span class="font-semibold text-white"> {{ probabilityPercentage }}% </span>
             </div>
 
-            <div class="flex justify-between items-center">
+            <div class="flex justify-between items-center mb-3">
               <span class="text-gray-400">Potential Win:</span>
               <span class="font-semibold text-success-400"> {{ potentialWinAmount.toLocaleString() }} {{ game.token.unitName }} </span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-400">Potential Net Win:</span>
+              <span> {{ potentialNetWinAmount.toLocaleString() }} {{ game.token.unitName }} </span>
             </div>
           </div>
 
           <div>
-            <AppButton @click="handleClaim" variant="accent" :disabled="state.isClaiming" class="px-8">
+            <AppButton @click="handleClaim" variant="primary" :disabled="cannotClaim" class="px-8">
               <AppLoader v-if="state.isClaiming" size="sm" color="white" class="mr-2" />
               {{ state.isClaiming ? "Processing..." : "Claim Now" }}
             </AppButton>
@@ -365,43 +593,125 @@ const resetGame = () => {
         <!-- Step 4: Result -->
         <div v-else-if="state.gamePlayStep === 4" class="text-center py-6 space-y-6">
           <div
-            v-if="gameStore.currentGamePlay?.isWin"
+            v-if="gameStore.currentGameState() == 'Win'"
             class="mb-6 bg-success-900 rounded-xl p-6 border border-success-700 neon-border-success"
           >
             <div class="text-2xl font-bold text-white mb-2">🎉 Congratulations! 🎉</div>
             <p class="text-success-300 text-lg">
-              You won {{ gameStore.currentGamePlay?.winAmount?.toLocaleString() }} {{ game.token.unitName }}!
+              You won
+              <!-- You won {{ gameStore.currentGamePlay?.winAmount?.toLocaleString() }} {{ game.token.unitName }}! -->
             </p>
           </div>
 
           <div v-else class="mb-6 bg-background-dark rounded-xl p-6 border border-gray-700">
             <div class="text-xl font-medium text-white mb-2">Better luck next time!</div>
-            <p class="text-gray-400">You didn't win this round. Try again with a different bet or probability.</p>
+            <p class="text-gray-400">Feel free to review the game proof below and try your luck again.</p>
           </div>
 
           <div class="bg-background-dark rounded-lg p-4 mx-auto max-w-md">
-            <div class="flex justify-between items-center mb-3">
+            <div class="flex justify-between items-center" v-if="state.play">
               <span class="text-gray-400">Deposit Amount:</span>
-              <span class="font-semibold text-white"> {{ state.depositAmount }} {{ game.token.unitName }} </span>
+              <span class="font-semibold text-white">
+                {{ (Number(state.play.deposit) / 10 ** game.token.decimals).toLocaleString() }} {{ game.token.unitName }}
+              </span>
             </div>
 
-            <div class="flex justify-between items-center mb-3">
+            <div class="flex justify-between items-center" v-if="state.play">
               <span class="text-gray-400">Win Probability:</span>
-              <span class="font-semibold text-white"> {{ probabilityPercentage }}% </span>
+              <span class="font-semibold text-white"> {{ (Number(state.play.winProbability) / 10000).toLocaleString() }}% </span>
             </div>
 
             <div class="flex justify-between items-center">
               <span class="text-gray-400">Outcome:</span>
-              <span :class="['font-semibold', gameStore.currentGamePlay?.isWin ? 'text-success-400' : 'text-error-400']">
-                {{ gameStore.currentGamePlay?.isWin ? "Win" : "Loss" }}
+              <span :class="['font-semibold', gameStore.currentGameState() == 'Win' ? 'text-success-400' : 'text-error-400']">
+                {{ gameStore.currentGameState() }}
+              </span>
+            </div>
+
+            <div class="flex justify-between items-center" v-if="state.play">
+              <span class="text-gray-400">Game round:</span>
+              <span class="font-semibold text-white"> {{ state.play.round.toLocaleString() }} </span>
+            </div>
+            <div class="flex justify-between items-center" v-if="state.play">
+              <span class="text-gray-400">Game round + 2:</span>
+              <span class="font-semibold text-white"> {{ (state.play.round + 2n).toLocaleString() }} </span>
+            </div>
+            <div class="flex justify-between items-center" v-if="state.seedInB64">
+              <span class="text-gray-400">Seed B64:</span>
+              <span class="font-semibold text-white"><Abbr :text="state.seedInB64"></Abbr></span>
+            </div>
+            <div class="flex justify-between items-center" v-if="state.seedInHex">
+              <span class="text-gray-400">Seed HEX:</span>
+              <span class="font-semibold text-white"><Abbr :text="state.seedInHex"></Abbr></span>
+            </div>
+            <div class="flex justify-between items-center" v-if="state.seedInDec">
+              <span class="text-gray-400">Seed decimal:</span>
+              <span class="font-semibold text-white"><Abbr :text="state.seedInDec?.toString()"></Abbr></span>
+            </div>
+            <div class="flex justify-between items-center" v-if="state.seedInDec">
+              <span class="text-gray-400">Random number (R):</span>
+              <span class="font-semibold text-white"
+                >{{ (state.seedInDec % 1000000n)?.toLocaleString() }} / {{ Number(1_000_000).toLocaleString() }}</span
+              >
+            </div>
+            <div class="flex justify-between items-center" v-if="state.play">
+              <span class="text-gray-400">External seed verification:</span>
+              <span class="font-semibold text-white">
+                <a
+                  :href="`${appStore.state.algodHost}:${appStore.state.algodPort}/v2/blocks/${state.play.round + 2n}?format=json`"
+                  target="_blank"
+                  rel="noref"
+                  ref="noref"
+                >
+                  Round {{ state.play.round + 2n }}
+                </a>
+              </span>
+            </div>
+            <div class="flex justify-between items-center" v-if="gameStore.currentGamePlay?.winProbability">
+              <span class="text-gray-400">Your probability:</span>
+              <span class="font-semibold text-white"
+                >{{ gameStore.currentGamePlay?.winProbability?.toLocaleString() }} / {{ Number(1_000_000).toLocaleString() }}</span
+              >
+            </div>
+            <div class="flex justify-between items-center" v-if="game.game.winRatio">
+              <span class="text-gray-400">Game win ratio:</span>
+              <span class="font-semibold text-white">
+                {{ game.game.winRatio?.toLocaleString() }} / {{ Number(1_000_000).toLocaleString() }}
+              </span>
+            </div>
+            <div class="flex justify-between items-center" v-if="game.game.winRatio && gameStore.currentGamePlay?.winProbability">
+              <span class="text-gray-400">Play win probability (P):</span>
+              <span class="font-semibold text-white">
+                {{ gameProofPlayerBigint.toLocaleString() }} /
+                {{ Number(1_000_000).toLocaleString() }}
+              </span>
+            </div>
+            <div class="flex justify-between items-center" v-if="state.seedInDec">
+              <span class="text-gray-400">Proof to win (R&lt;P):</span>
+              <span class="font-semibold text-white">
+                {{ gameProofRand01Bigint.toLocaleString() }} < {{ gameProofPlayerBigint.toLocaleString() }}
+              </span>
+            </div>
+            <div class="flex justify-between items-center" v-if="state.play && state.play.state > 1n">
+              <span class="text-gray-400">Validate proof:</span>
+              <span class="font-semibold text-success-400" v-if="gameProofRand01Bigint >= gameProofPlayerBigint && state.play?.state == 3n">
+                Proof is valid
+              </span>
+              <span class="font-semibold text-error-500" v-if="gameProofRand01Bigint < gameProofPlayerBigint && state.play?.state == 3n">
+                Proof is invalid
+              </span>
+              <span class="font-semibold text-success-400" v-if="gameProofRand01Bigint < gameProofPlayerBigint && state.play?.state == 2n">
+                Proof is valid
+              </span>
+              <span class="font-semibold text-error-500" v-if="gameProofRand01Bigint >= gameProofPlayerBigint && state.play?.state == 2n">
+                Proof is invalid
               </span>
             </div>
           </div>
 
           <div class="flex justify-center space-x-4">
-            <AppButton @click="resetGame" variant="outline"> Back to Game </AppButton>
-
-            <AppButton @click="state.gamePlayStep = 1" variant="primary"> Play Again </AppButton>
+            <AppButton @click="resetGameClick" variant="outline"> Back to Game </AppButton>
+            <AppButton @click="playAgainClick" variant="primary"> Play Again </AppButton>
           </div>
         </div>
       </div>

@@ -4,9 +4,9 @@ import {
   AddressAssetStruct,
   AvmSatoshiDiceClient,
   GameStruct,
+  PlayStruct,
 } from "../../../AVMSatoshiDice/smart_contracts/artifacts/avm_satoshi_dice/AvmSatoshiDiceClient";
 import { getAssetAsync } from "../scripts/algorand/getAssetAsync";
-import type { GamePlay } from "../types";
 import { IAssetParams } from "../types/IAssetParams";
 
 export interface IGameStruct {
@@ -24,7 +24,7 @@ export const useGameStore = defineStore("game", () => {
   const tokens = ref<IAssetParams[]>([]);
   const selectedTokenFilter = ref<bigint | null>(null);
   const currentGame = ref<IGameStruct | null>(null);
-  const currentGamePlay = ref<GamePlay | null>(null);
+  const currentGamePlay = ref<PlayStruct | null>(null);
 
   const loadGames = async (client: AvmSatoshiDiceClient) => {
     const gamesMap = await client.state.box.games.getMap();
@@ -52,7 +52,8 @@ export const useGameStore = defineStore("game", () => {
     let result = [...games.value];
 
     // Apply token filter
-    if (selectedTokenFilter.value) {
+    console.log("filter", selectedTokenFilter.value);
+    if (selectedTokenFilter.value !== null) {
       result = result.filter((game) => game.token.id === selectedTokenFilter.value);
     }
 
@@ -76,10 +77,30 @@ export const useGameStore = defineStore("game", () => {
     return games.value.find((game) => game.id === id) || null;
   }
 
+  function updateGame(updatedGame: IGameStruct) {
+    const index = games.value.findIndex((game) => game.id === updatedGame.id);
+    if (index !== -1) {
+      games.value[index] = updatedGame;
+      console.log("game updated at index", index, games.value[index]);
+    } else {
+      games.value.push(updatedGame);
+      console.log("game updated - new", updatedGame);
+    }
+  }
   function setCurrentGame(gameId: string) {
     currentGame.value = getGameById(gameId);
   }
-
+  const setLastGamePlay = (play: PlayStruct) => {
+    currentGamePlay.value = play;
+    console.log("last play: ", play);
+  };
+  const currentGameState = () => {
+    if (!currentGamePlay.value) return "No game played";
+    if (currentGamePlay.value.state == 1n) return "Waiting for result";
+    if (currentGamePlay.value.state == 2n) return "Win";
+    if (currentGamePlay.value.state == 3n) return "Lost";
+    return "Unknown";
+  };
   return {
     games,
     loadGames,
@@ -91,5 +112,8 @@ export const useGameStore = defineStore("game", () => {
     setTokenFilter,
     getGameById,
     setCurrentGame,
+    setLastGamePlay,
+    currentGameState,
+    updateGame,
   };
 });

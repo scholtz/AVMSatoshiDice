@@ -1,4 +1,6 @@
 import { AlgorandClient } from "@algorandfoundation/algokit-utils";
+import algosdk from "algosdk";
+import { getArc200Client } from "arc200-client";
 import { IAssetParams } from "../../types/IAssetParams";
 
 interface INetworkAssetCache {
@@ -102,10 +104,69 @@ export const getAssetAsync = async (assetId: string | number | bigint, avmClient
       console.error("requets for native token, but token genesis not identified", network);
     }
   }
-  const assetInfo = await avmClient.client.algod.getAssetByID(assetBigInt).do();
-  if (assetInfo?.params) {
-    if (!cache[network.genesisId]) cache[network.genesisId] = {};
-    cache[network.genesisId][assetStr] = { ...assetInfo.params, id: assetBigInt, type: "asa" };
+  try {
+    const assetInfo = await avmClient.client.algod.getAssetByID(assetBigInt).do();
+    if (assetInfo?.params) {
+      if (!cache[network.genesisId]) cache[network.genesisId] = {};
+      cache[network.genesisId][assetStr] = { ...assetInfo.params, id: assetBigInt, type: "asa" };
+    }
+  } catch {
+    try {
+      const app = await avmClient.client.algod.getApplicationByID(assetBigInt).do();
+      const arc200 = getArc200Client({
+        algorand: avmClient,
+        appId: assetBigInt,
+        appName: undefined,
+        approvalSourceMap: undefined,
+        clearSourceMap: undefined,
+        defaultSender: undefined,
+        defaultSigner: undefined,
+      });
+      const state = await arc200.state.global.getAll();
+      const params: IAssetParams = {
+        id: assetBigInt,
+        type: "arc200",
+        creator: algosdk.encodeAddress(app.params.creator.publicKey),
+        decimals: state.decimals ?? 0,
+        total: state.totalSupply ?? 0n,
+        clawback: undefined,
+        defaultFrozen: false,
+        freeze: undefined,
+        manager: undefined,
+        metadataHash: undefined,
+        name: Buffer.from(state.name?.buffer ?? Buffer.from("ARC200", "ascii")).toString("utf-8"),
+        nameB64: new Uint8Array(Buffer.from(state.name?.buffer ?? Buffer.from("ARC200", "ascii"))),
+        reserve: undefined,
+        unitName: Buffer.from(state.symbol?.buffer ?? Buffer.from("U", "ascii")).toString("utf-8"),
+        unitNameB64: new Uint8Array(Buffer.from(state.symbol?.buffer ?? Buffer.from("U", "ascii"))),
+        url: undefined,
+        urlB64: undefined,
+      };
+      if (!cache[network.genesisId]) cache[network.genesisId] = {};
+      cache[network.genesisId][assetStr] = params;
+    } catch (e) {
+      console.error("Count not fetch info about the asset asa ASA nor ARC200", assetBigInt);
+      const params: IAssetParams = {
+        id: assetBigInt,
+        type: "other",
+        creator: "",
+        decimals: 0,
+        total: 0n,
+        clawback: undefined,
+        defaultFrozen: false,
+        freeze: undefined,
+        manager: undefined,
+        metadataHash: undefined,
+        name: Buffer.from(Buffer.from("Unknown", "ascii")).toString("utf-8"),
+        nameB64: new Uint8Array(Buffer.from(Buffer.from("Unknown", "ascii"))),
+        reserve: undefined,
+        unitName: Buffer.from(Buffer.from("U", "ascii")).toString("utf-8"),
+        unitNameB64: new Uint8Array(Buffer.from(Buffer.from("U", "ascii"))),
+        url: undefined,
+        urlB64: undefined,
+      };
+      return params;
+    }
   }
   // localStorage.setItem(
   //   `${network.genesisId}-${assetStr}`,

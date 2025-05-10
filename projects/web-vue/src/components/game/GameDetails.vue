@@ -1,18 +1,48 @@
 <script setup lang="ts">
 import { useWallet } from "@txnlab/use-wallet-vue";
-import { computed } from "vue";
+import algosdk from "algosdk";
+import { computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { IGameStruct } from "../../stores/game";
+import { AvmSatoshiDiceClient } from "../../../../AVMSatoshiDice/smart_contracts/artifacts/avm_satoshi_dice/AvmSatoshiDiceClient";
+import { useAppStore } from "../../stores/app";
+import { IGameStruct, useGameStore } from "../../stores/game";
 import AppButton from "../common/AppButton.vue";
-const { activeAddress } = useWallet();
 const props = defineProps<{
   game: IGameStruct;
 }>();
 
 const router = useRouter();
+const appStore = useAppStore();
+const gameStore = useGameStore();
 
+onMounted(async () => {
+  await checkCurrentGameState();
+});
+const { activeAddress, transactionSigner } = useWallet();
+const checkCurrentGameState = async () => {
+  try {
+    if (!activeAddress.value) return;
+    const client = new AvmSatoshiDiceClient({
+      algorand: appStore.getAlgorandClient(),
+      appId: appStore.state.appId,
+      defaultSender: algosdk.decodeAddress(activeAddress.value),
+      defaultSigner: transactionSigner,
+    });
+
+    const play = await client.myGame({ args: {} });
+    if (play) {
+      gameStore.setLastGamePlay(play);
+    }
+  } catch (e: any) {
+    console.error(e);
+  }
+};
 const isGameCreator = computed(() => {
   return activeAddress.value === props.game.idObj.owner;
+});
+const isLatestGame = computed(() => {
+  if (!gameStore.currentGamePlay) return false;
+  return gameStore.currentGamePlay.owner == props.game.idObj.owner && gameStore.currentGamePlay.assetId == props.game.idObj.assetId;
 });
 
 const formattedWinRatio = computed(() => {
@@ -20,7 +50,7 @@ const formattedWinRatio = computed(() => {
 });
 
 const formattedBalance = computed(() => {
-  return (Number(props.game.game.balance) / 10 ** props.game.token.decimals).toLocaleString();
+  return (Number(props.game.game.balance) / 10 ** Number(props.game.token.decimals)).toLocaleString();
 });
 
 const formattedLastPlayTime = computed(() => {
@@ -40,11 +70,15 @@ const formattedBiggestWinTime = computed(() => {
 
 const formattedBiggestWinAmount = computed(() => {
   if (!props.game.game.biggestWinAmount) return "0";
-  return (Number(props.game.game.biggestWinAmount) / 10 ** props.game.token.decimals).toLocaleString();
+  return (Number(props.game.game.biggestWinAmount) / 10 ** Number(props.game.token.decimals)).toLocaleString();
 });
 
 const playGame = () => {
   router.push(`/game/${props.game.id}/play`);
+};
+
+const goToLastGameOverviewClick = () => {
+  router.push(`/game/${props.game.id}/overview`);
 };
 </script>
 
@@ -71,9 +105,7 @@ const playGame = () => {
 
             <div class="flex justify-between items-center">
               <span class="text-gray-400">Created By:</span>
-              <span class="font-semibold text-white">
-                {{ game.idObj.owner.substring(0, 5) + ".." + game.idObj.owner.substring(game.idObj.owner.length - 5) }}
-              </span>
+              <span class="font-semibold text-white"><Abbr :text="game.idObj.owner"></Abbr> </span>
             </div>
 
             <div class="flex justify-between items-center">
@@ -112,6 +144,7 @@ const playGame = () => {
 
       <div class="flex justify-end space-x-4">
         <AppButton v-if="isGameCreator" variant="outline"> Manage Game </AppButton>
+        <AppButton v-if="isLatestGame" variant="outline" @click="goToLastGameOverviewClick"> Last game overview </AppButton>
 
         <AppButton @click="playGame" variant="primary"> Play Game </AppButton>
       </div>

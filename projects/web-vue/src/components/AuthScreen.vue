@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import H2 from "../components/H2.vue";
-import { useAppStore } from "../stores/app";
 import { WalletId, useNetwork, useWallet, type Wallet } from "@txnlab/use-wallet-vue";
 import { onMounted, reactive, ref, watch } from "vue";
+import H2 from "../components/H2.vue";
+import { useAppStore } from "../stores/app";
 import MainButton from "./MainButton.vue";
 import MainPanel from "./MainPanel.vue";
 
@@ -75,7 +75,7 @@ const selectChainClick = (chain: any) => {
 };
 const chains = [
   {
-    appId: 1003n,
+    appId: 6029n,
     name: "Algorand Mainnet",
     code: "mainnet-v1.0",
     algodHost: "https://mainnet-api.4160.nodely.dev",
@@ -88,7 +88,7 @@ const chains = [
     wallets: [WalletId.BIATEC, WalletId.DEFLY, WalletId.EXODUS, WalletId.PERA, WalletId.KIBISIS, WalletId.WALLETCONNECT],
   },
   {
-    appId: 1003n,
+    appId: 6029n,
     name: "Voi Mainnet",
     code: "voimain-v1.0",
     algodHost: "https://mainnet-api.voi.nodely.dev",
@@ -101,7 +101,7 @@ const chains = [
     wallets: [WalletId.BIATEC, WalletId.KIBISIS, WalletId.DEFLY, WalletId.WALLETCONNECT],
   },
   {
-    appId: 1003n,
+    appId: 6029n,
     name: "Aramid Mainnet",
     code: "aramidmain-v1.0",
     algodHost: "https://algod.aramidmain.a-wallet.net",
@@ -114,7 +114,7 @@ const chains = [
     wallets: [WalletId.BIATEC, WalletId.DEFLY, WalletId.WALLETCONNECT],
   },
   {
-    appId: 1003n,
+    appId: 6029n,
     name: "Algorand Testnet",
     code: "testnet-v1.0",
     algodHost: "https://testnet-api.4160.nodely.dev",
@@ -127,7 +127,7 @@ const chains = [
     wallets: [WalletId.BIATEC, WalletId.DEFLY, WalletId.PERA, WalletId.WALLETCONNECT],
   },
   {
-    appId: 1003n,
+    appId: 6029n,
     name: "Localnet",
     code: "dockernet-v1",
     algodHost: "http://localhost",
@@ -142,7 +142,7 @@ const chains = [
 ];
 </script>
 <template>
-  <div v-if="activeAddress">
+  <div v-if="activeAddress" class="w-full">
     <slot />
   </div>
   <div v-else class="flex flex-col items-center justify-center min-h-screen w-full">
@@ -151,7 +151,7 @@ const chains = [
         <H2>Blockchain selection {{ store.state.env }}</H2>
         <MainButton
           v-for="chain in chains"
-          :key="chain"
+          :key="chain.code"
           :class="store?.state?.env == chain.code ? 'bg-teal-800  hover:bg-teal-700 !text-teal-100' : ''"
           class="mb-4 flex justify-center items-center"
           @click="selectChainClick(chain)"

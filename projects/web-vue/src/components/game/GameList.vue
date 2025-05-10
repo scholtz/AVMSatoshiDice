@@ -47,7 +47,7 @@ setTimeout(() => {
 </script>
 
 <template>
-  <div>
+  <div class="w-full">
     <div class="flex justify-between items-center mb-6">
       <h2 class="text-2xl font-bold text-white">Available Games</h2>
 
@@ -83,10 +83,10 @@ setTimeout(() => {
       <AppLoader size="lg" color="primary" />
     </div>
 
-    <div v-else-if="filteredGames.length === 0" class="bg-background rounded-xl p-8 text-center">
+    <MainPanel v-else-if="filteredGames.length === 0" class="p-8 text-center">
       <div class="text-gray-400 mb-2">No games found</div>
       <p class="text-gray-500">Try selecting a different token filter or check back later.</p>
-    </div>
+    </MainPanel>
 
     <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <GameCard v-for="game in filteredGames" :key="game.id" :game="game" />

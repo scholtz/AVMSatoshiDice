@@ -21,7 +21,7 @@ useMotion(heroRef, {
 </script>
 
 <template>
-  <div>
+  <div class="w-full">
     <div ref="heroRef" class="mb-12 text-center" v-motion>
       <h1
         class="text-4xl sm:text-5xl font-bold mb-4 bg-gradient-to-r from-primary-400 via-secondary-400 to-accent-400 text-transparent bg-clip-text"

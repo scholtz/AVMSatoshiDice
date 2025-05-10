@@ -44,6 +44,10 @@ class GameStruct extends arc4.Struct<{
    */
   createdAtTime: UintN64
   /**
+   * Blockchain block round when the Game was created. Each game play has specific round at the PlayStruct object.
+   */
+  createdAtRound: UintN64
+  /**
    * Time when someone last played the game
    */
   lastPlayedTime: UintN64
@@ -332,7 +336,7 @@ export class AvmSatoshiDice extends Contract {
    * @param winRatio Win ratio.. 1_000_000 for user probability, 200_000 for 0.2 factor of the user probability, 0 for no win
    */
   @arc4.abimethod()
-  public CreateGameWithNativeToken(txnDeposit: gtxn.PaymentTxn, winRatio: UintN64): void {
+  public CreateGameWithNativeToken(txnDeposit: gtxn.PaymentTxn, winRatio: UintN64): GameStruct {
     const sender = new arc4.Address(txnDeposit.sender)
     const assetId = new UintN64(0)
     assert(winRatio.native <= 1_000_000, 'Win probability must be below 1 000 000')
@@ -371,6 +375,8 @@ export class AvmSatoshiDice extends Contract {
         isASAToken: new Bool(false),
 
         createdAtTime: new UintN64(Global.latestTimestamp),
+        createdAtRound: new UintN64(Global.round),
+
         lastPlayedTime: new UintN64(0),
         lastWinTime: new UintN64(0),
         lastWinAmount: new UintN256(0),
@@ -382,6 +388,7 @@ export class AvmSatoshiDice extends Contract {
       })
       this.games(key).value = newValue.copy()
     }
+    return this.games(key).value
   }
   /**
    * Anyone can optin this contract to his ASA if he deposits 10 native tokens
@@ -416,7 +423,7 @@ export class AvmSatoshiDice extends Contract {
    * @param winRatio Win ratio.. 1_000_000 for user probability, 200_000 for 0.2 factor of the user probability, 0 for no win
    */
   @arc4.abimethod()
-  public CreateGameWithASAToken(txnDeposit: gtxn.AssetTransferTxn, winRatio: UintN64): void {
+  public CreateGameWithASAToken(txnDeposit: gtxn.AssetTransferTxn, winRatio: UintN64): GameStruct {
     const sender = new arc4.Address(txnDeposit.sender)
     assert(winRatio.native <= 1_000_000, 'Win probability must be below 1 000 000')
     const assetId = new UintN64(txnDeposit.xferAsset.id)
@@ -456,6 +463,8 @@ export class AvmSatoshiDice extends Contract {
         isASAToken: new Bool(true),
 
         createdAtTime: new UintN64(Global.latestTimestamp),
+        createdAtRound: new UintN64(Global.round),
+
         lastPlayedTime: new UintN64(0),
         lastWinTime: new UintN64(0),
         lastWinAmount: new UintN256(0),
@@ -467,6 +476,7 @@ export class AvmSatoshiDice extends Contract {
       })
       this.games(key).value = newValue.copy()
     }
+    return this.games(key).value
   }
 
   /**
@@ -476,7 +486,7 @@ export class AvmSatoshiDice extends Contract {
    * @param winRatio Win ratio.. 1_000_000 for user probability, 200_000 for 0.2 factor of the user probability, 0 for no win
    */
   @arc4.abimethod()
-  public CreateGameWithArc200Token(assetId: UintN64, amount: UintN256, winRatio: UintN64): void {
+  public CreateGameWithArc200Token(assetId: UintN64, amount: UintN256, winRatio: UintN64): GameStruct {
     const sender = new arc4.Address(Txn.sender)
     assert(winRatio.native <= 1_000_000, 'Win probability must be below 1 000 000')
 
@@ -526,6 +536,8 @@ export class AvmSatoshiDice extends Contract {
         isASAToken: new Bool(false),
 
         createdAtTime: new UintN64(Global.latestTimestamp),
+        createdAtRound: new UintN64(Global.round),
+
         lastPlayedTime: new UintN64(0),
         lastWinTime: new UintN64(0),
         lastWinAmount: new UintN256(0),
@@ -537,6 +549,7 @@ export class AvmSatoshiDice extends Contract {
       })
       this.games(key).value = newValue.copy()
     }
+    return this.games(key).value
   }
   /**
    * Starts new game play
@@ -552,7 +565,7 @@ export class AvmSatoshiDice extends Contract {
     txnDeposit: gtxn.PaymentTxn,
     game: AddressAssetStruct,
     winProbability: UintN64,
-  ): void {
+  ): PlayStruct {
     const sender = new arc4.Address(txnDeposit.sender)
     const assetId = new UintN64(0)
     assert(Txn.sender === txnDeposit.sender, 'Sender of the app call must be the same as sender of the deposit')
@@ -573,10 +586,11 @@ export class AvmSatoshiDice extends Contract {
     // lets check if the game has enough money for potential win scenario
     // 100_000_000 * 1_000_000 / 200_000 = 500_000_000
 
-    const winAmount = new UintN256(BigUint((txnDeposit.amount * 1_000_000) / winProbability.native))
+    const winAmount: biguint = BigUint((txnDeposit.amount * 1_000_000) / winProbability.native)
+    const maxPotWinAmount: biguint = this.games(game).value.balance.native / BigUint(2)
     assert(
-      this.games(game).value.balance.native >= winAmount.native,
-      'The game does not have enough balance for your win scenario',
+      maxPotWinAmount >= winAmount,
+      'The game does not have enough balance for your win scenario. You can win max 50% of the game balance',
     )
 
     let prevDeposit: UintN256 = new UintN256(0)
@@ -596,6 +610,7 @@ export class AvmSatoshiDice extends Contract {
     })
 
     this.plays(sender).value = newValue.copy()
+    return newValue
   }
 
   /**
@@ -612,7 +627,7 @@ export class AvmSatoshiDice extends Contract {
     txnDeposit: gtxn.AssetTransferTxn,
     game: AddressAssetStruct,
     winProbability: UintN64,
-  ): void {
+  ): PlayStruct {
     const sender = new arc4.Address(txnDeposit.sender)
     const assetId = new UintN64(txnDeposit.xferAsset.id)
     assert(Txn.sender === txnDeposit.sender, 'Sender of the app call must be the same as sender of the deposit')
@@ -633,10 +648,11 @@ export class AvmSatoshiDice extends Contract {
     // lets check if the game has enough money for potential win scenario
     // 100_000_000 * 1_000_000 / 200_000 = 500_000_000
 
-    const winAmount = new UintN256(BigUint((txnDeposit.assetAmount * 1_000_000) / winProbability.native))
+    const winAmount: biguint = BigUint((txnDeposit.assetAmount * 1_000_000) / winProbability.native)
+    const maxPotWinAmount: biguint = this.games(game).value.balance.native / BigUint(2)
     assert(
-      this.games(game).value.balance.native >= winAmount.native,
-      'The game does not have enough balance for your win scenario',
+      maxPotWinAmount >= winAmount,
+      'The game does not have enough balance for your win scenario. You can win max 50% of the game balance',
     )
 
     let prevDeposit: UintN256 = new UintN256(0)
@@ -656,6 +672,7 @@ export class AvmSatoshiDice extends Contract {
     })
 
     this.plays(sender).value = newValue.copy()
+    return newValue
   }
 
   /**
@@ -673,7 +690,7 @@ export class AvmSatoshiDice extends Contract {
     assetId: UintN64,
     game: AddressAssetStruct,
     winProbability: UintN64,
-  ): void {
+  ): PlayStruct {
     const sender = new arc4.Address(Txn.sender)
     assert(game.assetId === assetId, 'Asset id in the tx does not match the game asset id')
     assert(this.games(game).exists, 'The game does not exist')
@@ -705,10 +722,11 @@ export class AvmSatoshiDice extends Contract {
       })
       .submit()
 
-    const winAmount = new UintN256((amount.native * BigUint(1_000_000)) / BigUint(winProbability.native))
+    const winAmount: biguint = (amount.native * BigUint(1_000_000)) / BigUint(winProbability.native)
+    const maxPotWinAmount: biguint = this.games(game).value.balance.native / BigUint(2)
     assert(
-      this.games(game).value.balance.native >= winAmount.native,
-      'The game does not have enough balance for your win scenario',
+      maxPotWinAmount >= winAmount,
+      'The game does not have enough balance for your win scenario. You can win max 50% of the game balance',
     )
 
     let prevDeposit: UintN256 = new UintN256(0)
@@ -728,6 +746,7 @@ export class AvmSatoshiDice extends Contract {
     })
 
     this.plays(sender).value = newValue.copy()
+    return newValue
   }
 
   /**
@@ -764,7 +783,7 @@ export class AvmSatoshiDice extends Contract {
    * If user lost, the game is funded with more balance
    */
   @arc4.abimethod()
-  public ClaimGame(): void {
+  public ClaimGame(): PlayStruct {
     const sender = new arc4.Address(Txn.sender)
     assert(this.plays(sender).exists, 'Did not found the game you are playing')
     const play = this.plays(sender).value.copy()
@@ -780,13 +799,13 @@ export class AvmSatoshiDice extends Contract {
     // 100 rounds @ 1 sec is ~ 2 minutes, at 2.7 sec its 4-5 min
     if (play.round.native < Global.round - 100) {
       this.LooseGame(key, game, play, sender)
-      return
+      return this.plays(sender).value
     }
 
     // MAIN LOGIC OF THE APPLICATION IS HERE
 
     // seed is 256 bit number generated from prev block data
-    const seed = BigUint(op.Block.blkSeed(play.round.native + 1))
+    const seed = BigUint(op.Block.blkSeed(play.round.native + 2))
     // lets take number from (0,1 with 6 decimal places)
     const rand0_1: biguint = seed % BigUint(1_000_000)
 
@@ -799,11 +818,11 @@ export class AvmSatoshiDice extends Contract {
         (play.deposit.native * BigUint(1_000_000)) / BigUint(play.winProbability.native),
       )
 
-      game.lastWinAmount = new UintN256(winAmount)
-      game.lastWinTime = new UintN64(Global.latestTimestamp)
+      this.games(key).value.lastWinAmount = new UintN256(winAmount)
+      this.games(key).value.lastWinTime = new UintN64(Global.latestTimestamp)
       if (winAmount > game.biggestWinAmount.native) {
-        game.biggestWinAmount = new UintN256(winAmount)
-        game.biggestWinTime = new UintN64(Global.latestTimestamp)
+        this.games(key).value.biggestWinAmount = new UintN256(winAmount)
+        this.games(key).value.biggestWinTime = new UintN64(Global.latestTimestamp)
       }
 
       if (game.isNativeToken.native) {
@@ -882,10 +901,20 @@ export class AvmSatoshiDice extends Contract {
       // loose
       this.LooseGame(key, game, play, sender)
     }
+    return this.plays(sender).value
   }
   // internal method to mark the game as lost and set the correct balances to the game
   private LooseGame(key: AddressAssetStruct, game: GameStruct, play: PlayStruct, sender: Address) {
-    this.games(key).value.balance = new UintN256(game.balance.native + play.deposit.native)
+    // deduct the lost game fee (the game creator won, so he charges the deposit fee to his game)
+    // the fee is calculated as 20% from the game creator profit
+    // for game win ratio 90%, the fee is (100-90)*0.2 % of every deposit to the game from lost game
+
+    const gameProfitRatio: uint64 = 1_000_000 - this.games(key).value.winRatio.native
+    const feeRatio: uint64 = gameProfitRatio / 5
+    const fee: biguint = (play.deposit.native * BigUint(feeRatio)) / BigUint(1_000_000)
+
+    this.allDeposits(key.assetId).value = new UintN256(this.allDeposits(key.assetId).value.native - fee)
+    this.games(key).value.balance = new UintN256(game.balance.native + play.deposit.native - fee)
     this.plays(sender).value.state = new UintN64(3) // mark the state of the game 3 - loose
   }
 }
