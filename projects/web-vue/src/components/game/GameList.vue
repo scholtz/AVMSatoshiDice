@@ -35,7 +35,7 @@ const filteredGames = computed(() => {
   return gameStore.filteredGames;
 });
 
-const handleTokenFilter = (tokenId: string | null) => {
+const handleTokenFilter = (tokenId: bigint | null) => {
   gameStore.setTokenFilter(tokenId);
 };
 
@@ -64,18 +64,17 @@ setTimeout(() => {
 
         <button
           v-for="token in tokens"
-          :key="token.id"
+          :key="token.id.toString()"
           @click="handleTokenFilter(token.id)"
           :class="[
             'px-3 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center',
             gameStore.selectedTokenFilter === token.id ? 'bg-primary-600 text-white' : 'bg-gray-800 text-gray-300 hover:bg-gray-700',
           ]"
         >
-          <img v-if="token.logoUrl" :src="token.logoUrl" :alt="token.name" class="w-4 h-4 rounded-full mr-1" />
-          <span v-else class="w-4 h-4 rounded-full bg-gray-700 mr-1 flex items-center justify-center text-xs font-bold">
-            {{ token.symbol.substring(0, 1) }}
+          <span v-if="token.name" class="w-4 h-4 rounded-full bg-gray-700 mr-1 flex items-center justify-center text-xs font-bold">
+            {{ token.name.substring(0, 1) }}
           </span>
-          {{ token.symbol }}
+          {{ token.unitName }}
         </button>
       </div>
     </div>

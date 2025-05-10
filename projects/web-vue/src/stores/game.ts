@@ -1,42 +1,50 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
-import { AvmSatoshiDiceClient, GameStruct } from "../../../AVMSatoshiDice/smart_contracts/artifacts/avm_satoshi_dice/AvmSatoshiDiceClient";
-import type { GamePlay, Token } from "../types";
-
-// Mock data
-const mockTokens: Token[] = [
-  { id: "1", symbol: "ALGO", name: "Algorand", type: "native", logoUrl: "https://cryptologos.cc/logos/algorand-algo-logo.png" },
-  { id: "2", symbol: "USDC", name: "USD Coin", type: "asa", logoUrl: "https://cryptologos.cc/logos/usd-coin-usdc-logo.png" },
-  { id: "3", symbol: "PLANETS", name: "PlanetWatch", type: "asa", logoUrl: "https://cryptologos.cc/logos/planetwatch-planets-logo.png" },
-  { id: "4", symbol: "DICE", name: "Dice Token", type: "arc200", logoUrl: "" },
-];
+import {
+  AddressAssetStruct,
+  AvmSatoshiDiceClient,
+  GameStruct,
+} from "../../../AVMSatoshiDice/smart_contracts/artifacts/avm_satoshi_dice/AvmSatoshiDiceClient";
+import { getAssetAsync } from "../scripts/algorand/getAssetAsync";
+import type { GamePlay } from "../types";
+import { IAssetParams } from "../types/IAssetParams";
 
 export interface IGameStruct {
-  game: GameStruct;
   id: string;
-  token: Token;
+  idObj: AddressAssetStruct;
+  game: GameStruct;
+  token: IAssetParams;
 }
-
+interface IAsset2AssetParams {
+  [key: string]: IAssetParams;
+}
 export const useGameStore = defineStore("game", () => {
   // State
   const games = ref<IGameStruct[]>([]);
-  const tokens = ref<Token[]>(mockTokens);
-  const selectedTokenFilter = ref<string | null>(null);
+  const tokens = ref<IAssetParams[]>([]);
+  const selectedTokenFilter = ref<bigint | null>(null);
   const currentGame = ref<IGameStruct | null>(null);
   const currentGamePlay = ref<GamePlay | null>(null);
 
   const loadGames = async (client: AvmSatoshiDiceClient) => {
     const gamesMap = await client.state.box.games.getMap();
     const gamesData: IGameStruct[] = [];
-    gamesMap.forEach((g) => {
+    const tokensLocal: IAsset2AssetParams = {};
+    for (let item of gamesMap) {
+      const tokenidStr = BigInt(item[0].assetId).toString();
+      const token = await getAssetAsync(item[0].assetId, client.algorand);
+      tokensLocal[tokenidStr] = token;
       gamesData.push({
-        game: g,
-        id: `${g.owner}-${g.assetId}`,
-        token: mockTokens[0],
+        id: `${item[0].owner}-${item[0].assetId}`,
+        idObj: item[0],
+        game: item[1],
+        token: token,
       });
-    });
-    games.value = gamesData;
+    }
+    console.log("tokensLocal", tokensLocal);
+    tokens.value = Object.values(tokensLocal);
 
+    games.value = gamesData;
     console.log("games", games);
   };
   // Getters
@@ -60,7 +68,7 @@ export const useGameStore = defineStore("game", () => {
   });
 
   // Actions
-  function setTokenFilter(tokenId: string | null) {
+  function setTokenFilter(tokenId: bigint | null) {
     selectedTokenFilter.value = tokenId;
   }
 

@@ -61,6 +61,8 @@ describe('AvmSatoshiDice contract', () => {
     const testAccount = await localnet.context.generateAccount({ initialFunds: AlgoAmount.Algo(10000) })
     const { client } = await deploy(testAccount)
 
+    console.log('Deployed contract: ', client.appId)
+
     const result = await client.send.createGameWithNativeToken({
       args: {
         txnDeposit: makePaymentTxnWithSuggestedParamsFromObject({

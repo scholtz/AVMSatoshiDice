@@ -40,6 +40,10 @@ class GameStruct extends arc4.Struct<{
    */
   isArc200Token: Bool
   /**
+   * Time when game was created
+   */
+  createdAtTime: UintN64
+  /**
    * Time when someone last played the game
    */
   lastPlayedTime: UintN64
@@ -366,6 +370,7 @@ export class AvmSatoshiDice extends Contract {
         isNativeToken: new Bool(true),
         isASAToken: new Bool(false),
 
+        createdAtTime: new UintN64(Global.latestTimestamp),
         lastPlayedTime: new UintN64(0),
         lastWinTime: new UintN64(0),
         lastWinAmount: new UintN256(0),
@@ -450,6 +455,7 @@ export class AvmSatoshiDice extends Contract {
         isNativeToken: new Bool(false),
         isASAToken: new Bool(true),
 
+        createdAtTime: new UintN64(Global.latestTimestamp),
         lastPlayedTime: new UintN64(0),
         lastWinTime: new UintN64(0),
         lastWinAmount: new UintN256(0),
@@ -519,6 +525,7 @@ export class AvmSatoshiDice extends Contract {
         isNativeToken: new Bool(false),
         isASAToken: new Bool(false),
 
+        createdAtTime: new UintN64(Global.latestTimestamp),
         lastPlayedTime: new UintN64(0),
         lastWinTime: new UintN64(0),
         lastWinAmount: new UintN256(0),
@@ -561,6 +568,7 @@ export class AvmSatoshiDice extends Contract {
     } else {
       // new game
     }
+    this.games(game).value.lastPlayedTime = new UintN64(Global.latestTimestamp)
 
     // lets check if the game has enough money for potential win scenario
     // 100_000_000 * 1_000_000 / 200_000 = 500_000_000
@@ -620,6 +628,7 @@ export class AvmSatoshiDice extends Contract {
     } else {
       // new game
     }
+    this.games(game).value.lastPlayedTime = new UintN64(Global.latestTimestamp)
 
     // lets check if the game has enough money for potential win scenario
     // 100_000_000 * 1_000_000 / 200_000 = 500_000_000
@@ -679,6 +688,7 @@ export class AvmSatoshiDice extends Contract {
       // new game
     }
 
+    this.games(game).value.lastPlayedTime = new UintN64(Global.latestTimestamp)
     // lets check if the game has enough money for potential win scenario
     // 100_000_000 * 1_000_000 / 200_000 = 500_000_000
 
@@ -772,8 +782,6 @@ export class AvmSatoshiDice extends Contract {
       this.LooseGame(key, game, play, sender)
       return
     }
-
-    game.lastPlayedTime = new UintN64(Global.latestTimestamp)
 
     // MAIN LOGIC OF THE APPLICATION IS HERE
 

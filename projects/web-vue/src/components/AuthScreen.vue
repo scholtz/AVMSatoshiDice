@@ -75,7 +75,7 @@ const selectChainClick = (chain: any) => {
 };
 const chains = [
   {
-    appId: 4870n,
+    appId: 4904n,
     name: "Algorand Mainnet",
     code: "mainnet-v1.0",
     algodHost: "https://mainnet-api.4160.nodely.dev",
@@ -88,7 +88,7 @@ const chains = [
     wallets: [WalletId.BIATEC, WalletId.DEFLY, WalletId.EXODUS, WalletId.PERA, WalletId.KIBISIS, WalletId.WALLETCONNECT],
   },
   {
-    appId: 4870n,
+    appId: 4904n,
     name: "Voi Mainnet",
     code: "voimain-v1.0",
     algodHost: "https://mainnet-api.voi.nodely.dev",
@@ -101,7 +101,7 @@ const chains = [
     wallets: [WalletId.BIATEC, WalletId.KIBISIS, WalletId.DEFLY, WalletId.WALLETCONNECT],
   },
   {
-    appId: 4870n,
+    appId: 4904n,
     name: "Aramid Mainnet",
     code: "aramidmain-v1.0",
     algodHost: "https://algod.aramidmain.a-wallet.net",
@@ -114,7 +114,7 @@ const chains = [
     wallets: [WalletId.BIATEC, WalletId.DEFLY, WalletId.WALLETCONNECT],
   },
   {
-    appId: 4870n,
+    appId: 4904n,
     name: "Algorand Testnet",
     code: "testnet-v1.0",
     algodHost: "https://testnet-api.4160.nodely.dev",
@@ -127,7 +127,7 @@ const chains = [
     wallets: [WalletId.BIATEC, WalletId.DEFLY, WalletId.PERA, WalletId.WALLETCONNECT],
   },
   {
-    appId: 4870n,
+    appId: 4904n,
     name: "Localnet",
     code: "dockernet-v1",
     algodHost: "http://localhost",

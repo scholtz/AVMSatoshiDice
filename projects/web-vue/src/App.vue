@@ -28,9 +28,9 @@ onMounted(() => {
 #gradient-canvas {
   width: 100%;
   height: 100%;
-  --gradient-color-1: #333;
+  --gradient-color-1: #6a77e8;
   --gradient-color-2: #032e46;
-  --gradient-color-3: #666;
+  --gradient-color-3: #222;
   --gradient-color-4: #0f595e;
   position: fixed;
   top: 0;

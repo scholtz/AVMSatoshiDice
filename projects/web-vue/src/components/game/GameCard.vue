@@ -28,11 +28,11 @@ useMotion(gameCardRef, {
 });
 
 const formattedBalance = computed(() => {
-  return props.game.game.balance.toLocaleString();
+  return (Number(props.game.game.balance) / 10 ** props.game.token.decimals).toLocaleString();
 });
 
 const formattedWinRatio = computed(() => {
-  return `${props.game.game.winRatio}%`;
+  return `${Number(props.game.game.winRatio) / 1000000}%`;
 });
 
 const lastPlayedFormatted = computed(() => {
@@ -53,17 +53,9 @@ const playGame = () => {
   <div ref="gameCardRef" class="card border border-gray-800 hover:border-primary-600 transition-all duration-300 group" v-motion>
     <div class="p-6">
       <div class="flex items-center justify-between mb-4">
-        <h3 class="text-xl font-semibold text-white group-hover:text-primary-400 transition-colors">Game</h3>
+        <h3 class="text-xl font-semibold text-white group-hover:text-primary-400 transition-colors">{{ game.token.name }}</h3>
 
         <div class="flex items-center space-x-2">
-          <div class="flex items-center">
-            <img v-if="game.token.logoUrl" :src="game.token.logoUrl" :alt="game.token.name" class="w-6 h-6 rounded-full mr-1" />
-            <span v-else class="w-6 h-6 rounded-full bg-gray-700 mr-1 flex items-center justify-center text-xs font-bold">
-              {{ game.token.symbol.substring(0, 1) }}
-            </span>
-            <span class="text-sm font-medium text-gray-300">{{ game.token.symbol }}</span>
-          </div>
-
           <div class="px-2 py-1 bg-primary-900 text-primary-300 rounded-full text-xs font-medium">
             {{ formattedWinRatio }}
           </div>
@@ -73,7 +65,7 @@ const playGame = () => {
       <div class="grid grid-cols-2 gap-4 mb-6">
         <div class="bg-background-dark p-3 rounded-lg">
           <div class="text-gray-400 text-xs mb-1">Balance</div>
-          <div class="font-semibold text-white">{{ formattedBalance }} {{ game.token.symbol }}</div>
+          <div class="font-semibold text-white">{{ formattedBalance }} {{ game.token.unitName }}</div>
         </div>
 
         <div class="bg-background-dark p-3 rounded-lg">

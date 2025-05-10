@@ -3,6 +3,7 @@ import algosdk from "algosdk";
 import { getArc200Client } from "arc200-client";
 import { defineStore } from "pinia";
 import { ComputedRef, reactive } from "vue";
+import { getAssetAsync } from "../scripts/algorand/getAssetAsync";
 
 type UserStruct = {
   balance: bigint;
@@ -54,7 +55,7 @@ export interface IState {
   assetHolding: IAssetHolding[];
 }
 const defaultState: IState = {
-  appId: 4870n,
+  appId: 4904n,
   // algodHost: "https://mainnet-api.algonode.cloud",
   // algodPort: 443,
   // algodToken: "",
@@ -134,11 +135,11 @@ export const useAppStore = defineStore("app", () => {
         state.userBalance = info.assets[Number(state.assetId)].amount ?? 0n;
       }
 
-      const assetInfo = await algorandClient.client.algod.getAssetByID(state.assetId).do();
-      if (assetInfo?.params) {
-        state.assetDecimals = assetInfo.params.decimals;
-        if (assetInfo.params.name) {
-          state.tokenName = assetInfo.params.name;
+      const assetInfo = await getAssetAsync(state.assetId, algorandClient);
+      if (assetInfo) {
+        state.assetDecimals = assetInfo.decimals;
+        if (assetInfo.name) {
+          state.tokenName = assetInfo.name;
         }
       }
     }

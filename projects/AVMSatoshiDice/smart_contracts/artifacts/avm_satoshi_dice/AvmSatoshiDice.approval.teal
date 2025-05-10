@@ -5,22 +5,22 @@
 main:
     intcblock 0 32 1 8 1000000 321 322 320
     bytecblock 0x00 0x0000000000000000000000000000000000000000000000000000000000000000 0x0000000000000000 "g" "d" 0x640000000000000000 "p" 0x151f7c75 0x80 "user withdrawal" 0xda7025b9 "admin withdrawal" 0x0000000000000001 0x0f4240 0x0000000000000002 0x4a968f8f
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:140
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:144
     // export class AvmSatoshiDice extends Contract {
     txn NumAppArgs
     bz main_bare_routing@18
-    pushbytess 0x70a65e89 0xc61d56f5 0x54cc696f 0x6b090bbe 0xe36e57bf 0x178c1f33 0xa2649a00 0xc4b5cfb1 0x6646eb4a 0x2553863f 0x751e0d47 0x2a236e18 0x76e03d94 // method "updateApplication(string)bool", method "sendOnlineKeyRegistration(byte[],byte[],byte[],uint64,uint64,uint64,uint64)byte[]", method "withdraw(address,uint256,uint64,bool)void", method "CreateGameWithNativeToken(pay,uint64)void", method "OptInToASA(pay,uint64)void", method "CreateGameWithASAToken(axfer,uint64)void", method "CreateGameWithArc200Token(uint64,uint256,uint64)void", method "StartGameWithNativeToken(pay,(uint64,address),uint64)void", method "StartGameWithASAToken(axfer,(uint64,address),uint64)void", method "StartGameWithArc200Token(uint256,uint64,(uint64,address),uint64)void", method "Game(address,uint64)(uint256,uint64,bool,bool,bool,uint64,uint64,uint256,uint64,uint256,uint64,address)", method "MyGame()(uint64,uint64,uint64,uint256,uint64,address,address)", method "ClaimGame()void"
+    pushbytess 0x70a65e89 0xc61d56f5 0x54cc696f 0x6b090bbe 0xe36e57bf 0x178c1f33 0xa2649a00 0xc4b5cfb1 0x6646eb4a 0x2553863f 0x53fe54e6 0x2a236e18 0x76e03d94 // method "updateApplication(string)bool", method "sendOnlineKeyRegistration(byte[],byte[],byte[],uint64,uint64,uint64,uint64)byte[]", method "withdraw(address,uint256,uint64,bool)void", method "CreateGameWithNativeToken(pay,uint64)void", method "OptInToASA(pay,uint64)void", method "CreateGameWithASAToken(axfer,uint64)void", method "CreateGameWithArc200Token(uint64,uint256,uint64)void", method "StartGameWithNativeToken(pay,(uint64,address),uint64)void", method "StartGameWithASAToken(axfer,(uint64,address),uint64)void", method "StartGameWithArc200Token(uint256,uint64,(uint64,address),uint64)void", method "Game(address,uint64)(uint256,uint64,bool,bool,bool,uint64,uint64,uint64,uint256,uint64,uint256,uint64,address)", method "MyGame()(uint64,uint64,uint64,uint256,uint64,address,address)", method "ClaimGame()void"
     txna ApplicationArgs 0
     match main_updateApplication_route@3 main_sendOnlineKeyRegistration_route@4 main_withdraw_route@5 main_CreateGameWithNativeToken_route@6 main_OptInToASA_route@7 main_CreateGameWithASAToken_route@8 main_CreateGameWithArc200Token_route@9 main_StartGameWithNativeToken_route@10 main_StartGameWithASAToken_route@11 main_StartGameWithArc200Token_route@12 main_Game_route@13 main_MyGame_route@14 main_ClaimGame_route@15
 
 main_after_if_else@22:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:140
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:144
     // export class AvmSatoshiDice extends Contract {
     intc_0 // 0
     return
 
 main_ClaimGame_route@15:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:756
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:766
     // @arc4.abimethod()
     txn OnCompletion
     !
@@ -32,7 +32,7 @@ main_ClaimGame_route@15:
     return
 
 main_MyGame_route@14:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:742
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:752
     // @arc4.abimethod({ readonly: true })
     txn OnCompletion
     !
@@ -48,18 +48,18 @@ main_MyGame_route@14:
     return
 
 main_Game_route@13:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:728
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:738
     // @arc4.abimethod({ readonly: true })
     txn OnCompletion
     !
     assert // OnCompletion is not NoOp
     txn ApplicationID
     assert // can only call when not creating
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:140
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:144
     // export class AvmSatoshiDice extends Contract {
     txna ApplicationArgs 1
     txna ApplicationArgs 2
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:728
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:738
     // @arc4.abimethod({ readonly: true })
     callsub Game
     bytec 7 // 0x151f7c75
@@ -70,34 +70,34 @@ main_Game_route@13:
     return
 
 main_StartGameWithArc200Token_route@12:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:661
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:670
     // @arc4.abimethod()
     txn OnCompletion
     !
     assert // OnCompletion is not NoOp
     txn ApplicationID
     assert // can only call when not creating
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:140
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:144
     // export class AvmSatoshiDice extends Contract {
     txna ApplicationArgs 1
     txna ApplicationArgs 2
     txna ApplicationArgs 3
     txna ApplicationArgs 4
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:661
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:670
     // @arc4.abimethod()
     callsub StartGameWithArc200Token
     intc_2 // 1
     return
 
 main_StartGameWithASAToken_route@11:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:602
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:610
     // @arc4.abimethod()
     txn OnCompletion
     !
     assert // OnCompletion is not NoOp
     txn ApplicationID
     assert // can only call when not creating
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:140
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:144
     // export class AvmSatoshiDice extends Contract {
     txn GroupIndex
     intc_2 // 1
@@ -109,21 +109,21 @@ main_StartGameWithASAToken_route@11:
     assert // transaction type is axfer
     txna ApplicationArgs 1
     txna ApplicationArgs 2
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:602
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:610
     // @arc4.abimethod()
     callsub StartGameWithASAToken
     intc_2 // 1
     return
 
 main_StartGameWithNativeToken_route@10:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:543
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:550
     // @arc4.abimethod()
     txn OnCompletion
     !
     assert // OnCompletion is not NoOp
     txn ApplicationID
     assert // can only call when not creating
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:140
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:144
     // export class AvmSatoshiDice extends Contract {
     txn GroupIndex
     intc_2 // 1
@@ -135,40 +135,40 @@ main_StartGameWithNativeToken_route@10:
     assert // transaction type is pay
     txna ApplicationArgs 1
     txna ApplicationArgs 2
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:543
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:550
     // @arc4.abimethod()
     callsub StartGameWithNativeToken
     intc_2 // 1
     return
 
 main_CreateGameWithArc200Token_route@9:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:472
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:478
     // @arc4.abimethod()
     txn OnCompletion
     !
     assert // OnCompletion is not NoOp
     txn ApplicationID
     assert // can only call when not creating
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:140
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:144
     // export class AvmSatoshiDice extends Contract {
     txna ApplicationArgs 1
     txna ApplicationArgs 2
     txna ApplicationArgs 3
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:472
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:478
     // @arc4.abimethod()
     callsub CreateGameWithArc200Token
     intc_2 // 1
     return
 
 main_CreateGameWithASAToken_route@8:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:413
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:418
     // @arc4.abimethod()
     txn OnCompletion
     !
     assert // OnCompletion is not NoOp
     txn ApplicationID
     assert // can only call when not creating
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:140
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:144
     // export class AvmSatoshiDice extends Contract {
     txn GroupIndex
     intc_2 // 1
@@ -179,21 +179,21 @@ main_CreateGameWithASAToken_route@8:
     ==
     assert // transaction type is axfer
     txna ApplicationArgs 1
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:413
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:418
     // @arc4.abimethod()
     callsub CreateGameWithASAToken
     intc_2 // 1
     return
 
 main_OptInToASA_route@7:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:387
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:392
     // @arc4.abimethod()
     txn OnCompletion
     !
     assert // OnCompletion is not NoOp
     txn ApplicationID
     assert // can only call when not creating
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:140
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:144
     // export class AvmSatoshiDice extends Contract {
     txn GroupIndex
     intc_2 // 1
@@ -204,21 +204,21 @@ main_OptInToASA_route@7:
     ==
     assert // transaction type is pay
     txna ApplicationArgs 1
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:387
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:392
     // @arc4.abimethod()
     callsub OptInToASA
     intc_2 // 1
     return
 
 main_CreateGameWithNativeToken_route@6:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:330
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:334
     // @arc4.abimethod()
     txn OnCompletion
     !
     assert // OnCompletion is not NoOp
     txn ApplicationID
     assert // can only call when not creating
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:140
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:144
     // export class AvmSatoshiDice extends Contract {
     txn GroupIndex
     intc_2 // 1
@@ -229,41 +229,41 @@ main_CreateGameWithNativeToken_route@6:
     ==
     assert // transaction type is pay
     txna ApplicationArgs 1
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:330
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:334
     // @arc4.abimethod()
     callsub CreateGameWithNativeToken
     intc_2 // 1
     return
 
 main_withdraw_route@5:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:194
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:198
     // @arc4.abimethod()
     txn OnCompletion
     !
     assert // OnCompletion is not NoOp
     txn ApplicationID
     assert // can only call when not creating
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:140
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:144
     // export class AvmSatoshiDice extends Contract {
     txna ApplicationArgs 1
     txna ApplicationArgs 2
     txna ApplicationArgs 3
     txna ApplicationArgs 4
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:194
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:198
     // @arc4.abimethod()
     callsub withdraw
     intc_2 // 1
     return
 
 main_sendOnlineKeyRegistration_route@4:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:161
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:165
     // @arc4.abimethod()
     txn OnCompletion
     !
     assert // OnCompletion is not NoOp
     txn ApplicationID
     assert // can only call when not creating
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:140
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:144
     // export class AvmSatoshiDice extends Contract {
     txna ApplicationArgs 1
     extract 2 0
@@ -279,7 +279,7 @@ main_sendOnlineKeyRegistration_route@4:
     btoi
     txna ApplicationArgs 7
     btoi
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:161
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:165
     // @arc4.abimethod()
     callsub sendOnlineKeyRegistration
     dup
@@ -296,7 +296,7 @@ main_sendOnlineKeyRegistration_route@4:
     return
 
 main_updateApplication_route@3:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:152
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:156
     // @arc4.abimethod({ allowActions: 'UpdateApplication' })
     txn OnCompletion
     pushint 4 // UpdateApplication
@@ -304,11 +304,11 @@ main_updateApplication_route@3:
     assert // OnCompletion is not UpdateApplication
     txn ApplicationID
     assert // can only call when not creating
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:140
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:144
     // export class AvmSatoshiDice extends Contract {
     txna ApplicationArgs 1
     extract 2 0
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:152
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:156
     // @arc4.abimethod({ allowActions: 'UpdateApplication' })
     callsub updateApplication
     bytec_0 // 0x00
@@ -323,7 +323,7 @@ main_updateApplication_route@3:
     return
 
 main_bare_routing@18:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:140
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:144
     // export class AvmSatoshiDice extends Contract {
     txn OnCompletion
     bnz main_after_if_else@22
@@ -336,24 +336,24 @@ main_bare_routing@18:
 
 // smart_contracts/avm_satoshi_dice/contract.algo.ts::AvmSatoshiDice.updateApplication(newVersion: bytes) -> uint64:
 updateApplication:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:152-153
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:156-157
     // @arc4.abimethod({ allowActions: 'UpdateApplication' })
     // updateApplication(newVersion: string): boolean {
     proto 1 1
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:154
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:158
     // assert(Global.creatorAddress === Txn.sender, 'Only creator can update application')
     global CreatorAddress
     txn Sender
     ==
     assert // Only creator can update application
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:148
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:152
     // version = GlobalState<string>({ key: 'scver' })
     pushbytes "scver"
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:155
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:159
     // this.version.value = newVersion
     frame_dig -1
     app_global_put
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:156
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:160
     // return true
     intc_2 // 1
     retsub
@@ -361,7 +361,7 @@ updateApplication:
 
 // smart_contracts/avm_satoshi_dice/contract.algo.ts::AvmSatoshiDice.sendOnlineKeyRegistration(voteKey: bytes, selectionKey: bytes, stateProofKey: bytes, voteFirst: uint64, voteLast: uint64, voteKeyDilution: uint64, fee: uint64) -> bytes:
 sendOnlineKeyRegistration:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:161-170
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:165-174
     // @arc4.abimethod()
     // public sendOnlineKeyRegistration(
     //   voteKey: bytes,
@@ -373,13 +373,13 @@ sendOnlineKeyRegistration:
     //   fee: uint64,
     // ): bytes {
     proto 7 1
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:171
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:175
     // assert(Global.creatorAddress === Txn.sender, 'Only creator can use this method')
     global CreatorAddress
     txn Sender
     ==
     assert // Only creator can use this method
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:172-182
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:176-186
     // const itxnResult = itxn
     //   .keyRegistration({
     //     selectionKey: selectionKey,
@@ -404,7 +404,7 @@ sendOnlineKeyRegistration:
     itxn_field StateProofPK
     frame_dig -6
     itxn_field SelectionPK
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:172-181
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:176-185
     // const itxnResult = itxn
     //   .keyRegistration({
     //     selectionKey: selectionKey,
@@ -419,7 +419,7 @@ sendOnlineKeyRegistration:
     itxn_field TypeEnum
     frame_dig -1
     itxn_field Fee
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:172-182
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:176-186
     // const itxnResult = itxn
     //   .keyRegistration({
     //     selectionKey: selectionKey,
@@ -433,14 +433,14 @@ sendOnlineKeyRegistration:
     //   .submit()
     itxn_submit
     itxn TxID
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:183
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:187
     // return itxnResult.txnId
     retsub
 
 
 // smart_contracts/avm_satoshi_dice/contract.algo.ts::AvmSatoshiDice.withdraw(receiver: bytes, amount: bytes, assetId: bytes, isArc200Token: bytes) -> void:
 withdraw:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:194-195
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:198-199
     // @arc4.abimethod()
     // public withdraw(receiver: Address, amount: UintN256, assetId: UintN64, isArc200Token: Bool): void {
     proto 4 0
@@ -448,40 +448,40 @@ withdraw:
     dupn 3
     pushbytes ""
     dupn 4
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:196-199
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:200-203
     // const key = new AddressAssetStruct({
     //   assetId: assetId,
     //   owner: new Address(Txn.sender),
     // })
     frame_dig -2
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:198
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:202
     // owner: new Address(Txn.sender),
     txn Sender
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:196-199
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:200-203
     // const key = new AddressAssetStruct({
     //   assetId: assetId,
     //   owner: new Address(Txn.sender),
     // })
     concat
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:141
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:145
     // public games = BoxMap<AddressAssetStruct, GameStruct>({ keyPrefix: 'g' })
     bytec_3 // "g"
     swap
     concat
     dup
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:201
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:205
     // if (this.games(key).exists) {
     box_len
     bury 1
     bz withdraw_else_body@13
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:202
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:206
     // const game = this.games(key).value.copy()
     frame_dig 9
     box_get
     swap
     frame_bury 1
     assert // Box must have value
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:205
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:209
     // if (toWithdrawIncludingFee === BigUint(0)) {
     frame_dig -3
     pushbytes 0x
@@ -489,20 +489,20 @@ withdraw:
     frame_dig -3
     frame_bury 2
     bz withdraw_after_if_else@3
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:206
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:210
     // toWithdrawIncludingFee = game.balance.native
     frame_dig 1
     extract 0 32 // on error: Index access is out of bounds
     frame_bury 2
 
 withdraw_after_if_else@3:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:208
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:212
     // const fee: biguint = toWithdrawIncludingFee / BigUint(40)
     frame_dig 2
     dup
     pushbytes 0x28
     b/
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:209
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:213
     // const toWithdrawNet: biguint = toWithdrawIncludingFee - fee
     dig 1
     swap
@@ -510,7 +510,7 @@ withdraw_after_if_else@3:
     dup
     cover 2
     frame_bury 3
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:212
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:216
     // game.balance.native >= toWithdrawIncludingFee,
     frame_dig 1
     dup
@@ -519,13 +519,13 @@ withdraw_after_if_else@3:
     dup
     dig 2
     b>=
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:211-214
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:215-218
     // assert(
     //   game.balance.native >= toWithdrawIncludingFee,
     //   'Game creator can withdraw from the game only the game deposit',
     // )
     assert // Game creator can withdraw from the game only the game deposit
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:216
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:220
     // this.games(key).value.balance = new UintN256(game.balance.native - toWithdrawIncludingFee)
     swap
     b-
@@ -549,12 +549,12 @@ withdraw_after_if_else@3:
     swap
     replace2 0
     box_put
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:143
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:147
     // public allDeposits = BoxMap<UintN64, UintN256>({ keyPrefix: 'd' })
     bytec 4 // "d"
     frame_dig -2
     concat
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:217
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:221
     // this.allDeposits(assetId).value = new UintN256(this.allDeposits(assetId).value.native - toWithdrawNet)
     dup
     box_get
@@ -569,7 +569,7 @@ withdraw_after_if_else@3:
     uncover 2
     b|
     box_put
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:219
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:223
     // if (game.isNativeToken.native) {
     intc 7 // 320
     getbit
@@ -580,7 +580,7 @@ withdraw_after_if_else@3:
     intc_0 // 0
     getbit
     bz withdraw_after_if_else@6
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:220-227
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:224-231
     // itxn
     //   .payment({
     //     amount: new UintN64(toWithdrawNet).native,
@@ -590,7 +590,7 @@ withdraw_after_if_else@3:
     //   })
     //   .submit()
     itxn_begin
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:222
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:226
     // amount: new UintN64(toWithdrawNet).native,
     frame_dig 3
     dup
@@ -602,14 +602,14 @@ withdraw_after_if_else@3:
     bzero
     b|
     btoi
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:224
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:228
     // note: 'user withdrawal',
     bytec 9 // "user withdrawal"
     itxn_field Note
     frame_dig -4
     itxn_field Receiver
     itxn_field Amount
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:220-226
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:224-230
     // itxn
     //   .payment({
     //     amount: new UintN64(toWithdrawNet).native,
@@ -619,11 +619,11 @@ withdraw_after_if_else@3:
     //   })
     intc_2 // 1
     itxn_field TypeEnum
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:225
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:229
     // fee: 0,
     intc_0 // 0
     itxn_field Fee
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:220-227
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:224-231
     // itxn
     //   .payment({
     //     amount: new UintN64(toWithdrawNet).native,
@@ -635,7 +635,7 @@ withdraw_after_if_else@3:
     itxn_submit
 
 withdraw_after_if_else@6:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:229
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:233
     // if (game.isASAToken.native) {
     frame_dig 1
     intc 5 // 321
@@ -647,7 +647,7 @@ withdraw_after_if_else@6:
     intc_0 // 0
     getbit
     bz withdraw_after_if_else@9
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:230-238
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:234-242
     // itxn
     //   .assetTransfer({
     //     xferAsset: game.assetId.native,
@@ -658,12 +658,12 @@ withdraw_after_if_else@6:
     //   })
     //   .submit()
     itxn_begin
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:232
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:236
     // xferAsset: game.assetId.native,
     frame_dig 1
     intc_1 // 32
     extract_uint64
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:233
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:237
     // assetAmount: new UintN64(toWithdrawNet).native,
     frame_dig 3
     dup
@@ -675,7 +675,7 @@ withdraw_after_if_else@6:
     bzero
     b|
     btoi
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:235
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:239
     // note: 'user withdrawal',
     bytec 9 // "user withdrawal"
     itxn_field Note
@@ -683,7 +683,7 @@ withdraw_after_if_else@6:
     itxn_field AssetReceiver
     itxn_field AssetAmount
     itxn_field XferAsset
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:230-237
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:234-241
     // itxn
     //   .assetTransfer({
     //     xferAsset: game.assetId.native,
@@ -694,11 +694,11 @@ withdraw_after_if_else@6:
     //   })
     pushint 4 // 4
     itxn_field TypeEnum
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:236
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:240
     // fee: 0,
     intc_0 // 0
     itxn_field Fee
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:230-238
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:234-242
     // itxn
     //   .assetTransfer({
     //     xferAsset: game.assetId.native,
@@ -711,7 +711,7 @@ withdraw_after_if_else@6:
     itxn_submit
 
 withdraw_after_if_else@9:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:240
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:244
     // if (game.isArc200Token.native) {
     frame_dig 1
     intc 6 // 322
@@ -723,7 +723,7 @@ withdraw_after_if_else@9:
     intc_0 // 0
     getbit
     bz withdraw_after_if_else@30
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:242-249
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:246-253
     // itxn
     //   .applicationCall({
     //     appId: game.assetId.native,
@@ -733,12 +733,12 @@ withdraw_after_if_else@9:
     //   })
     //   .submit()
     itxn_begin
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:244
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:248
     // appId: game.assetId.native,
     frame_dig 1
     intc_1 // 32
     extract_uint64
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:245
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:249
     // appArgs: [methodSelector('arc200_transfer(address,uint256)bool'), receiver, new UintN256(toWithdrawNet)],
     frame_dig 3
     dup
@@ -748,11 +748,11 @@ withdraw_after_if_else@9:
     assert // overflow
     frame_dig 0
     b|
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:247
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:251
     // note: 'user withdrawal',
     bytec 9 // "user withdrawal"
     itxn_field Note
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:245
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:249
     // appArgs: [methodSelector('arc200_transfer(address,uint256)bool'), receiver, new UintN256(toWithdrawNet)],
     bytec 10 // method "arc200_transfer(address,uint256)bool"
     itxn_field ApplicationArgs
@@ -760,7 +760,7 @@ withdraw_after_if_else@9:
     itxn_field ApplicationArgs
     itxn_field ApplicationArgs
     itxn_field ApplicationID
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:242-248
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:246-252
     // itxn
     //   .applicationCall({
     //     appId: game.assetId.native,
@@ -770,11 +770,11 @@ withdraw_after_if_else@9:
     //   })
     pushint 6 // 6
     itxn_field TypeEnum
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:246
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:250
     // fee: 0,
     intc_0 // 0
     itxn_field Fee
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:242-249
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:246-253
     // itxn
     //   .applicationCall({
     //     appId: game.assetId.native,
@@ -789,39 +789,39 @@ withdraw_after_if_else@30:
     retsub
 
 withdraw_else_body@13:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:253
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:257
     // if (Global.creatorAddress === Txn.sender) {
     global CreatorAddress
     txn Sender
     ==
     assert // The game for this asset does not exists
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:256
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:260
     // if (assetId.native === 0) {
     frame_dig -2
     btoi
     dup
     frame_bury 6
     bnz withdraw_else_body@19
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:258
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:262
     // Global.currentApplicationAddress.balance -
     global CurrentApplicationAddress
     acct_params_get AcctBalance
     assert // account funded
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:259
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:263
     // Global.currentApplicationAddress.minBalance -
     global CurrentApplicationAddress
     acct_params_get AcctMinBalance
     assert // account funded
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:258-259
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:262-263
     // Global.currentApplicationAddress.balance -
     // Global.currentApplicationAddress.minBalance -
     -
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:143
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:147
     // public allDeposits = BoxMap<UintN64, UintN256>({ keyPrefix: 'd' })
     bytec 4 // "d"
     frame_dig -2
     concat
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:260
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:264
     // new UintN64(this.allDeposits(assetId).value.native).native
     box_get
     assert // Box must have value
@@ -833,39 +833,39 @@ withdraw_else_body@13:
     dig 1
     b|
     btoi
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:257-260
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:261-264
     // const maxWithdrawableBalance: uint64 =
     //   Global.currentApplicationAddress.balance -
     //   Global.currentApplicationAddress.minBalance -
     //   new UintN64(this.allDeposits(assetId).value.native).native
     uncover 2
     swap
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:258-260
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:262-264
     // Global.currentApplicationAddress.balance -
     // Global.currentApplicationAddress.minBalance -
     // new UintN64(this.allDeposits(assetId).value.native).native
     -
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:257-260
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:261-264
     // const maxWithdrawableBalance: uint64 =
     //   Global.currentApplicationAddress.balance -
     //   Global.currentApplicationAddress.minBalance -
     //   new UintN64(this.allDeposits(assetId).value.native).native
     dup
     frame_bury 4
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:261
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:265
     // assert(amount.native <= BigUint(maxWithdrawableBalance), 'maxWithdrawableBalance is less then requested')
     itob
     frame_dig -3
     b>=
     assert // maxWithdrawableBalance is less then requested
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:262
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:266
     // let toWidraw: uint64 = new UintN64(amount.native).native
     frame_dig -3
     b|
     btoi
     dup
     frame_bury 7
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:263
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:267
     // if (toWidraw === 0) {
     bnz withdraw_after_if_else@17
     frame_dig 4
@@ -873,7 +873,7 @@ withdraw_else_body@13:
 
 withdraw_after_if_else@17:
     frame_dig 7
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:267-274
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:271-278
     // itxn
     //   .payment({
     //     amount: new UintN64(toWidraw).native,
@@ -883,18 +883,18 @@ withdraw_after_if_else@17:
     //   })
     //   .submit()
     itxn_begin
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:269
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:273
     // amount: new UintN64(toWidraw).native,
     itob
     btoi
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:271
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:275
     // note: 'admin withdrawal',
     bytec 11 // "admin withdrawal"
     itxn_field Note
     frame_dig -4
     itxn_field Receiver
     itxn_field Amount
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:267-273
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:271-277
     // itxn
     //   .payment({
     //     amount: new UintN64(toWidraw).native,
@@ -904,11 +904,11 @@ withdraw_after_if_else@17:
     //   })
     intc_2 // 1
     itxn_field TypeEnum
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:272
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:276
     // fee: 0,
     intc_0 // 0
     itxn_field Fee
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:267-274
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:271-278
     // itxn
     //   .payment({
     //     amount: new UintN64(toWidraw).native,
@@ -921,13 +921,13 @@ withdraw_after_if_else@17:
     retsub
 
 withdraw_else_body@19:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:275
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:279
     // } else if (isArc200Token.native) {
     frame_dig -1
     intc_0 // 0
     getbit
     bz withdraw_else_body@22
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:290-297
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:294-301
     // itxn
     //   .applicationCall({
     //     appId: assetId.native,
@@ -937,11 +937,11 @@ withdraw_else_body@19:
     //   })
     //   .submit()
     itxn_begin
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:295
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:299
     // note: 'admin withdrawal',
     bytec 11 // "admin withdrawal"
     itxn_field Note
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:293
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:297
     // appArgs: [methodSelector('arc200_transfer(address,uint256)bool'), receiver, amount],
     bytec 10 // method "arc200_transfer(address,uint256)bool"
     itxn_field ApplicationArgs
@@ -951,7 +951,7 @@ withdraw_else_body@19:
     itxn_field ApplicationArgs
     frame_dig 6
     itxn_field ApplicationID
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:290-296
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:294-300
     // itxn
     //   .applicationCall({
     //     appId: assetId.native,
@@ -961,11 +961,11 @@ withdraw_else_body@19:
     //   })
     pushint 6 // 6
     itxn_field TypeEnum
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:294
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:298
     // fee: 0,
     intc_0 // 0
     itxn_field Fee
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:290-297
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:294-301
     // itxn
     //   .applicationCall({
     //     appId: assetId.native,
@@ -978,18 +978,18 @@ withdraw_else_body@19:
     retsub
 
 withdraw_else_body@22:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:300
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:304
     // const balance = Asset(assetId.native).balance(Global.currentApplicationAddress)
     global CurrentApplicationAddress
     frame_dig 6
     asset_holding_get AssetBalance
     assert // account opted into asset
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:143
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:147
     // public allDeposits = BoxMap<UintN64, UintN256>({ keyPrefix: 'd' })
     bytec 4 // "d"
     frame_dig -2
     concat
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:301
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:305
     // const maxWithdrawableBalance: uint64 = balance - new UintN64(this.allDeposits(assetId).value.native).native
     box_get
     assert // Box must have value
@@ -1006,20 +1006,20 @@ withdraw_else_body@22:
     -
     dup
     frame_bury 5
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:302
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:306
     // assert(amount.native <= BigUint(maxWithdrawableBalance), 'maxWithdrawableBalance is less then requested')
     itob
     frame_dig -3
     b>=
     assert // maxWithdrawableBalance is less then requested
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:303
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:307
     // let toWidraw: uint64 = new UintN64(amount.native).native
     frame_dig -3
     b|
     btoi
     dup
     frame_bury 8
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:304
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:308
     // if (toWidraw === 0) {
     bnz withdraw_after_if_else@24
     frame_dig 5
@@ -1027,7 +1027,7 @@ withdraw_else_body@22:
 
 withdraw_after_if_else@24:
     frame_dig 8
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:308-316
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:312-320
     // itxn
     //   .assetTransfer({
     //     xferAsset: assetId.native,
@@ -1038,11 +1038,11 @@ withdraw_after_if_else@24:
     //   })
     //   .submit()
     itxn_begin
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:311
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:315
     // assetAmount: new UintN64(toWidraw).native,
     itob
     btoi
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:313
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:317
     // note: 'admin withdrawal',
     bytec 11 // "admin withdrawal"
     itxn_field Note
@@ -1051,7 +1051,7 @@ withdraw_after_if_else@24:
     itxn_field AssetAmount
     frame_dig 6
     itxn_field XferAsset
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:308-315
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:312-319
     // itxn
     //   .assetTransfer({
     //     xferAsset: assetId.native,
@@ -1062,11 +1062,11 @@ withdraw_after_if_else@24:
     //   })
     pushint 4 // 4
     itxn_field TypeEnum
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:314
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:318
     // fee: 0,
     intc_0 // 0
     itxn_field Fee
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:308-316
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:312-320
     // itxn
     //   .assetTransfer({
     //     xferAsset: assetId.native,
@@ -1082,48 +1082,48 @@ withdraw_after_if_else@24:
 
 // smart_contracts/avm_satoshi_dice/contract.algo.ts::AvmSatoshiDice.CreateGameWithNativeToken(txnDeposit: uint64, winRatio: bytes) -> void:
 CreateGameWithNativeToken:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:330-331
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:334-335
     // @arc4.abimethod()
     // public CreateGameWithNativeToken(txnDeposit: gtxn.PaymentTxn, winRatio: UintN64): void {
     proto 2 0
     intc_0 // 0
     dup
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:332
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:336
     // const sender = new arc4.Address(txnDeposit.sender)
     frame_dig -2
     gtxns Sender
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:334
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:338
     // assert(winRatio.native <= 1_000_000, 'Win probability must be below 1 000 000')
     frame_dig -1
     btoi
     intc 4 // 1000000
     <=
     assert // Win probability must be below 1 000 000
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:336
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:340
     // const fee: uint64 = txnDeposit.amount / 40 //2.5%
     frame_dig -2
     gtxns Amount
     dup
     pushint 40 // 40
     /
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:337
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:341
     // const deposit: uint64 = txnDeposit.amount - fee
     -
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:338
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:342
     // let prevDeposit: UintN256 = new UintN256(0)
     bytec_1 // 0x0000000000000000000000000000000000000000000000000000000000000000
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:143
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:147
     // public allDeposits = BoxMap<UintN64, UintN256>({ keyPrefix: 'd' })
     bytec 5 // 0x640000000000000000
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:339
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:343
     // if (this.allDeposits(assetId).exists) {
     box_len
     bury 1
     bz CreateGameWithNativeToken_after_if_else@2
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:143
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:147
     // public allDeposits = BoxMap<UintN64, UintN256>({ keyPrefix: 'd' })
     bytec 5 // 0x640000000000000000
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:340
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:344
     // prevDeposit = this.allDeposits(assetId).value
     box_get
     swap
@@ -1131,7 +1131,7 @@ CreateGameWithNativeToken:
     assert // Box must have value
 
 CreateGameWithNativeToken_after_if_else@2:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:343
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:347
     // this.allDeposits(assetId).value = new UintN256(prevDeposit.native + BigUint(deposit))
     frame_dig 3
     itob
@@ -1149,42 +1149,42 @@ CreateGameWithNativeToken_after_if_else@2:
     dup
     frame_bury 0
     b|
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:143
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:147
     // public allDeposits = BoxMap<UintN64, UintN256>({ keyPrefix: 'd' })
     bytec 5 // 0x640000000000000000
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:343
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:347
     // this.allDeposits(assetId).value = new UintN256(prevDeposit.native + BigUint(deposit))
     swap
     box_put
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:345
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:349
     // assert(txnDeposit.receiver === Global.currentApplicationAddress, 'Receiver must be the gas station app')
     frame_dig -2
     gtxns Receiver
     global CurrentApplicationAddress
     ==
     assert // Receiver must be the gas station app
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:333
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:337
     // const assetId = new UintN64(0)
     bytec_2 // 0x0000000000000000
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:347-350
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:351-354
     // const key = new AddressAssetStruct({
     //   assetId: assetId,
     //   owner: sender,
     // })
     frame_dig 2
     concat
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:141
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:145
     // public games = BoxMap<AddressAssetStruct, GameStruct>({ keyPrefix: 'g' })
     bytec_3 // "g"
     swap
     concat
     dup
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:351
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:355
     // if (this.games(key).exists) {
     box_len
     bury 1
     bz CreateGameWithNativeToken_else_body@4
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:352
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:356
     // assert(this.games(key).value.isNativeToken === new Bool(true), 'The previous game was not for the native token')
     dup
     box_get
@@ -1198,7 +1198,7 @@ CreateGameWithNativeToken_after_if_else@2:
     bytec 8 // 0x80
     ==
     assert // The previous game was not for the native token
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:353
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:357
     // assert(this.games(key).value.isASAToken === new Bool(false), 'The previous game was ASA token')
     dup
     box_get
@@ -1212,26 +1212,26 @@ CreateGameWithNativeToken_after_if_else@2:
     bytec_0 // 0x00
     ==
     assert // The previous game was ASA token
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:354
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:358
     // assert(this.games(key).value.assetId === assetId, 'The previous game was not for the native token')
     dup
     box_get
     assert // Box must have value
     extract 32 8 // on error: Index access is out of bounds
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:333
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:337
     // const assetId = new UintN64(0)
     bytec_2 // 0x0000000000000000
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:354
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:358
     // assert(this.games(key).value.assetId === assetId, 'The previous game was not for the native token')
     ==
     assert // The previous game was not for the native token
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:357
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:361
     // const oldBalance = this.games(key).value.balance
     dup
     box_get
     assert // Box must have value
     extract 0 32 // on error: Index access is out of bounds
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:358
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:362
     // this.games(key).value.balance = new UintN256(oldBalance.native + BigUint(deposit))
     frame_dig 1
     b+
@@ -1250,18 +1250,18 @@ CreateGameWithNativeToken_after_if_else@2:
     dig 1
     swap
     box_put
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:359
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:363
     // this.games(key).value.winRatio = winRatio
     dup
     box_get
     assert // Box must have value
     frame_dig -1
-    replace2 129
+    replace2 137
     box_put
     retsub
 
 CreateGameWithNativeToken_else_body@4:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:363
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:367
     // balance: new UintN256(BigUint(deposit)),
     frame_dig 1
     dup
@@ -1271,10 +1271,11 @@ CreateGameWithNativeToken_else_body@4:
     assert // overflow
     frame_dig 0
     b|
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:333
-    // const assetId = new UintN64(0)
-    bytec_2 // 0x0000000000000000
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:362-377
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:373
+    // createdAtTime: new UintN64(Global.latestTimestamp),
+    global LatestTimestamp
+    itob
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:366-382
     // const newValue = new GameStruct({
     //   balance: new UintN256(BigUint(deposit)),
     //   assetId: assetId,
@@ -1282,6 +1283,29 @@ CreateGameWithNativeToken_else_body@4:
     //   isNativeToken: new Bool(true),
     //   isASAToken: new Bool(false),
     // 
+    //   createdAtTime: new UintN64(Global.latestTimestamp),
+    //   lastPlayedTime: new UintN64(0),
+    //   lastWinTime: new UintN64(0),
+    //   lastWinAmount: new UintN256(0),
+    //   biggestWinAmount: new UintN256(0),
+    //   biggestWinTime: new UintN64(0),
+    // 
+    //   winRatio: winRatio,
+    //   owner: sender,
+    // })
+    swap
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:337
+    // const assetId = new UintN64(0)
+    bytec_2 // 0x0000000000000000
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:366-382
+    // const newValue = new GameStruct({
+    //   balance: new UintN256(BigUint(deposit)),
+    //   assetId: assetId,
+    //   isArc200Token: new Bool(false),
+    //   isNativeToken: new Bool(true),
+    //   isASAToken: new Bool(false),
+    // 
+    //   createdAtTime: new UintN64(Global.latestTimestamp),
     //   lastPlayedTime: new UintN64(0),
     //   lastWinTime: new UintN64(0),
     //   lastWinAmount: new UintN256(0),
@@ -1292,10 +1316,10 @@ CreateGameWithNativeToken_else_body@4:
     //   owner: sender,
     // })
     concat
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:366
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:370
     // isNativeToken: new Bool(true),
     bytec 8 // 0x80
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:362-377
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:366-382
     // const newValue = new GameStruct({
     //   balance: new UintN256(BigUint(deposit)),
     //   assetId: assetId,
@@ -1303,6 +1327,7 @@ CreateGameWithNativeToken_else_body@4:
     //   isNativeToken: new Bool(true),
     //   isASAToken: new Bool(false),
     // 
+    //   createdAtTime: new UintN64(Global.latestTimestamp),
     //   lastPlayedTime: new UintN64(0),
     //   lastWinTime: new UintN64(0),
     //   lastWinAmount: new UintN256(0),
@@ -1319,10 +1344,12 @@ CreateGameWithNativeToken_else_body@4:
     intc 6 // 322
     intc_0 // 0
     setbit
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:369
+    swap
+    concat
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:374
     // lastPlayedTime: new UintN64(0),
     bytec_2 // 0x0000000000000000
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:362-377
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:366-382
     // const newValue = new GameStruct({
     //   balance: new UintN256(BigUint(deposit)),
     //   assetId: assetId,
@@ -1330,6 +1357,7 @@ CreateGameWithNativeToken_else_body@4:
     //   isNativeToken: new Bool(true),
     //   isASAToken: new Bool(false),
     // 
+    //   createdAtTime: new UintN64(Global.latestTimestamp),
     //   lastPlayedTime: new UintN64(0),
     //   lastWinTime: new UintN64(0),
     //   lastWinAmount: new UintN256(0),
@@ -1340,10 +1368,10 @@ CreateGameWithNativeToken_else_body@4:
     //   owner: sender,
     // })
     concat
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:370
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:375
     // lastWinTime: new UintN64(0),
     bytec_2 // 0x0000000000000000
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:362-377
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:366-382
     // const newValue = new GameStruct({
     //   balance: new UintN256(BigUint(deposit)),
     //   assetId: assetId,
@@ -1351,6 +1379,7 @@ CreateGameWithNativeToken_else_body@4:
     //   isNativeToken: new Bool(true),
     //   isASAToken: new Bool(false),
     // 
+    //   createdAtTime: new UintN64(Global.latestTimestamp),
     //   lastPlayedTime: new UintN64(0),
     //   lastWinTime: new UintN64(0),
     //   lastWinAmount: new UintN256(0),
@@ -1361,10 +1390,10 @@ CreateGameWithNativeToken_else_body@4:
     //   owner: sender,
     // })
     concat
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:371
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:376
     // lastWinAmount: new UintN256(0),
     bytec_1 // 0x0000000000000000000000000000000000000000000000000000000000000000
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:362-377
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:366-382
     // const newValue = new GameStruct({
     //   balance: new UintN256(BigUint(deposit)),
     //   assetId: assetId,
@@ -1372,6 +1401,7 @@ CreateGameWithNativeToken_else_body@4:
     //   isNativeToken: new Bool(true),
     //   isASAToken: new Bool(false),
     // 
+    //   createdAtTime: new UintN64(Global.latestTimestamp),
     //   lastPlayedTime: new UintN64(0),
     //   lastWinTime: new UintN64(0),
     //   lastWinAmount: new UintN256(0),
@@ -1382,10 +1412,10 @@ CreateGameWithNativeToken_else_body@4:
     //   owner: sender,
     // })
     concat
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:373
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:378
     // biggestWinTime: new UintN64(0),
     bytec_2 // 0x0000000000000000
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:362-377
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:366-382
     // const newValue = new GameStruct({
     //   balance: new UintN256(BigUint(deposit)),
     //   assetId: assetId,
@@ -1393,6 +1423,7 @@ CreateGameWithNativeToken_else_body@4:
     //   isNativeToken: new Bool(true),
     //   isASAToken: new Bool(false),
     // 
+    //   createdAtTime: new UintN64(Global.latestTimestamp),
     //   lastPlayedTime: new UintN64(0),
     //   lastWinTime: new UintN64(0),
     //   lastWinAmount: new UintN256(0),
@@ -1403,10 +1434,10 @@ CreateGameWithNativeToken_else_body@4:
     //   owner: sender,
     // })
     concat
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:372
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:377
     // biggestWinAmount: new UintN256(0),
     bytec_1 // 0x0000000000000000000000000000000000000000000000000000000000000000
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:362-377
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:366-382
     // const newValue = new GameStruct({
     //   balance: new UintN256(BigUint(deposit)),
     //   assetId: assetId,
@@ -1414,6 +1445,7 @@ CreateGameWithNativeToken_else_body@4:
     //   isNativeToken: new Bool(true),
     //   isASAToken: new Bool(false),
     // 
+    //   createdAtTime: new UintN64(Global.latestTimestamp),
     //   lastPlayedTime: new UintN64(0),
     //   lastWinTime: new UintN64(0),
     //   lastWinAmount: new UintN256(0),
@@ -1428,7 +1460,7 @@ CreateGameWithNativeToken_else_body@4:
     concat
     frame_dig 2
     concat
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:378
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:383
     // this.games(key).value = newValue.copy()
     box_put
     retsub
@@ -1436,30 +1468,30 @@ CreateGameWithNativeToken_else_body@4:
 
 // smart_contracts/avm_satoshi_dice/contract.algo.ts::AvmSatoshiDice.OptInToASA(txnDeposit: uint64, assetId: bytes) -> void:
 OptInToASA:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:387-388
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:392-393
     // @arc4.abimethod()
     // public OptInToASA(txnDeposit: gtxn.PaymentTxn, assetId: UintN64) {
     proto 2 0
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:390
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:395
     // txnDeposit.receiver === Global.currentApplicationAddress,
     frame_dig -2
     gtxns Receiver
     global CurrentApplicationAddress
     ==
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:389-392
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:394-397
     // assert(
     //   txnDeposit.receiver === Global.currentApplicationAddress,
     //   'Receiver of the optin fee must be the current smart contract',
     // )
     assert // Receiver of the optin fee must be the current smart contract
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:393
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:398
     // assert(txnDeposit.amount === 10_000_000, 'Opt in fee for new asset is 10 native tokens')
     frame_dig -2
     gtxns Amount
     pushint 10000000 // 10000000
     ==
     assert // Opt in fee for new asset is 10 native tokens
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:395
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:400
     // if (!Global.currentApplicationAddress.isOptedIn(Asset(assetId.native))) {
     global CurrentApplicationAddress
     frame_dig -1
@@ -1469,7 +1501,7 @@ OptInToASA:
     asset_holding_get AssetBalance
     bury 1
     bnz OptInToASA_after_if_else@3
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:396-403
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:401-408
     // itxn
     //   .assetTransfer({
     //     xferAsset: assetId.native,
@@ -1479,17 +1511,17 @@ OptInToASA:
     //   })
     //   .submit()
     itxn_begin
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:400
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:405
     // assetReceiver: Global.currentApplicationAddress,
     global CurrentApplicationAddress
     itxn_field AssetReceiver
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:399
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:404
     // assetAmount: 0,
     intc_0 // 0
     itxn_field AssetAmount
     frame_dig 0
     itxn_field XferAsset
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:396-402
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:401-407
     // itxn
     //   .assetTransfer({
     //     xferAsset: assetId.native,
@@ -1499,11 +1531,11 @@ OptInToASA:
     //   })
     pushint 4 // 4
     itxn_field TypeEnum
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:401
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:406
     // fee: 0,
     intc_0 // 0
     itxn_field Fee
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:396-403
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:401-408
     // itxn
     //   .assetTransfer({
     //     xferAsset: assetId.native,
@@ -1520,56 +1552,56 @@ OptInToASA_after_if_else@3:
 
 // smart_contracts/avm_satoshi_dice/contract.algo.ts::AvmSatoshiDice.CreateGameWithASAToken(txnDeposit: uint64, winRatio: bytes) -> void:
 CreateGameWithASAToken:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:413-414
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:418-419
     // @arc4.abimethod()
     // public CreateGameWithASAToken(txnDeposit: gtxn.AssetTransferTxn, winRatio: UintN64): void {
     proto 2 0
     intc_0 // 0
     dup
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:415
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:420
     // const sender = new arc4.Address(txnDeposit.sender)
     frame_dig -2
     gtxns Sender
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:416
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:421
     // assert(winRatio.native <= 1_000_000, 'Win probability must be below 1 000 000')
     frame_dig -1
     btoi
     intc 4 // 1000000
     <=
     assert // Win probability must be below 1 000 000
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:417
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:422
     // const assetId = new UintN64(txnDeposit.xferAsset.id)
     frame_dig -2
     gtxns XferAsset
     itob
     dup
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:419
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:424
     // const fee: uint64 = txnDeposit.assetAmount / 40 //2.5%
     frame_dig -2
     gtxns AssetAmount
     dup
     pushint 40 // 40
     /
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:420
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:425
     // const deposit: uint64 = txnDeposit.assetAmount - fee
     -
     swap
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:421
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:426
     // let prevDeposit: UintN256 = new UintN256(0)
     bytec_1 // 0x0000000000000000000000000000000000000000000000000000000000000000
     swap
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:143
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:147
     // public allDeposits = BoxMap<UintN64, UintN256>({ keyPrefix: 'd' })
     bytec 4 // "d"
     swap
     concat
     dup
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:422
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:427
     // if (this.allDeposits(assetId).exists) {
     box_len
     bury 1
     bz CreateGameWithASAToken_after_if_else@2
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:423
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:428
     // prevDeposit = this.allDeposits(assetId).value
     frame_dig 6
     box_get
@@ -1578,7 +1610,7 @@ CreateGameWithASAToken:
     assert // Box must have value
 
 CreateGameWithASAToken_after_if_else@2:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:426
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:431
     // this.allDeposits(assetId).value = new UintN256(prevDeposit.native + BigUint(deposit))
     frame_dig 4
     itob
@@ -1599,14 +1631,14 @@ CreateGameWithASAToken_after_if_else@2:
     frame_dig 6
     swap
     box_put
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:428
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:433
     // assert(txnDeposit.assetReceiver === Global.currentApplicationAddress, 'Receiver must be the gas station app')
     frame_dig -2
     gtxns AssetReceiver
     global CurrentApplicationAddress
     ==
     assert // Receiver must be the gas station app
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:430-433
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:435-438
     // const key = new AddressAssetStruct({
     //   assetId: assetId,
     //   owner: sender,
@@ -1614,18 +1646,18 @@ CreateGameWithASAToken_after_if_else@2:
     frame_dig 3
     frame_dig 2
     concat
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:141
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:145
     // public games = BoxMap<AddressAssetStruct, GameStruct>({ keyPrefix: 'g' })
     bytec_3 // "g"
     swap
     concat
     dup
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:434
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:439
     // if (this.games(key).exists) {
     box_len
     bury 1
     bz CreateGameWithASAToken_else_body@4
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:435
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:440
     // assert(this.games(key).value.isNativeToken === new Bool(false), 'The previous game was for the native token')
     dup
     box_get
@@ -1639,7 +1671,7 @@ CreateGameWithASAToken_after_if_else@2:
     bytec_0 // 0x00
     ==
     assert // The previous game was for the native token
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:436
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:441
     // assert(this.games(key).value.isArc200Token === new Bool(false), 'The previous game was for the arc200 token')
     dup
     box_get
@@ -1653,7 +1685,7 @@ CreateGameWithASAToken_after_if_else@2:
     bytec_0 // 0x00
     ==
     assert // The previous game was for the arc200 token
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:437
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:442
     // assert(this.games(key).value.isASAToken === new Bool(true), 'The previous game was not for the ASA token')
     dup
     box_get
@@ -1667,7 +1699,7 @@ CreateGameWithASAToken_after_if_else@2:
     bytec 8 // 0x80
     ==
     assert // The previous game was not for the ASA token
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:438
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:443
     // assert(this.games(key).value.assetId === assetId, 'The previous game was not for the same token')
     dup
     box_get
@@ -1676,13 +1708,13 @@ CreateGameWithASAToken_after_if_else@2:
     frame_dig 3
     ==
     assert // The previous game was not for the same token
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:441
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:446
     // const oldBalance = this.games(key).value.balance
     dup
     box_get
     assert // Box must have value
     extract 0 32 // on error: Index access is out of bounds
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:442
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:447
     // this.games(key).value.balance = new UintN256(oldBalance.native + BigUint(deposit))
     frame_dig 1
     b+
@@ -1701,18 +1733,18 @@ CreateGameWithASAToken_after_if_else@2:
     dig 1
     swap
     box_put
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:443
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:448
     // this.games(key).value.winRatio = winRatio
     dup
     box_get
     assert // Box must have value
     frame_dig -1
-    replace2 129
+    replace2 137
     box_put
     retsub
 
 CreateGameWithASAToken_else_body@4:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:447
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:452
     // balance: new UintN256(BigUint(deposit)),
     frame_dig 1
     dup
@@ -1722,7 +1754,11 @@ CreateGameWithASAToken_else_body@4:
     assert // overflow
     frame_dig 0
     b|
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:446-461
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:458
+    // createdAtTime: new UintN64(Global.latestTimestamp),
+    global LatestTimestamp
+    itob
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:451-467
     // const newValue = new GameStruct({
     //   balance: new UintN256(BigUint(deposit)),
     //   assetId: assetId,
@@ -1730,6 +1766,7 @@ CreateGameWithASAToken_else_body@4:
     //   isNativeToken: new Bool(false),
     //   isASAToken: new Bool(true),
     // 
+    //   createdAtTime: new UintN64(Global.latestTimestamp),
     //   lastPlayedTime: new UintN64(0),
     //   lastWinTime: new UintN64(0),
     //   lastWinAmount: new UintN256(0),
@@ -1739,12 +1776,13 @@ CreateGameWithASAToken_else_body@4:
     //   winRatio: winRatio,
     //   owner: sender,
     // })
+    swap
     frame_dig 3
     concat
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:450
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:455
     // isNativeToken: new Bool(false),
     bytec_0 // 0x00
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:446-461
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:451-467
     // const newValue = new GameStruct({
     //   balance: new UintN256(BigUint(deposit)),
     //   assetId: assetId,
@@ -1752,6 +1790,7 @@ CreateGameWithASAToken_else_body@4:
     //   isNativeToken: new Bool(false),
     //   isASAToken: new Bool(true),
     // 
+    //   createdAtTime: new UintN64(Global.latestTimestamp),
     //   lastPlayedTime: new UintN64(0),
     //   lastWinTime: new UintN64(0),
     //   lastWinAmount: new UintN256(0),
@@ -1768,10 +1807,12 @@ CreateGameWithASAToken_else_body@4:
     intc 6 // 322
     intc_0 // 0
     setbit
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:453
+    swap
+    concat
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:459
     // lastPlayedTime: new UintN64(0),
     bytec_2 // 0x0000000000000000
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:446-461
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:451-467
     // const newValue = new GameStruct({
     //   balance: new UintN256(BigUint(deposit)),
     //   assetId: assetId,
@@ -1779,6 +1820,7 @@ CreateGameWithASAToken_else_body@4:
     //   isNativeToken: new Bool(false),
     //   isASAToken: new Bool(true),
     // 
+    //   createdAtTime: new UintN64(Global.latestTimestamp),
     //   lastPlayedTime: new UintN64(0),
     //   lastWinTime: new UintN64(0),
     //   lastWinAmount: new UintN256(0),
@@ -1789,10 +1831,10 @@ CreateGameWithASAToken_else_body@4:
     //   owner: sender,
     // })
     concat
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:454
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:460
     // lastWinTime: new UintN64(0),
     bytec_2 // 0x0000000000000000
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:446-461
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:451-467
     // const newValue = new GameStruct({
     //   balance: new UintN256(BigUint(deposit)),
     //   assetId: assetId,
@@ -1800,6 +1842,7 @@ CreateGameWithASAToken_else_body@4:
     //   isNativeToken: new Bool(false),
     //   isASAToken: new Bool(true),
     // 
+    //   createdAtTime: new UintN64(Global.latestTimestamp),
     //   lastPlayedTime: new UintN64(0),
     //   lastWinTime: new UintN64(0),
     //   lastWinAmount: new UintN256(0),
@@ -1810,10 +1853,10 @@ CreateGameWithASAToken_else_body@4:
     //   owner: sender,
     // })
     concat
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:455
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:461
     // lastWinAmount: new UintN256(0),
     bytec_1 // 0x0000000000000000000000000000000000000000000000000000000000000000
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:446-461
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:451-467
     // const newValue = new GameStruct({
     //   balance: new UintN256(BigUint(deposit)),
     //   assetId: assetId,
@@ -1821,6 +1864,7 @@ CreateGameWithASAToken_else_body@4:
     //   isNativeToken: new Bool(false),
     //   isASAToken: new Bool(true),
     // 
+    //   createdAtTime: new UintN64(Global.latestTimestamp),
     //   lastPlayedTime: new UintN64(0),
     //   lastWinTime: new UintN64(0),
     //   lastWinAmount: new UintN256(0),
@@ -1831,10 +1875,10 @@ CreateGameWithASAToken_else_body@4:
     //   owner: sender,
     // })
     concat
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:457
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:463
     // biggestWinTime: new UintN64(0),
     bytec_2 // 0x0000000000000000
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:446-461
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:451-467
     // const newValue = new GameStruct({
     //   balance: new UintN256(BigUint(deposit)),
     //   assetId: assetId,
@@ -1842,6 +1886,7 @@ CreateGameWithASAToken_else_body@4:
     //   isNativeToken: new Bool(false),
     //   isASAToken: new Bool(true),
     // 
+    //   createdAtTime: new UintN64(Global.latestTimestamp),
     //   lastPlayedTime: new UintN64(0),
     //   lastWinTime: new UintN64(0),
     //   lastWinAmount: new UintN256(0),
@@ -1852,10 +1897,10 @@ CreateGameWithASAToken_else_body@4:
     //   owner: sender,
     // })
     concat
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:456
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:462
     // biggestWinAmount: new UintN256(0),
     bytec_1 // 0x0000000000000000000000000000000000000000000000000000000000000000
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:446-461
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:451-467
     // const newValue = new GameStruct({
     //   balance: new UintN256(BigUint(deposit)),
     //   assetId: assetId,
@@ -1863,6 +1908,7 @@ CreateGameWithASAToken_else_body@4:
     //   isNativeToken: new Bool(false),
     //   isASAToken: new Bool(true),
     // 
+    //   createdAtTime: new UintN64(Global.latestTimestamp),
     //   lastPlayedTime: new UintN64(0),
     //   lastWinTime: new UintN64(0),
     //   lastWinAmount: new UintN256(0),
@@ -1877,7 +1923,7 @@ CreateGameWithASAToken_else_body@4:
     concat
     frame_dig 2
     concat
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:462
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:468
     // this.games(key).value = newValue.copy()
     box_put
     retsub
@@ -1885,46 +1931,46 @@ CreateGameWithASAToken_else_body@4:
 
 // smart_contracts/avm_satoshi_dice/contract.algo.ts::AvmSatoshiDice.CreateGameWithArc200Token(assetId: bytes, amount: bytes, winRatio: bytes) -> void:
 CreateGameWithArc200Token:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:472-473
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:478-479
     // @arc4.abimethod()
     // public CreateGameWithArc200Token(assetId: UintN64, amount: UintN256, winRatio: UintN64): void {
     proto 3 0
     intc_0 // 0
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:474
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:480
     // const sender = new arc4.Address(Txn.sender)
     txn Sender
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:475
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:481
     // assert(winRatio.native <= 1_000_000, 'Win probability must be below 1 000 000')
     frame_dig -1
     btoi
     intc 4 // 1000000
     <=
     assert // Win probability must be below 1 000 000
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:477
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:483
     // const fee: biguint = amount.native / BigUint(40) //2.5%
     frame_dig -2
     pushbytes 0x28
     b/
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:478
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:484
     // const deposit: biguint = amount.native - fee
     frame_dig -2
     swap
     b-
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:479
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:485
     // let prevDeposit: UintN256 = new UintN256(0)
     bytec_1 // 0x0000000000000000000000000000000000000000000000000000000000000000
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:143
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:147
     // public allDeposits = BoxMap<UintN64, UintN256>({ keyPrefix: 'd' })
     bytec 4 // "d"
     frame_dig -3
     concat
     dup
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:480
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:486
     // if (this.allDeposits(assetId).exists) {
     box_len
     bury 1
     bz CreateGameWithArc200Token_after_if_else@2
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:481
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:487
     // prevDeposit = this.allDeposits(assetId).value
     frame_dig 4
     box_get
@@ -1933,7 +1979,7 @@ CreateGameWithArc200Token:
     assert // Box must have value
 
 CreateGameWithArc200Token_after_if_else@2:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:484
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:490
     // this.allDeposits(assetId).value = new UintN256(prevDeposit.native + BigUint(deposit))
     frame_dig 3
     frame_dig 2
@@ -1951,7 +1997,7 @@ CreateGameWithArc200Token_after_if_else@2:
     frame_dig 4
     swap
     box_put
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:487-497
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:493-503
     // itxn
     //   .applicationCall({
     //     appId: assetId.native,
@@ -1964,17 +2010,17 @@ CreateGameWithArc200Token_after_if_else@2:
     //   })
     //   .submit()
     itxn_begin
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:489
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:495
     // appId: assetId.native,
     frame_dig -3
     btoi
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:492
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:498
     // new Address(Txn.sender),
     txn Sender
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:493
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:499
     // new Address(Global.currentApplicationAddress),
     global CurrentApplicationAddress
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:491
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:497
     // methodSelector('arc200_transferFrom(address,address,uint256)bool'),
     bytec 15 // method "arc200_transferFrom(address,address,uint256)bool"
     itxn_field ApplicationArgs
@@ -1984,7 +2030,7 @@ CreateGameWithArc200Token_after_if_else@2:
     frame_dig -2
     itxn_field ApplicationArgs
     itxn_field ApplicationID
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:487-496
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:493-502
     // itxn
     //   .applicationCall({
     //     appId: assetId.native,
@@ -1999,7 +2045,7 @@ CreateGameWithArc200Token_after_if_else@2:
     itxn_field TypeEnum
     intc_0 // 0
     itxn_field Fee
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:487-497
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:493-503
     // itxn
     //   .applicationCall({
     //     appId: assetId.native,
@@ -2012,7 +2058,7 @@ CreateGameWithArc200Token_after_if_else@2:
     //   })
     //   .submit()
     itxn_submit
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:499-502
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:505-508
     // const key = new AddressAssetStruct({
     //   assetId: assetId,
     //   owner: sender,
@@ -2020,18 +2066,18 @@ CreateGameWithArc200Token_after_if_else@2:
     frame_dig -3
     frame_dig 1
     concat
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:141
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:145
     // public games = BoxMap<AddressAssetStruct, GameStruct>({ keyPrefix: 'g' })
     bytec_3 // "g"
     swap
     concat
     dup
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:503
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:509
     // if (this.games(key).exists) {
     box_len
     bury 1
     bz CreateGameWithArc200Token_else_body@5
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:504
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:510
     // assert(this.games(key).value.isNativeToken === new Bool(false), 'The previous game was for the native token')
     dup
     box_get
@@ -2045,7 +2091,7 @@ CreateGameWithArc200Token_after_if_else@2:
     bytec_0 // 0x00
     ==
     assert // The previous game was for the native token
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:505
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:511
     // assert(this.games(key).value.isArc200Token === new Bool(true), 'The previous game was NOT for the arc200 token')
     dup
     box_get
@@ -2059,7 +2105,7 @@ CreateGameWithArc200Token_after_if_else@2:
     bytec 8 // 0x80
     ==
     assert // The previous game was NOT for the arc200 token
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:506
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:512
     // assert(this.games(key).value.isASAToken === new Bool(false), 'The previous game was for the ASA token')
     dup
     box_get
@@ -2073,7 +2119,7 @@ CreateGameWithArc200Token_after_if_else@2:
     bytec_0 // 0x00
     ==
     assert // The previous game was for the ASA token
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:507
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:513
     // assert(this.games(key).value.assetId === assetId, 'The previous game was not for the same token')
     dup
     box_get
@@ -2082,13 +2128,13 @@ CreateGameWithArc200Token_after_if_else@2:
     frame_dig -3
     ==
     assert // The previous game was not for the same token
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:510
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:516
     // const oldBalance = this.games(key).value.balance
     dup
     box_get
     assert // Box must have value
     extract 0 32 // on error: Index access is out of bounds
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:511
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:517
     // this.games(key).value.balance = new UintN256(oldBalance.native + BigUint(deposit))
     frame_dig 2
     b+
@@ -2107,18 +2153,18 @@ CreateGameWithArc200Token_after_if_else@2:
     dig 1
     swap
     box_put
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:512
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:518
     // this.games(key).value.winRatio = winRatio
     dup
     box_get
     assert // Box must have value
     frame_dig -1
-    replace2 129
+    replace2 137
     box_put
     retsub
 
 CreateGameWithArc200Token_else_body@5:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:516
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:522
     // balance: new UintN256(deposit),
     frame_dig 2
     dup
@@ -2128,7 +2174,11 @@ CreateGameWithArc200Token_else_body@5:
     assert // overflow
     frame_dig 0
     b|
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:515-530
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:528
+    // createdAtTime: new UintN64(Global.latestTimestamp),
+    global LatestTimestamp
+    itob
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:521-537
     // const newValue = new GameStruct({
     //   balance: new UintN256(deposit),
     //   assetId: assetId,
@@ -2136,6 +2186,7 @@ CreateGameWithArc200Token_else_body@5:
     //   isNativeToken: new Bool(false),
     //   isASAToken: new Bool(false),
     // 
+    //   createdAtTime: new UintN64(Global.latestTimestamp),
     //   lastPlayedTime: new UintN64(0),
     //   lastWinTime: new UintN64(0),
     //   lastWinAmount: new UintN256(0),
@@ -2145,12 +2196,13 @@ CreateGameWithArc200Token_else_body@5:
     //   winRatio: winRatio,
     //   owner: sender,
     // })
+    swap
     frame_dig -3
     concat
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:519
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:525
     // isNativeToken: new Bool(false),
     bytec_0 // 0x00
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:515-530
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:521-537
     // const newValue = new GameStruct({
     //   balance: new UintN256(deposit),
     //   assetId: assetId,
@@ -2158,6 +2210,7 @@ CreateGameWithArc200Token_else_body@5:
     //   isNativeToken: new Bool(false),
     //   isASAToken: new Bool(false),
     // 
+    //   createdAtTime: new UintN64(Global.latestTimestamp),
     //   lastPlayedTime: new UintN64(0),
     //   lastWinTime: new UintN64(0),
     //   lastWinAmount: new UintN256(0),
@@ -2174,10 +2227,12 @@ CreateGameWithArc200Token_else_body@5:
     intc 6 // 322
     intc_2 // 1
     setbit
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:522
+    swap
+    concat
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:529
     // lastPlayedTime: new UintN64(0),
     bytec_2 // 0x0000000000000000
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:515-530
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:521-537
     // const newValue = new GameStruct({
     //   balance: new UintN256(deposit),
     //   assetId: assetId,
@@ -2185,6 +2240,7 @@ CreateGameWithArc200Token_else_body@5:
     //   isNativeToken: new Bool(false),
     //   isASAToken: new Bool(false),
     // 
+    //   createdAtTime: new UintN64(Global.latestTimestamp),
     //   lastPlayedTime: new UintN64(0),
     //   lastWinTime: new UintN64(0),
     //   lastWinAmount: new UintN256(0),
@@ -2195,10 +2251,10 @@ CreateGameWithArc200Token_else_body@5:
     //   owner: sender,
     // })
     concat
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:523
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:530
     // lastWinTime: new UintN64(0),
     bytec_2 // 0x0000000000000000
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:515-530
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:521-537
     // const newValue = new GameStruct({
     //   balance: new UintN256(deposit),
     //   assetId: assetId,
@@ -2206,6 +2262,7 @@ CreateGameWithArc200Token_else_body@5:
     //   isNativeToken: new Bool(false),
     //   isASAToken: new Bool(false),
     // 
+    //   createdAtTime: new UintN64(Global.latestTimestamp),
     //   lastPlayedTime: new UintN64(0),
     //   lastWinTime: new UintN64(0),
     //   lastWinAmount: new UintN256(0),
@@ -2216,10 +2273,10 @@ CreateGameWithArc200Token_else_body@5:
     //   owner: sender,
     // })
     concat
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:524
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:531
     // lastWinAmount: new UintN256(0),
     bytec_1 // 0x0000000000000000000000000000000000000000000000000000000000000000
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:515-530
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:521-537
     // const newValue = new GameStruct({
     //   balance: new UintN256(deposit),
     //   assetId: assetId,
@@ -2227,6 +2284,7 @@ CreateGameWithArc200Token_else_body@5:
     //   isNativeToken: new Bool(false),
     //   isASAToken: new Bool(false),
     // 
+    //   createdAtTime: new UintN64(Global.latestTimestamp),
     //   lastPlayedTime: new UintN64(0),
     //   lastWinTime: new UintN64(0),
     //   lastWinAmount: new UintN256(0),
@@ -2237,10 +2295,10 @@ CreateGameWithArc200Token_else_body@5:
     //   owner: sender,
     // })
     concat
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:526
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:533
     // biggestWinTime: new UintN64(0),
     bytec_2 // 0x0000000000000000
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:515-530
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:521-537
     // const newValue = new GameStruct({
     //   balance: new UintN256(deposit),
     //   assetId: assetId,
@@ -2248,6 +2306,7 @@ CreateGameWithArc200Token_else_body@5:
     //   isNativeToken: new Bool(false),
     //   isASAToken: new Bool(false),
     // 
+    //   createdAtTime: new UintN64(Global.latestTimestamp),
     //   lastPlayedTime: new UintN64(0),
     //   lastWinTime: new UintN64(0),
     //   lastWinAmount: new UintN256(0),
@@ -2258,10 +2317,10 @@ CreateGameWithArc200Token_else_body@5:
     //   owner: sender,
     // })
     concat
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:525
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:532
     // biggestWinAmount: new UintN256(0),
     bytec_1 // 0x0000000000000000000000000000000000000000000000000000000000000000
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:515-530
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:521-537
     // const newValue = new GameStruct({
     //   balance: new UintN256(deposit),
     //   assetId: assetId,
@@ -2269,6 +2328,7 @@ CreateGameWithArc200Token_else_body@5:
     //   isNativeToken: new Bool(false),
     //   isASAToken: new Bool(false),
     // 
+    //   createdAtTime: new UintN64(Global.latestTimestamp),
     //   lastPlayedTime: new UintN64(0),
     //   lastWinTime: new UintN64(0),
     //   lastWinAmount: new UintN256(0),
@@ -2283,7 +2343,7 @@ CreateGameWithArc200Token_else_body@5:
     concat
     frame_dig 1
     concat
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:531
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:538
     // this.games(key).value = newValue.copy()
     box_put
     retsub
@@ -2291,7 +2351,7 @@ CreateGameWithArc200Token_else_body@5:
 
 // smart_contracts/avm_satoshi_dice/contract.algo.ts::AvmSatoshiDice.StartGameWithNativeToken(txnDeposit: uint64, game: bytes, winProbability: bytes) -> void:
 StartGameWithNativeToken:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:543-548
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:550-555
     // @arc4.abimethod()
     // public StartGameWithNativeToken(
     //   txnDeposit: gtxn.PaymentTxn,
@@ -2302,56 +2362,56 @@ StartGameWithNativeToken:
     intc_0 // 0
     dup
     pushbytes ""
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:549
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:556
     // const sender = new arc4.Address(txnDeposit.sender)
     frame_dig -3
     gtxns Sender
     dup
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:551
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:558
     // assert(Txn.sender === txnDeposit.sender, 'Sender of the app call must be the same as sender of the deposit')
     txn Sender
     dig 1
     ==
     assert // Sender of the app call must be the same as sender of the deposit
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:552
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:559
     // assert(game.assetId === assetId, 'Asset id in the tx does not match the game asset id')
     frame_dig -2
     extract 0 8 // on error: Index access is out of bounds
     dup
     cover 2
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:550
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:557
     // const assetId = new UintN64(0)
     bytec_2 // 0x0000000000000000
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:552
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:559
     // assert(game.assetId === assetId, 'Asset id in the tx does not match the game asset id')
     ==
     assert // Asset id in the tx does not match the game asset id
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:141
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:145
     // public games = BoxMap<AddressAssetStruct, GameStruct>({ keyPrefix: 'g' })
     bytec_3 // "g"
     frame_dig -2
     concat
     dup
     cover 2
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:553
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:560
     // assert(this.games(game).exists, 'The game does not exist')
     dup
     box_len
     bury 1
     assert // The game does not exist
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:554
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:561
     // assert(this.games(game).value.assetId === assetId, 'This game must be played with native token')
     box_get
     assert // Box must have value
     extract 32 8 // on error: Index access is out of bounds
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:550
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:557
     // const assetId = new UintN64(0)
     bytec_2 // 0x0000000000000000
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:554
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:561
     // assert(this.games(game).value.assetId === assetId, 'This game must be played with native token')
     ==
     assert // This game must be played with native token
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:555
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:562
     // assert(winProbability.native <= 1_000_000, 'Win probability must be below 1 000 000')
     frame_dig -1
     btoi
@@ -2360,18 +2420,18 @@ StartGameWithNativeToken:
     intc 4 // 1000000
     <=
     assert // Win probability must be below 1 000 000
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:142
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:146
     // public plays = BoxMap<Address, PlayStruct>({ keyPrefix: 'p' })
     bytec 6 // "p"
     swap
     concat
     dup
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:557
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:564
     // if (this.plays(sender).exists) {
     box_len
     bury 1
     bz StartGameWithNativeToken_after_if_else@3
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:559
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:566
     // assert(this.plays(sender).value.state.native > 1, 'Your previous game has not yet been claimed')
     frame_dig 7
     box_get
@@ -2383,7 +2443,21 @@ StartGameWithNativeToken:
     assert // Your previous game has not yet been claimed
 
 StartGameWithNativeToken_after_if_else@3:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:568
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:571
+    // this.games(game).value.lastPlayedTime = new UintN64(Global.latestTimestamp)
+    global LatestTimestamp
+    itob
+    frame_dig 5
+    dup
+    cover 2
+    box_get
+    assert // Box must have value
+    swap
+    replace2 49
+    dig 1
+    swap
+    box_put
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:576
     // const winAmount = new UintN256(BigUint((txnDeposit.amount * 1_000_000) / winProbability.native))
     frame_dig -3
     gtxns Amount
@@ -2404,35 +2478,35 @@ StartGameWithNativeToken_after_if_else@3:
     dup
     frame_bury 0
     b|
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:570
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:578
     // this.games(game).value.balance.native >= winAmount.native,
-    frame_dig 5
+    swap
     box_get
     assert // Box must have value
     extract 0 32 // on error: Index access is out of bounds
     b<=
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:569-572
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:577-580
     // assert(
     //   this.games(game).value.balance.native >= winAmount.native,
     //   'The game does not have enough balance for your win scenario',
     // )
     assert // The game does not have enough balance for your win scenario
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:574
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:582
     // let prevDeposit: UintN256 = new UintN256(0)
     bytec_1 // 0x0000000000000000000000000000000000000000000000000000000000000000
     frame_bury 1
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:143
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:147
     // public allDeposits = BoxMap<UintN64, UintN256>({ keyPrefix: 'd' })
     bytec 5 // 0x640000000000000000
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:575
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:583
     // if (this.allDeposits(assetId).exists) {
     box_len
     bury 1
     bz StartGameWithNativeToken_after_if_else@5
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:143
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:147
     // public allDeposits = BoxMap<UintN64, UintN256>({ keyPrefix: 'd' })
     bytec 5 // 0x640000000000000000
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:576
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:584
     // prevDeposit = this.allDeposits(assetId).value
     box_get
     swap
@@ -2440,7 +2514,7 @@ StartGameWithNativeToken_after_if_else@3:
     assert // Box must have value
 
 StartGameWithNativeToken_after_if_else@5:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:578
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:586
     // this.allDeposits(assetId).value = new UintN256(prevDeposit.native + BigUint(txnDeposit.amount))
     frame_dig 2
     itob
@@ -2456,18 +2530,18 @@ StartGameWithNativeToken_after_if_else@5:
     dup
     cover 2
     b|
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:143
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:147
     // public allDeposits = BoxMap<UintN64, UintN256>({ keyPrefix: 'd' })
     bytec 5 // 0x640000000000000000
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:578
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:586
     // this.allDeposits(assetId).value = new UintN256(prevDeposit.native + BigUint(txnDeposit.amount))
     swap
     box_put
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:581
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:589
     // round: new UintN64(Global.round),
     global Round
     itob
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:584
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:592
     // deposit: new UintN256(BigUint(txnDeposit.amount)),
     dig 2
     len
@@ -2476,14 +2550,14 @@ StartGameWithNativeToken_after_if_else@5:
     assert // overflow
     cover 2
     b|
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:586
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:594
     // gameCreator: game.owner,
     frame_dig -2
     extract 8 32 // on error: Index access is out of bounds
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:582
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:590
     // state: new UintN64(1),
     bytec 12 // 0x0000000000000001
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:580-588
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:588-596
     // const newValue = new PlayStruct({
     //   round: new UintN64(Global.round),
     //   state: new UintN64(1),
@@ -2505,7 +2579,7 @@ StartGameWithNativeToken_after_if_else@5:
     concat
     frame_dig 3
     concat
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:590
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:598
     // this.plays(sender).value = newValue.copy()
     frame_dig 7
     swap
@@ -2515,7 +2589,7 @@ StartGameWithNativeToken_after_if_else@5:
 
 // smart_contracts/avm_satoshi_dice/contract.algo.ts::AvmSatoshiDice.StartGameWithASAToken(txnDeposit: uint64, game: bytes, winProbability: bytes) -> void:
 StartGameWithASAToken:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:602-607
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:610-615
     // @arc4.abimethod()
     // public StartGameWithASAToken(
     //   txnDeposit: gtxn.AssetTransferTxn,
@@ -2526,25 +2600,25 @@ StartGameWithASAToken:
     intc_0 // 0
     dupn 2
     pushbytes ""
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:608
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:616
     // const sender = new arc4.Address(txnDeposit.sender)
     frame_dig -3
     gtxns Sender
     dup
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:609
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:617
     // const assetId = new UintN64(txnDeposit.xferAsset.id)
     frame_dig -3
     gtxns XferAsset
     itob
     dup
     uncover 2
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:610
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:618
     // assert(Txn.sender === txnDeposit.sender, 'Sender of the app call must be the same as sender of the deposit')
     txn Sender
     dig 1
     ==
     assert // Sender of the app call must be the same as sender of the deposit
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:611
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:619
     // assert(game.assetId.native === assetId.native, 'Asset id in the tx does not match the game asset id')
     frame_dig -2
     extract 0 8 // on error: Index access is out of bounds
@@ -2556,20 +2630,20 @@ StartGameWithASAToken:
     btoi
     ==
     assert // Asset id in the tx does not match the game asset id
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:141
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:145
     // public games = BoxMap<AddressAssetStruct, GameStruct>({ keyPrefix: 'g' })
     bytec_3 // "g"
     frame_dig -2
     concat
     dup
     cover 3
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:612
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:620
     // assert(this.games(game).exists, 'The game does not exist')
     dup
     box_len
     bury 1
     assert // The game does not exist
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:613
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:621
     // assert(this.games(game).value.assetId === assetId, 'This game must be played with native token')
     box_get
     assert // Box must have value
@@ -2577,7 +2651,7 @@ StartGameWithASAToken:
     uncover 2
     ==
     assert // This game must be played with native token
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:614
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:622
     // assert(winProbability.native <= 1_000_000, 'Win probability must be below 1 000 000')
     frame_dig -1
     btoi
@@ -2586,18 +2660,18 @@ StartGameWithASAToken:
     intc 4 // 1000000
     <=
     assert // Win probability must be below 1 000 000
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:142
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:146
     // public plays = BoxMap<Address, PlayStruct>({ keyPrefix: 'p' })
     bytec 6 // "p"
     swap
     concat
     dup
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:616
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:624
     // if (this.plays(sender).exists) {
     box_len
     bury 1
     bz StartGameWithASAToken_after_if_else@3
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:618
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:626
     // assert(this.plays(sender).value.state.native > 1, 'Your previous game has not yet been claimed')
     frame_dig 9
     box_get
@@ -2609,7 +2683,21 @@ StartGameWithASAToken:
     assert // Your previous game has not yet been claimed
 
 StartGameWithASAToken_after_if_else@3:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:627
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:631
+    // this.games(game).value.lastPlayedTime = new UintN64(Global.latestTimestamp)
+    global LatestTimestamp
+    itob
+    frame_dig 7
+    dup
+    cover 2
+    box_get
+    assert // Box must have value
+    swap
+    replace2 49
+    dig 1
+    swap
+    box_put
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:636
     // const winAmount = new UintN256(BigUint((txnDeposit.assetAmount * 1_000_000) / winProbability.native))
     frame_dig -3
     gtxns AssetAmount
@@ -2630,36 +2718,36 @@ StartGameWithASAToken_after_if_else@3:
     dup
     frame_bury 0
     b|
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:629
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:638
     // this.games(game).value.balance.native >= winAmount.native,
-    frame_dig 7
+    swap
     box_get
     assert // Box must have value
     extract 0 32 // on error: Index access is out of bounds
     b<=
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:628-631
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:637-640
     // assert(
     //   this.games(game).value.balance.native >= winAmount.native,
     //   'The game does not have enough balance for your win scenario',
     // )
     assert // The game does not have enough balance for your win scenario
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:633
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:642
     // let prevDeposit: UintN256 = new UintN256(0)
     bytec_1 // 0x0000000000000000000000000000000000000000000000000000000000000000
     frame_bury 1
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:143
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:147
     // public allDeposits = BoxMap<UintN64, UintN256>({ keyPrefix: 'd' })
     bytec 4 // "d"
     frame_dig 5
     concat
     dup
     frame_bury 2
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:634
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:643
     // if (this.allDeposits(assetId).exists) {
     box_len
     bury 1
     bz StartGameWithASAToken_after_if_else@5
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:635
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:644
     // prevDeposit = this.allDeposits(assetId).value
     frame_dig 2
     box_get
@@ -2668,7 +2756,7 @@ StartGameWithASAToken_after_if_else@3:
     assert // Box must have value
 
 StartGameWithASAToken_after_if_else@5:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:637
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:646
     // this.allDeposits(assetId).value = new UintN256(prevDeposit.native + BigUint(txnDeposit.assetAmount))
     frame_dig 3
     itob
@@ -2687,11 +2775,11 @@ StartGameWithASAToken_after_if_else@5:
     frame_dig 2
     swap
     box_put
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:640
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:649
     // round: new UintN64(Global.round),
     global Round
     itob
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:643
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:652
     // deposit: new UintN256(BigUint(txnDeposit.assetAmount)),
     dig 2
     len
@@ -2700,14 +2788,14 @@ StartGameWithASAToken_after_if_else@5:
     assert // overflow
     cover 2
     b|
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:645
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:654
     // gameCreator: game.owner,
     frame_dig -2
     extract 8 32 // on error: Index access is out of bounds
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:641
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:650
     // state: new UintN64(1),
     bytec 12 // 0x0000000000000001
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:639-647
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:648-656
     // const newValue = new PlayStruct({
     //   round: new UintN64(Global.round),
     //   state: new UintN64(1),
@@ -2729,7 +2817,7 @@ StartGameWithASAToken_after_if_else@5:
     concat
     frame_dig 4
     concat
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:649
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:658
     // this.plays(sender).value = newValue.copy()
     frame_dig 9
     swap
@@ -2739,7 +2827,7 @@ StartGameWithASAToken_after_if_else@5:
 
 // smart_contracts/avm_satoshi_dice/contract.algo.ts::AvmSatoshiDice.StartGameWithArc200Token(amount: bytes, assetId: bytes, game: bytes, winProbability: bytes) -> void:
 StartGameWithArc200Token:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:661-667
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:670-676
     // @arc4.abimethod()
     // public StartGameWithArc200Token(
     //   amount: UintN256,
@@ -2750,11 +2838,11 @@ StartGameWithArc200Token:
     proto 4 0
     intc_0 // 0
     dupn 2
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:668
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:677
     // const sender = new arc4.Address(Txn.sender)
     txn Sender
     dup
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:669
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:678
     // assert(game.assetId === assetId, 'Asset id in the tx does not match the game asset id')
     frame_dig -2
     extract 0 8 // on error: Index access is out of bounds
@@ -2763,20 +2851,20 @@ StartGameWithArc200Token:
     frame_dig -3
     ==
     assert // Asset id in the tx does not match the game asset id
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:141
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:145
     // public games = BoxMap<AddressAssetStruct, GameStruct>({ keyPrefix: 'g' })
     bytec_3 // "g"
     frame_dig -2
     concat
     dup
     cover 2
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:670
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:679
     // assert(this.games(game).exists, 'The game does not exist')
     dup
     box_len
     bury 1
     assert // The game does not exist
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:671
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:680
     // assert(this.games(game).value.assetId === assetId, 'This game must be played with native token')
     box_get
     assert // Box must have value
@@ -2784,7 +2872,7 @@ StartGameWithArc200Token:
     frame_dig -3
     ==
     assert // This game must be played with native token
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:672
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:681
     // assert(winProbability.native <= 1_000_000, 'Win probability must be below 1 000 000')
     frame_dig -1
     btoi
@@ -2793,18 +2881,18 @@ StartGameWithArc200Token:
     intc 4 // 1000000
     <=
     assert // Win probability must be below 1 000 000
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:142
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:146
     // public plays = BoxMap<Address, PlayStruct>({ keyPrefix: 'p' })
     bytec 6 // "p"
     swap
     concat
     dup
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:674
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:683
     // if (this.plays(sender).exists) {
     box_len
     bury 1
     bz StartGameWithArc200Token_after_if_else@3
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:676
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:685
     // assert(this.plays(sender).value.state.native > 1, 'Your previous game has not yet been claimed')
     frame_dig 7
     box_get
@@ -2816,7 +2904,21 @@ StartGameWithArc200Token:
     assert // Your previous game has not yet been claimed
 
 StartGameWithArc200Token_after_if_else@3:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:686-696
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:691
+    // this.games(game).value.lastPlayedTime = new UintN64(Global.latestTimestamp)
+    global LatestTimestamp
+    itob
+    frame_dig 5
+    dup
+    cover 2
+    box_get
+    assert // Box must have value
+    swap
+    replace2 49
+    dig 1
+    swap
+    box_put
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:696-706
     // itxn
     //   .applicationCall({
     //     appId: game.assetId.native,
@@ -2829,18 +2931,18 @@ StartGameWithArc200Token_after_if_else@3:
     //   })
     //   .submit()
     itxn_begin
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:688
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:698
     // appId: game.assetId.native,
     frame_dig -2
     intc_0 // 0
     extract_uint64
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:691
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:701
     // new Address(Txn.sender),
     txn Sender
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:692
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:702
     // new Address(Global.currentApplicationAddress),
     global CurrentApplicationAddress
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:690
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:700
     // methodSelector('arc200_transferFrom(address,address,uint256)bool'),
     bytec 15 // method "arc200_transferFrom(address,address,uint256)bool"
     itxn_field ApplicationArgs
@@ -2850,7 +2952,7 @@ StartGameWithArc200Token_after_if_else@3:
     frame_dig -4
     itxn_field ApplicationArgs
     itxn_field ApplicationID
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:686-695
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:696-705
     // itxn
     //   .applicationCall({
     //     appId: game.assetId.native,
@@ -2865,7 +2967,7 @@ StartGameWithArc200Token_after_if_else@3:
     itxn_field TypeEnum
     intc_0 // 0
     itxn_field Fee
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:686-696
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:696-706
     // itxn
     //   .applicationCall({
     //     appId: game.assetId.native,
@@ -2878,7 +2980,7 @@ StartGameWithArc200Token_after_if_else@3:
     //   })
     //   .submit()
     itxn_submit
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:698
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:708
     // const winAmount = new UintN256((amount.native * BigUint(1_000_000)) / BigUint(winProbability.native))
     frame_dig -4
     bytec 13 // 0x0f4240
@@ -2896,36 +2998,36 @@ StartGameWithArc200Token_after_if_else@3:
     dup
     frame_bury 0
     b|
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:700
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:710
     // this.games(game).value.balance.native >= winAmount.native,
-    frame_dig 5
+    swap
     box_get
     assert // Box must have value
     extract 0 32 // on error: Index access is out of bounds
     b<=
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:699-702
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:709-712
     // assert(
     //   this.games(game).value.balance.native >= winAmount.native,
     //   'The game does not have enough balance for your win scenario',
     // )
     assert // The game does not have enough balance for your win scenario
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:704
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:714
     // let prevDeposit: UintN256 = new UintN256(0)
     bytec_1 // 0x0000000000000000000000000000000000000000000000000000000000000000
     frame_bury 1
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:143
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:147
     // public allDeposits = BoxMap<UintN64, UintN256>({ keyPrefix: 'd' })
     bytec 4 // "d"
     frame_dig -3
     concat
     dup
     frame_bury 2
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:705
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:715
     // if (this.allDeposits(assetId).exists) {
     box_len
     bury 1
     bz StartGameWithArc200Token_after_if_else@6
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:706
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:716
     // prevDeposit = this.allDeposits(assetId).value
     frame_dig 2
     box_get
@@ -2934,7 +3036,7 @@ StartGameWithArc200Token_after_if_else@3:
     assert // Box must have value
 
 StartGameWithArc200Token_after_if_else@6:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:708
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:718
     // this.allDeposits(assetId).value = new UintN256(prevDeposit.native + amount.native)
     frame_dig 1
     frame_dig -4
@@ -2951,23 +3053,23 @@ StartGameWithArc200Token_after_if_else@6:
     frame_dig 2
     swap
     box_put
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:711
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:721
     // round: new UintN64(Global.round),
     global Round
     itob
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:714
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:724
     // deposit: new UintN256(amount.native),
     frame_dig -4
     uncover 2
     b|
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:716
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:726
     // gameCreator: game.owner,
     frame_dig -2
     extract 8 32 // on error: Index access is out of bounds
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:712
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:722
     // state: new UintN64(1),
     bytec 12 // 0x0000000000000001
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:710-718
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:720-728
     // const newValue = new PlayStruct({
     //   round: new UintN64(Global.round),
     //   state: new UintN64(1),
@@ -2989,7 +3091,7 @@ StartGameWithArc200Token_after_if_else@6:
     concat
     frame_dig 3
     concat
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:720
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:730
     // this.plays(sender).value = newValue.copy()
     frame_dig 7
     swap
@@ -2999,11 +3101,11 @@ StartGameWithArc200Token_after_if_else@6:
 
 // smart_contracts/avm_satoshi_dice/contract.algo.ts::AvmSatoshiDice.Game(creator: bytes, assetId: bytes) -> bytes:
 Game:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:728-729
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:738-739
     // @arc4.abimethod({ readonly: true })
     // public Game(creator: Address, assetId: UintN64): GameStruct {
     proto 2 1
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:730-733
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:740-743
     // const key = new AddressAssetStruct({
     //   assetId: assetId,
     //   owner: creator,
@@ -3011,18 +3113,18 @@ Game:
     frame_dig -1
     frame_dig -2
     concat
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:141
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:145
     // public games = BoxMap<AddressAssetStruct, GameStruct>({ keyPrefix: 'g' })
     bytec_3 // "g"
     swap
     concat
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:734
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:744
     // assert(this.games(key).exists, 'Did not found the game')
     dup
     box_len
     bury 1
     assert // Did not found the game
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:735
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:745
     // return this.games(key).value
     box_get
     assert // Box must have value
@@ -3031,22 +3133,22 @@ Game:
 
 // smart_contracts/avm_satoshi_dice/contract.algo.ts::AvmSatoshiDice.MyGame() -> bytes:
 MyGame:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:142
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:146
     // public plays = BoxMap<Address, PlayStruct>({ keyPrefix: 'p' })
     bytec 6 // "p"
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:744
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:754
     // const sender = new arc4.Address(Txn.sender)
     txn Sender
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:142
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:146
     // public plays = BoxMap<Address, PlayStruct>({ keyPrefix: 'p' })
     concat
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:745
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:755
     // assert(this.plays(sender).exists, 'Did not found the game you are playing')
     dup
     box_len
     bury 1
     assert // Did not found the game you are playing
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:746
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:756
     // return this.plays(sender).value
     box_get
     assert // Box must have value
@@ -3055,7 +3157,7 @@ MyGame:
 
 // smart_contracts/avm_satoshi_dice/contract.algo.ts::AvmSatoshiDice.ClaimGame() -> void:
 ClaimGame:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:756-757
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:766-767
     // @arc4.abimethod()
     // public ClaimGame(): void {
     proto 0 0
@@ -3063,40 +3165,40 @@ ClaimGame:
     dupn 9
     pushbytes ""
     dup
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:758
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:768
     // const sender = new arc4.Address(Txn.sender)
     txn Sender
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:142
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:146
     // public plays = BoxMap<Address, PlayStruct>({ keyPrefix: 'p' })
     bytec 6 // "p"
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:758
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:768
     // const sender = new arc4.Address(Txn.sender)
     txn Sender
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:142
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:146
     // public plays = BoxMap<Address, PlayStruct>({ keyPrefix: 'p' })
     concat
     dupn 2
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:759
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:769
     // assert(this.plays(sender).exists, 'Did not found the game you are playing')
     box_len
     bury 1
     assert // Did not found the game you are playing
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:760
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:770
     // const play = this.plays(sender).value.copy()
     box_get
     swap
     dup
     uncover 2
     assert // Box must have value
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:763
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:773
     // assetId: play.assetId,
     dup
     extract 56 8 // on error: Index access is out of bounds
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:764
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:774
     // owner: play.gameCreator,
     dig 1
     extract 64 32 // on error: Index access is out of bounds
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:762-765
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:772-775
     // const key = new AddressAssetStruct({
     //   assetId: play.assetId,
     //   owner: play.gameCreator,
@@ -3104,26 +3206,26 @@ ClaimGame:
     concat
     dup
     cover 2
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:141
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:145
     // public games = BoxMap<AddressAssetStruct, GameStruct>({ keyPrefix: 'g' })
     bytec_3 // "g"
     swap
     concat
     dup
     cover 2
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:766
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:776
     // assert(this.games(key).exists, 'Did not found the game')
     dup
     box_len
     bury 1
     assert // Did not found the game
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:767
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:777
     // const game = this.games(key).value.copy()
     box_get
     swap
     cover 2
     assert // Box must have value
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:771
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:781
     // if (play.round.native < Global.round - 100) {
     pushint 16 // 16
     extract_uint64
@@ -3133,7 +3235,7 @@ ClaimGame:
     -
     <
     bz ClaimGame_after_if_else@2
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:772
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:782
     // this.LooseGame(key, game, play, sender)
     frame_dig 15
     frame_dig 17
@@ -3141,49 +3243,40 @@ ClaimGame:
     frame_dig 12
     callsub LooseGame
     popn 3
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:773
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:783
     // return
     retsub
 
 ClaimGame_after_if_else@2:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:776
-    // game.lastPlayedTime = new UintN64(Global.latestTimestamp)
-    global LatestTimestamp
-    itob
-    frame_dig 17
-    swap
-    replace2 41
-    dup
-    frame_bury 17
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:781
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:789
     // const seed = BigUint(op.Block.blkSeed(play.round.native + 1))
     frame_dig 18
     intc_2 // 1
     +
     block BlkSeed
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:783
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:791
     // const rand0_1: biguint = seed % BigUint(1_000_000)
     bytec 13 // 0x0f4240
     b%
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:786
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:794
     // const winThreshold: uint64 = (play.winProbability.native * game.winRatio.native) / 1_000_000
     frame_dig 14
     intc_3 // 8
     extract_uint64
     dup
     frame_bury 10
-    uncover 2
-    pushint 129 // 129
+    frame_dig 17
+    pushint 137 // 137
     extract_uint64
     *
     intc 4 // 1000000
     /
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:787
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:795
     // if (rand0_1 < BigUint(winThreshold)) {
     itob
     b<
     bz ClaimGame_else_body@21
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:791
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:799
     // (play.deposit.native * BigUint(1_000_000)) / BigUint(play.winProbability.native),
     frame_dig 14
     extract 24 32 // on error: Index access is out of bounds
@@ -3192,13 +3285,13 @@ ClaimGame_after_if_else@2:
     frame_dig 10
     itob
     b/
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:790-792
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:798-800
     // const winAmount: biguint = BigUint(
     //   (play.deposit.native * BigUint(1_000_000)) / BigUint(play.winProbability.native),
     // )
     dup
     frame_bury 9
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:794
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:802
     // game.lastWinAmount = new UintN256(winAmount)
     dup
     len
@@ -3217,40 +3310,40 @@ ClaimGame_after_if_else@2:
     frame_bury 0
     frame_dig 17
     swap
-    replace2 57
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:795
+    replace2 65
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:803
     // game.lastWinTime = new UintN64(Global.latestTimestamp)
     global LatestTimestamp
     itob
-    replace2 49
+    replace2 57
     dup
     frame_bury 17
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:796
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:804
     // if (winAmount > game.biggestWinAmount.native) {
     dup
-    extract 97 32 // on error: Index access is out of bounds
+    extract 105 32 // on error: Index access is out of bounds
     uncover 2
     b<
     swap
     frame_bury 2
     bz ClaimGame_after_if_else@5
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:797
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:805
     // game.biggestWinAmount = new UintN256(winAmount)
     frame_dig 17
     frame_dig 0
-    replace2 97
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:798
+    replace2 105
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:806
     // game.biggestWinTime = new UintN64(Global.latestTimestamp)
     global LatestTimestamp
     itob
-    replace2 89
+    replace2 97
     frame_bury 2
 
 ClaimGame_after_if_else@5:
     frame_dig 2
     dup
     frame_bury 17
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:801
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:809
     // if (game.isNativeToken.native) {
     intc 7 // 320
     getbit
@@ -3261,27 +3354,27 @@ ClaimGame_after_if_else@5:
     intc_0 // 0
     getbit
     bz ClaimGame_after_if_else@10
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:804
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:812
     // let prevDeposit: UintN256 = new UintN256(0)
     bytec_1 // 0x0000000000000000000000000000000000000000000000000000000000000000
     frame_bury 3
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:805
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:813
     // if (this.allDeposits(key.assetId).exists) {
     frame_dig 15
     extract 0 8 // on error: Index access is out of bounds
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:143
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:147
     // public allDeposits = BoxMap<UintN64, UintN256>({ keyPrefix: 'd' })
     bytec 4 // "d"
     swap
     concat
     dup
     frame_bury 6
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:805
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:813
     // if (this.allDeposits(key.assetId).exists) {
     box_len
     bury 1
     bz ClaimGame_after_if_else@8
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:806
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:814
     // prevDeposit = this.allDeposits(key.assetId).value
     frame_dig 6
     box_get
@@ -3290,7 +3383,7 @@ ClaimGame_after_if_else@5:
     assert // Box must have value
 
 ClaimGame_after_if_else@8:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:808
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:816
     // assert(prevDeposit.native >= winAmount, 'There is not enough money in the sc to cover this win tx')
     frame_dig 3
     dup
@@ -3299,7 +3392,7 @@ ClaimGame_after_if_else@8:
     cover 3
     b>=
     assert // There is not enough money in the sc to cover this win tx
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:809
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:817
     // this.allDeposits(key.assetId).value = new UintN256(prevDeposit.native - winAmount)
     dig 1
     b-
@@ -3315,7 +3408,7 @@ ClaimGame_after_if_else@8:
     frame_dig 6
     swap
     box_put
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:811
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:819
     // assert(game.balance.native >= winAmount, 'There is not enough money in the sc to cover this win tx')
     frame_dig 17
     extract 0 32 // on error: Index access is out of bounds
@@ -3323,7 +3416,7 @@ ClaimGame_after_if_else@8:
     dig 2
     b>=
     assert // There is not enough money in the sc to cover this win tx
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:812
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:820
     // this.games(key).value.balance = new UintN256(game.balance.native - winAmount)
     dig 1
     b-
@@ -3342,7 +3435,7 @@ ClaimGame_after_if_else@8:
     swap
     replace2 0
     box_put
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:814
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:822
     // this.plays(sender).value.state = new UintN64(2) // mark the state of the game 2 - win
     frame_dig 13
     dup
@@ -3351,7 +3444,7 @@ ClaimGame_after_if_else@8:
     bytec 14 // 0x0000000000000002
     replace2 0
     box_put
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:816-823
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:824-831
     // itxn
     //   .payment({
     //     sender: Global.currentApplicationAddress,
@@ -3361,14 +3454,14 @@ ClaimGame_after_if_else@8:
     //   })
     //   .submit()
     itxn_begin
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:818
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:826
     // sender: Global.currentApplicationAddress,
     global CurrentApplicationAddress
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:819
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:827
     // receiver: play.owner.native,
     frame_dig 14
     extract 96 32 // on error: Index access is out of bounds
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:820
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:828
     // amount: new UintN64(winAmount).native,
     frame_dig 11
     intc_3 // 8
@@ -3382,7 +3475,7 @@ ClaimGame_after_if_else@8:
     itxn_field Amount
     itxn_field Receiver
     itxn_field Sender
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:816-822
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:824-830
     // itxn
     //   .payment({
     //     sender: Global.currentApplicationAddress,
@@ -3392,11 +3485,11 @@ ClaimGame_after_if_else@8:
     //   })
     intc_2 // 1
     itxn_field TypeEnum
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:821
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:829
     // fee: 0,
     intc_0 // 0
     itxn_field Fee
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:816-823
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:824-831
     // itxn
     //   .payment({
     //     sender: Global.currentApplicationAddress,
@@ -3408,7 +3501,7 @@ ClaimGame_after_if_else@8:
     itxn_submit
 
 ClaimGame_after_if_else@10:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:826
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:834
     // if (game.isASAToken.native) {
     frame_dig 17
     intc 5 // 321
@@ -3420,27 +3513,27 @@ ClaimGame_after_if_else@10:
     intc_0 // 0
     getbit
     bz ClaimGame_after_if_else@15
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:829
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:837
     // let prevDeposit: UintN256 = new UintN256(0)
     bytec_1 // 0x0000000000000000000000000000000000000000000000000000000000000000
     frame_bury 4
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:830
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:838
     // if (this.allDeposits(key.assetId).exists) {
     frame_dig 15
     extract 0 8 // on error: Index access is out of bounds
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:143
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:147
     // public allDeposits = BoxMap<UintN64, UintN256>({ keyPrefix: 'd' })
     bytec 4 // "d"
     swap
     concat
     dup
     frame_bury 7
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:830
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:838
     // if (this.allDeposits(key.assetId).exists) {
     box_len
     bury 1
     bz ClaimGame_after_if_else@13
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:831
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:839
     // prevDeposit = this.allDeposits(key.assetId).value
     frame_dig 7
     box_get
@@ -3449,7 +3542,7 @@ ClaimGame_after_if_else@10:
     assert // Box must have value
 
 ClaimGame_after_if_else@13:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:833
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:841
     // assert(prevDeposit.native >= winAmount, 'There is not enough money in the sc to cover this win tx')
     frame_dig 4
     dup
@@ -3458,7 +3551,7 @@ ClaimGame_after_if_else@13:
     cover 3
     b>=
     assert // There is not enough money in the sc to cover this win tx
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:834
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:842
     // this.allDeposits(key.assetId).value = new UintN256(prevDeposit.native - winAmount)
     dig 1
     b-
@@ -3474,7 +3567,7 @@ ClaimGame_after_if_else@13:
     frame_dig 7
     swap
     box_put
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:836
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:844
     // assert(game.balance.native >= winAmount, 'There is not enough money in the sc to cover this win tx')
     frame_dig 17
     dup
@@ -3484,7 +3577,7 @@ ClaimGame_after_if_else@13:
     dig 2
     b>=
     assert // There is not enough money in the sc to cover this win tx
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:837
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:845
     // this.games(key).value.balance = new UintN256(game.balance.native - winAmount)
     dig 1
     b-
@@ -3503,7 +3596,7 @@ ClaimGame_after_if_else@13:
     swap
     replace2 0
     box_put
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:839
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:847
     // this.plays(sender).value.state = new UintN64(2) // mark the state of the game 2 - win
     frame_dig 13
     dup
@@ -3512,7 +3605,7 @@ ClaimGame_after_if_else@13:
     bytec 14 // 0x0000000000000002
     replace2 0
     box_put
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:841-849
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:849-857
     // itxn
     //   .assetTransfer({
     //     sender: Global.currentApplicationAddress,
@@ -3523,14 +3616,14 @@ ClaimGame_after_if_else@13:
     //   })
     //   .submit()
     itxn_begin
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:843
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:851
     // sender: Global.currentApplicationAddress,
     global CurrentApplicationAddress
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:844
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:852
     // assetReceiver: play.owner.native,
     frame_dig 14
     extract 96 32 // on error: Index access is out of bounds
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:845
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:853
     // assetAmount: new UintN64(winAmount).native,
     frame_dig 11
     intc_3 // 8
@@ -3541,7 +3634,7 @@ ClaimGame_after_if_else@13:
     uncover 3
     b|
     btoi
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:846
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:854
     // xferAsset: game.assetId.native,
     uncover 3
     intc_1 // 32
@@ -3550,7 +3643,7 @@ ClaimGame_after_if_else@13:
     itxn_field AssetAmount
     itxn_field AssetReceiver
     itxn_field Sender
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:841-848
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:849-856
     // itxn
     //   .assetTransfer({
     //     sender: Global.currentApplicationAddress,
@@ -3561,11 +3654,11 @@ ClaimGame_after_if_else@13:
     //   })
     pushint 4 // 4
     itxn_field TypeEnum
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:847
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:855
     // fee: 0,
     intc_0 // 0
     itxn_field Fee
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:841-849
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:849-857
     // itxn
     //   .assetTransfer({
     //     sender: Global.currentApplicationAddress,
@@ -3578,7 +3671,7 @@ ClaimGame_after_if_else@13:
     itxn_submit
 
 ClaimGame_after_if_else@15:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:851
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:859
     // if (game.isArc200Token.native) {
     frame_dig 17
     intc 6 // 322
@@ -3590,27 +3683,27 @@ ClaimGame_after_if_else@15:
     intc_0 // 0
     getbit
     bz ClaimGame_after_if_else@22
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:852
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:860
     // let prevDeposit: UintN256 = new UintN256(0)
     bytec_1 // 0x0000000000000000000000000000000000000000000000000000000000000000
     frame_bury 5
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:853
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:861
     // if (this.allDeposits(key.assetId).exists) {
     frame_dig 15
     extract 0 8 // on error: Index access is out of bounds
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:143
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:147
     // public allDeposits = BoxMap<UintN64, UintN256>({ keyPrefix: 'd' })
     bytec 4 // "d"
     swap
     concat
     dup
     frame_bury 8
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:853
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:861
     // if (this.allDeposits(key.assetId).exists) {
     box_len
     bury 1
     bz ClaimGame_after_if_else@18
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:854
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:862
     // prevDeposit = this.allDeposits(key.assetId).value
     frame_dig 8
     box_get
@@ -3619,7 +3712,7 @@ ClaimGame_after_if_else@15:
     assert // Box must have value
 
 ClaimGame_after_if_else@18:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:856
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:864
     // assert(prevDeposit.native >= winAmount, 'There is not enough money in the sc to cover this win tx')
     frame_dig 5
     dup
@@ -3628,7 +3721,7 @@ ClaimGame_after_if_else@18:
     cover 3
     b>=
     assert // There is not enough money in the sc to cover this win tx
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:857
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:865
     // this.allDeposits(key.assetId).value = new UintN256(prevDeposit.native - winAmount)
     dig 1
     b-
@@ -3644,7 +3737,7 @@ ClaimGame_after_if_else@18:
     frame_dig 8
     swap
     box_put
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:859
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:867
     // assert(game.balance.native >= winAmount, 'There is not enough money in the sc to cover this win tx')
     frame_dig 17
     dup
@@ -3654,7 +3747,7 @@ ClaimGame_after_if_else@18:
     dig 2
     b>=
     assert // There is not enough money in the sc to cover this win tx
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:860
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:868
     // this.games(key).value.balance = new UintN256(game.balance.native - winAmount)
     swap
     b-
@@ -3672,7 +3765,7 @@ ClaimGame_after_if_else@18:
     swap
     replace2 0
     box_put
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:862
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:870
     // this.plays(sender).value.state = new UintN64(2) // mark the state of the game 2 - win
     frame_dig 13
     dup
@@ -3681,7 +3774,7 @@ ClaimGame_after_if_else@18:
     bytec 14 // 0x0000000000000002
     replace2 0
     box_put
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:865-871
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:873-879
     // itxn
     //   .applicationCall({
     //     appId: game.assetId.native,
@@ -3690,11 +3783,11 @@ ClaimGame_after_if_else@18:
     //   })
     //   .submit()
     itxn_begin
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:867
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:875
     // appId: game.assetId.native,
     intc_1 // 32
     extract_uint64
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:868
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:876
     // appArgs: [methodSelector('arc200_transfer(address,uint256)bool'), play.owner, new UintN256(winAmount)],
     frame_dig 14
     extract 96 32 // on error: Index access is out of bounds
@@ -3704,7 +3797,7 @@ ClaimGame_after_if_else@18:
     frame_dig 0
     itxn_field ApplicationArgs
     itxn_field ApplicationID
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:865-870
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:873-878
     // itxn
     //   .applicationCall({
     //     appId: game.assetId.native,
@@ -3713,11 +3806,11 @@ ClaimGame_after_if_else@18:
     //   })
     pushint 6 // 6
     itxn_field TypeEnum
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:869
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:877
     // fee: 0,
     intc_0 // 0
     itxn_field Fee
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:865-871
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:873-879
     // itxn
     //   .applicationCall({
     //     appId: game.assetId.native,
@@ -3731,7 +3824,7 @@ ClaimGame_after_if_else@22:
     retsub
 
 ClaimGame_else_body@21:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:875
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:883
     // this.LooseGame(key, game, play, sender)
     frame_dig 15
     frame_dig 17
@@ -3744,10 +3837,10 @@ ClaimGame_else_body@21:
 
 // smart_contracts/avm_satoshi_dice/contract.algo.ts::AvmSatoshiDice.LooseGame(key: bytes, game: bytes, play: bytes, sender: bytes) -> bytes, bytes, bytes:
 LooseGame:
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:879
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:887
     // private LooseGame(key: AddressAssetStruct, game: GameStruct, play: PlayStruct, sender: Address) {
     proto 4 3
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:880
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:888
     // this.games(key).value.balance = new UintN256(game.balance.native + play.deposit.native)
     frame_dig -3
     extract 0 32 // on error: Index access is out of bounds
@@ -3762,12 +3855,12 @@ LooseGame:
     intc_1 // 32
     bzero
     b|
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:141
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:145
     // public games = BoxMap<AddressAssetStruct, GameStruct>({ keyPrefix: 'g' })
     bytec_3 // "g"
     frame_dig -4
     concat
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:880
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:888
     // this.games(key).value.balance = new UintN256(game.balance.native + play.deposit.native)
     dup
     box_get
@@ -3775,12 +3868,12 @@ LooseGame:
     uncover 2
     replace2 0
     box_put
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:142
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:146
     // public plays = BoxMap<Address, PlayStruct>({ keyPrefix: 'p' })
     bytec 6 // "p"
     frame_dig -1
     concat
-    // smart_contracts/avm_satoshi_dice/contract.algo.ts:881
+    // smart_contracts/avm_satoshi_dice/contract.algo.ts:889
     // this.plays(sender).value.state = new UintN64(3) // mark the state of the game 3 - loose
     dup
     box_get
