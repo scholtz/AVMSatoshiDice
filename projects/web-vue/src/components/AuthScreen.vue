@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import H2 from "@/components/H2.vue";
-import { useAppStore } from "@/stores/app";
+import H2 from "../components/H2.vue";
+import { useAppStore } from "../stores/app";
 import { WalletId, useNetwork, useWallet, type Wallet } from "@txnlab/use-wallet-vue";
 import { onMounted, reactive, ref, watch } from "vue";
 import MainButton from "./MainButton.vue";
@@ -9,13 +9,13 @@ import MainPanel from "./MainPanel.vue";
 const state = reactive({
   wallets: [] as Wallet[],
 });
-const { activeNetwork, setActiveNetwork, networkConfig } = useNetwork();
+const { setActiveNetwork, networkConfig } = useNetwork();
 console.log("networkConfig", networkConfig);
 onMounted(() => {
   selectChainClick(chains.find((c) => c.code == store.state.env));
 });
 
-const { algodClient, transactionSigner, wallets, activeAddress } = useWallet();
+const { wallets, activeAddress } = useWallet();
 const isMagicLink = (wallet: Wallet) => wallet.id === WalletId.MAGIC;
 const getConnectArgs = (wallet: Wallet) => {
   if (isMagicLink(wallet)) {
@@ -64,7 +64,7 @@ const selectChainClick = (chain: any) => {
   store.state.appId = chain.appId;
   const newWallets: Wallet[] = [];
   console.log("chain.wallets", chain.wallets, wallets.value);
-  for (let walletId of chain.wallets) {
+  for (const walletId of chain.wallets) {
     const w = wallets.value.find((w) => w.id == walletId);
     console.log("w", w);
     if (w) {
@@ -75,7 +75,7 @@ const selectChainClick = (chain: any) => {
 };
 const chains = [
   {
-    appId: 4904n,
+    appId: 1003n,
     name: "Algorand Mainnet",
     code: "mainnet-v1.0",
     algodHost: "https://mainnet-api.4160.nodely.dev",
@@ -88,7 +88,7 @@ const chains = [
     wallets: [WalletId.BIATEC, WalletId.DEFLY, WalletId.EXODUS, WalletId.PERA, WalletId.KIBISIS, WalletId.WALLETCONNECT],
   },
   {
-    appId: 4904n,
+    appId: 1003n,
     name: "Voi Mainnet",
     code: "voimain-v1.0",
     algodHost: "https://mainnet-api.voi.nodely.dev",
@@ -101,7 +101,7 @@ const chains = [
     wallets: [WalletId.BIATEC, WalletId.KIBISIS, WalletId.DEFLY, WalletId.WALLETCONNECT],
   },
   {
-    appId: 4904n,
+    appId: 1003n,
     name: "Aramid Mainnet",
     code: "aramidmain-v1.0",
     algodHost: "https://algod.aramidmain.a-wallet.net",
@@ -114,7 +114,7 @@ const chains = [
     wallets: [WalletId.BIATEC, WalletId.DEFLY, WalletId.WALLETCONNECT],
   },
   {
-    appId: 4904n,
+    appId: 1003n,
     name: "Algorand Testnet",
     code: "testnet-v1.0",
     algodHost: "https://testnet-api.4160.nodely.dev",
@@ -127,7 +127,7 @@ const chains = [
     wallets: [WalletId.BIATEC, WalletId.DEFLY, WalletId.PERA, WalletId.WALLETCONNECT],
   },
   {
-    appId: 4904n,
+    appId: 1003n,
     name: "Localnet",
     code: "dockernet-v1",
     algodHost: "http://localhost",
@@ -151,6 +151,7 @@ const chains = [
         <H2>Blockchain selection {{ store.state.env }}</H2>
         <MainButton
           v-for="chain in chains"
+          :key="chain"
           :class="store?.state?.env == chain.code ? 'bg-teal-800  hover:bg-teal-700 !text-teal-100' : ''"
           class="mb-4 flex justify-center items-center"
           @click="selectChainClick(chain)"

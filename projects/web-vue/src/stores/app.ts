@@ -55,7 +55,7 @@ export interface IState {
   assetHolding: IAssetHolding[];
 }
 const defaultState: IState = {
-  appId: 4904n,
+  appId: 1003n,
   // algodHost: "https://mainnet-api.algonode.cloud",
   // algodPort: 443,
   // algodToken: "",
@@ -87,8 +87,11 @@ export const useAppStore = defineStore("app", () => {
   const initState = { ...defaultState };
   const state = reactive(initState);
 
-  function getBalanceForToken(tokenId: string | number | bigint): number {
-    return Number(state.token2balance[tokenId.toString()] || 0n);
+  function getBalanceForToken(
+    tokenId: string | number | bigint,
+    chainId: "mainnet-v1.0" | "aramidmain-v1.0" | "testnet-v1.0" | "betanet-v1.0" | "voimain-v1.0" | "fnet-v1" | "dockernet-v1",
+  ): number {
+    return Number(state.token2balance[`${chainId}-${tokenId.toString()}`] || 0n);
   }
   const getAlgorandClient = () => {
     return AlgorandClient.fromConfig({
@@ -109,8 +112,12 @@ export const useAppStore = defineStore("app", () => {
     tokenType: "native" | "asa" | "arc200",
     activeAddress: ComputedRef<string | null>,
     transactionSigner: (txnGroup: algosdk.Transaction[], indexesToSign: number[]) => Promise<Uint8Array[]>,
+    chainId: "mainnet-v1.0" | "aramidmain-v1.0" | "testnet-v1.0" | "betanet-v1.0" | "voimain-v1.0" | "fnet-v1" | "dockernet-v1",
   ) => {
-    //state.token2balance[tokenId] = newBalance;
+    console.log("updating balance", activeAddress.value, assetId, tokenType);
+    console.log("activeAddress.value", activeAddress.value);
+    //state.
+    const extendedTokenId = `${chainId}-${assetId}`;
     state.assetId = BigInt(assetId);
     state.tokenType = tokenType;
 
@@ -118,21 +125,24 @@ export const useAppStore = defineStore("app", () => {
       state.userBalance = 0n;
       return;
     }
-
     const algorandClient = getAlgorandClient();
     if (state.tokenType == "native") {
       const info = await algorandClient.client.algod.accountInformation(activeAddress.value).do();
+      console.log("info", info);
       state.userBalance = info.amount;
+      state.token2balance[extendedTokenId] = info.amount;
       state.assetDecimals = 6;
     }
     if (state.tokenType == "asa" && state.assetId > 0n) {
       const info = await algorandClient.client.algod.accountInformation(activeAddress.value).do();
+      console.log("info", info);
       state.assetHolding =
         info.assets?.map((i) => {
           return { amount: i.amount, assetId: i.amount, isFrozen: i.isFrozen };
         }) ?? [];
       if (info.assets) {
         state.userBalance = info.assets[Number(state.assetId)].amount ?? 0n;
+        state.token2balance[extendedTokenId] = info.assets[Number(state.assetId)].amount ?? 0n;
       }
 
       const assetInfo = await getAssetAsync(state.assetId, algorandClient);
@@ -153,7 +163,9 @@ export const useAppStore = defineStore("app", () => {
         approvalSourceMap: undefined,
         clearSourceMap: undefined,
       });
-      state.userBalance = await arc200.arc200BalanceOf({ args: { owner: activeAddress.value } });
+      const balance = await arc200.arc200BalanceOf({ args: { owner: activeAddress.value } });
+      state.userBalance = balance;
+      state.token2balance[extendedTokenId] = balance;
     }
     console.log("updateBalance", state);
   };

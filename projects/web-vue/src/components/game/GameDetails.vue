@@ -49,7 +49,7 @@ const playGame = () => {
 </script>
 
 <template>
-  <div class="card border border-gray-800">
+  <MainPanel>
     <div class="p-6">
       <div class="flex items-center justify-between mb-6">
         <h2 class="text-2xl font-bold text-white">{{ game.token.name }} game</h2>
@@ -116,5 +116,5 @@ const playGame = () => {
         <AppButton @click="playGame" variant="primary"> Play Game </AppButton>
       </div>
     </div>
-  </div>
+  </MainPanel>
 </template>

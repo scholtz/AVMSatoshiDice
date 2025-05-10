@@ -1,10 +1,15 @@
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from "vue";
+import { useWallet } from "@txnlab/use-wallet-vue";
+import algosdk, { makePaymentTxnWithSuggestedParamsFromObject } from "algosdk";
+import { useToast } from "primevue";
+import { computed, onMounted, reactive, ref, watch } from "vue";
+import { AvmSatoshiDiceClient } from "../../../../AVMSatoshiDice/smart_contracts/artifacts/avm_satoshi_dice/AvmSatoshiDiceClient";
 import { useAppStore } from "../../stores/app";
 import { IGameStruct, useGameStore } from "../../stores/game";
 import AppButton from "../common/AppButton.vue";
 import AppLoader from "../common/AppLoader.vue";
 import Fireworks from "../effects/Fireworks.vue";
+const toast = useToast();
 
 const props = defineProps<{
   game: IGameStruct;
@@ -13,10 +18,15 @@ const props = defineProps<{
 const appStore = useAppStore();
 const emit = defineEmits(["play-complete"]);
 
+const { activeAddress, transactionSigner } = useWallet();
+onMounted(async () => {
+  await appStore.updateBalance(props.game.token.id, props.game.token.type, activeAddress, transactionSigner);
+});
+
 const gameStore = useGameStore();
 const state = reactive({
-  depositAmount: 1,
-  winProbability: 500000,
+  depositAmount: 1000,
+  winProbability: 50,
   isDepositing: false,
   isClaiming: false,
   gamePlayStep: 1, // 1: Setup, 2: Deposit, 3: Claim, 4: Result
@@ -30,12 +40,19 @@ const tokenBalance = computed(() => {
 });
 
 const potentialWinAmount = computed(() => {
-  const probabilityDecimal = state.winProbability / 1000000;
+  const probabilityDecimal = state.winProbability / 100;
   return Math.floor(state.depositAmount / probabilityDecimal);
+});
+const potentialNetWinAmount = computed(() => {
+  const probabilityDecimal = state.winProbability / 100;
+  return Math.floor(state.depositAmount / probabilityDecimal) - state.depositAmount;
 });
 
 const probabilityPercentage = computed(() => {
-  return (state.winProbability / 10000).toFixed(2);
+  return state.winProbability.toFixed(4);
+});
+const probabilityIncludingWinRatioPercentage = computed(() => {
+  return ((state.winProbability * Number(props.game.game.winRatio)) / 1000000).toFixed(4);
 });
 
 const maxPossibleWin = computed(() => {
@@ -51,7 +68,7 @@ const canWinAmount = computed(() => {
 });
 
 const canPlay = computed(() => {
-  return state.depositAmount > 0 && state.winProbability > 0 && state.winProbability <= 1000000 && canAffordBet.value && canWinAmount.value;
+  return state.depositAmount > 0 && state.winProbability > 0 && state.winProbability <= 100 && canAffordBet.value && canWinAmount.value;
 });
 
 watch(
@@ -80,28 +97,63 @@ const validatePlayability = () => {
   }
 
   if (state.depositAmount <= 0) {
-    state.errorMessage = "Bet amount must be greater than 0";
+    state.errorMessage = "Deposit amount must be greater than 0";
     return false;
   }
 
-  if (state.winProbability <= 0 || state.winProbability > 1000000) {
-    state.errorMessage = "Win probability must be between 1 and 1,000,000";
+  if (state.winProbability <= 0 || state.winProbability > 100) {
+    state.errorMessage = "Win probability must be between 0 and 100";
     return false;
   }
 
   return true;
 };
 
-const startPlay = () => {
-  if (!validatePlayability()) return;
-  state.errorMessage = "";
-  state.gamePlayStep = 2;
+const startPlay = async () => {
+  try {
+    if (!validatePlayability()) return;
+    state.errorMessage = "";
+    state.gamePlayStep = 2;
 
-  // Create game play record
+    // Create game play record
+    if (!activeAddress.value) throw Error("Active Address is missing");
+    state.isDepositing = true;
 
-  state.isDepositing = true;
-  // do the deposit
-  state.isDepositing = false;
+    const client = new AvmSatoshiDiceClient({
+      algorand: appStore.getAlgorandClient(),
+      appId: appStore.state.appId,
+      defaultSender: algosdk.decodeAddress(activeAddress.value),
+      defaultSigner: transactionSigner,
+    });
+    if (props.game.token.type == "native") {
+      await client.send.startGameWithNativeToken({
+        args: {
+          game: props.game.idObj,
+          txnDeposit: makePaymentTxnWithSuggestedParamsFromObject({
+            amount: BigInt(state.depositAmount * 10 ** props.game.token.decimals),
+            receiver: algosdk.encodeAddress(client.appAddress.publicKey),
+            sender: activeAddress.value,
+            suggestedParams: await client.algorand.client.algod.getTransactionParams().do(),
+          }),
+          winProbability: BigInt(state.winProbability * 10000),
+        },
+      });
+    }
+
+    // do the deposit
+    state.isDepositing = false;
+    state.gamePlayStep = 3;
+  } catch (e: any) {
+    state.isDepositing = false;
+    state.gamePlayStep = 3;
+    console.error(e);
+    state.errorMessage = e.message;
+    toast.add({
+      severity: "error",
+      detail: e.message ?? e,
+      life: 10000,
+    });
+  }
 };
 
 const handleDeposit = () => {
@@ -121,8 +173,8 @@ const handleClaim = () => {
 };
 
 const resetGame = () => {
-  state.depositAmount = 1;
-  state.winProbability = 500000;
+  state.depositAmount = 1000;
+  state.winProbability = 50;
   state.gamePlayStep = 1;
   showFireworks.value = false;
   state.errorMessage = "";
@@ -134,7 +186,7 @@ const resetGame = () => {
   <div>
     <Fireworks :active="showFireworks" intensity="high" :duration="6000" />
 
-    <div class="card border border-gray-800 overflow-hidden">
+    <MainPanel>
       <div class="bg-gradient-to-r from-primary-900 to-background-dark p-4 border-b border-gray-800 flex items-center justify-between">
         <h3 class="text-lg font-semibold text-white">Play: {{ game.token.name }} game</h3>
 
@@ -147,7 +199,7 @@ const resetGame = () => {
           </div>
 
           <div class="px-2 py-0.5 bg-primary-800 text-primary-300 rounded-full text-xs font-medium">
-            {{ game.game.winRatio }}% Win Ratio
+            {{ (Number(game.game.winRatio) / 10000).toLocaleString() }}% Win Ratio
           </div>
         </div>
       </div>
@@ -157,31 +209,49 @@ const resetGame = () => {
         <div v-if="state.gamePlayStep === 1" class="space-y-6">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label class="label" for="state.depositAmount">Bet Amount ({{ game.token.unitName }})</label>
+              <label class="label" for="state.depositAmount">Deposit Amount ({{ game.token.unitName }})</label>
               <div class="flex items-center">
                 <input
                   id="state.depositAmount"
                   v-model.number="state.depositAmount"
                   type="number"
-                  min="1"
+                  min="0"
                   step="1"
                   class="input flex-1"
                   :class="{ 'border-error-500': !canAffordBet }"
                 />
-                <div class="ml-2 text-sm text-gray-400">Balance: {{ tokenBalance }} {{ game.token.unitName }}</div>
+              </div>
+              <div class="mt-1 text-sm text-gray-400">
+                Your balance: {{ (Number(tokenBalance) / 10 ** game.token.decimals).toLocaleString() }} {{ appStore.state.tokenName }}
               </div>
               <div v-if="!canAffordBet" class="mt-1 text-sm text-error-500">Insufficient balance</div>
             </div>
-
             <div>
-              <label class="label" for="winProbability">Win Probability ({{ probabilityPercentage }}%)</label>
+              <label class="label" for="winProbability">Win probability (%)</label>
+              <div class="flex items-center">
+                <input
+                  id="winProbability"
+                  v-model.number="state.winProbability"
+                  type="number"
+                  min="0.0001"
+                  step="0.0001"
+                  max="100"
+                  class="input flex-1"
+                  :class="{ 'border-error-500': !canWinAmount }"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-1 gap-6">
+            <div>
+              <label class="label" for="winProbability">Game win Probability ({{ probabilityIncludingWinRatioPercentage }}%)</label>
               <input
                 id="winProbability"
                 v-model.number="state.winProbability"
                 type="range"
-                min="1"
-                max="1000000"
-                step="1000"
+                min="0.0001"
+                step="0.0001"
+                max="100"
                 class="w-full h-2 rounded-lg appearance-none cursor-pointer bg-gray-700"
               />
               <div class="flex justify-between text-gray-400 text-xs mt-1">
@@ -198,6 +268,10 @@ const resetGame = () => {
               <span :class="['font-semibold text-lg', canWinAmount ? 'text-success-400' : 'text-error-500']">
                 {{ potentialWinAmount.toLocaleString() }} {{ game.token.unitName }}
               </span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-400">Potential Net Win:</span>
+              <span> {{ potentialNetWinAmount.toLocaleString() }} {{ game.token.unitName }} </span>
             </div>
 
             <div class="flex justify-between items-center">
@@ -217,7 +291,7 @@ const resetGame = () => {
           </div>
 
           <div class="flex justify-end">
-            <AppButton @click="startPlay" variant="primary" :disabled="!canPlay"> Place Bet </AppButton>
+            <AppButton @click="startPlay" variant="primary" :disabled="!canPlay"> Start game </AppButton>
           </div>
         </div>
 
@@ -226,30 +300,33 @@ const resetGame = () => {
           <div class="mb-6">
             <div class="text-xl font-medium text-white mb-2">Deposit Tokens</div>
             <p class="text-gray-400">Deposit {{ state.depositAmount }} {{ game.token.unitName }} tokens to start the game.</p>
+            <p class="text-red-400">Check your wallet to sign the transaction.</p>
           </div>
 
           <div class="bg-background-dark rounded-lg p-4 mx-auto max-w-md">
             <div class="flex justify-between items-center mb-3">
-              <span class="text-gray-400">Bet Amount:</span>
+              <span class="text-gray-400">Deposit Amount:</span>
               <span class="font-semibold text-white"> {{ state.depositAmount }} {{ game.token.unitName }} </span>
             </div>
 
             <div class="flex justify-between items-center mb-3">
               <span class="text-gray-400">Win Probability:</span>
-              <span class="font-semibold text-white"> {{ probabilityPercentage }}% </span>
+              <span class="font-semibold text-white"> {{ probabilityIncludingWinRatioPercentage }}% </span>
+            </div>
+
+            <div class="flex justify-between items-center mb-3">
+              <span class="text-gray-400">Potential Win:</span>
+              <span class="font-semibold text-success-400"> {{ potentialWinAmount.toLocaleString() }} {{ game.token.unitName }} </span>
             </div>
 
             <div class="flex justify-between items-center">
-              <span class="text-gray-400">Potential Win:</span>
-              <span class="font-semibold text-success-400"> {{ potentialWinAmount.toLocaleString() }} {{ game.token.unitName }} </span>
+              <span class="text-gray-400">Potential Net Win:</span>
+              <span class="font-semibold text-white"> {{ potentialNetWinAmount.toLocaleString() }} {{ game.token.unitName }} </span>
             </div>
           </div>
 
           <div>
-            <AppButton @click="handleDeposit" variant="primary" :disabled="state.isDepositing" class="px-8">
-              <AppLoader v-if="state.isDepositing" size="sm" color="white" class="mr-2" />
-              {{ state.isDepositing ? "Processing..." : "Deposit Tokens" }}
-            </AppButton>
+            <AppButton @click="state.gamePlayStep = 1" variant="primary" :disabled="state.isDepositing" class="px-8"> Cancel </AppButton>
           </div>
         </div>
 
@@ -262,7 +339,7 @@ const resetGame = () => {
 
           <div class="bg-background-dark rounded-lg p-4 mx-auto max-w-md">
             <div class="flex justify-between items-center mb-3">
-              <span class="text-gray-400">Bet Amount:</span>
+              <span class="text-gray-400">Deposit Amount:</span>
               <span class="font-semibold text-white"> {{ state.depositAmount }} {{ game.token.unitName }} </span>
             </div>
 
@@ -304,7 +381,7 @@ const resetGame = () => {
 
           <div class="bg-background-dark rounded-lg p-4 mx-auto max-w-md">
             <div class="flex justify-between items-center mb-3">
-              <span class="text-gray-400">Bet Amount:</span>
+              <span class="text-gray-400">Deposit Amount:</span>
               <span class="font-semibold text-white"> {{ state.depositAmount }} {{ game.token.unitName }} </span>
             </div>
 
@@ -328,6 +405,6 @@ const resetGame = () => {
           </div>
         </div>
       </div>
-    </div>
+    </MainPanel>
   </div>
 </template>

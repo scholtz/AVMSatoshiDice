@@ -6,6 +6,9 @@
     },
     {
       "path": "projects/AVMSatoshiDice"
+    },
+    {
+      "path": "projects/web-vue"
     }
   ],
   "settings": {
