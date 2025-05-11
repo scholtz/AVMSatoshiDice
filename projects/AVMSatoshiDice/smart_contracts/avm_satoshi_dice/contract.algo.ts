@@ -50,7 +50,11 @@ class GameStruct extends arc4.Struct<{
   /**
    * Time when someone last played the game
    */
-  lastPlayedTime: UintN64
+  lastPlayTime: UintN64
+  /**
+   * Amount of the last game play
+   */
+  lastPlayAmount: UintN256
   /**
    * Time when someone last won at the game
    */
@@ -377,7 +381,8 @@ export class AvmSatoshiDice extends Contract {
         createdAtTime: new UintN64(Global.latestTimestamp),
         createdAtRound: new UintN64(Global.round),
 
-        lastPlayedTime: new UintN64(0),
+        lastPlayTime: new UintN64(0),
+        lastPlayAmount: new UintN256(0),
         lastWinTime: new UintN64(0),
         lastWinAmount: new UintN256(0),
         biggestWinAmount: new UintN256(0),
@@ -465,7 +470,8 @@ export class AvmSatoshiDice extends Contract {
         createdAtTime: new UintN64(Global.latestTimestamp),
         createdAtRound: new UintN64(Global.round),
 
-        lastPlayedTime: new UintN64(0),
+        lastPlayTime: new UintN64(0),
+        lastPlayAmount: new UintN256(0),
         lastWinTime: new UintN64(0),
         lastWinAmount: new UintN256(0),
         biggestWinAmount: new UintN256(0),
@@ -538,7 +544,8 @@ export class AvmSatoshiDice extends Contract {
         createdAtTime: new UintN64(Global.latestTimestamp),
         createdAtRound: new UintN64(Global.round),
 
-        lastPlayedTime: new UintN64(0),
+        lastPlayTime: new UintN64(0),
+        lastPlayAmount: new UintN256(0),
         lastWinTime: new UintN64(0),
         lastWinAmount: new UintN256(0),
         biggestWinAmount: new UintN256(0),
@@ -581,7 +588,8 @@ export class AvmSatoshiDice extends Contract {
     } else {
       // new game
     }
-    this.games(game).value.lastPlayedTime = new UintN64(Global.latestTimestamp)
+    this.games(game).value.lastPlayTime = new UintN64(Global.latestTimestamp)
+    this.games(game).value.lastPlayAmount = new UintN256(BigUint(txnDeposit.amount))
 
     // lets check if the game has enough money for potential win scenario
     // 100_000_000 * 1_000_000 / 200_000 = 500_000_000
@@ -643,7 +651,8 @@ export class AvmSatoshiDice extends Contract {
     } else {
       // new game
     }
-    this.games(game).value.lastPlayedTime = new UintN64(Global.latestTimestamp)
+    this.games(game).value.lastPlayTime = new UintN64(Global.latestTimestamp)
+    this.games(game).value.lastPlayAmount = new UintN256(BigUint(txnDeposit.assetAmount))
 
     // lets check if the game has enough money for potential win scenario
     // 100_000_000 * 1_000_000 / 200_000 = 500_000_000
@@ -705,7 +714,8 @@ export class AvmSatoshiDice extends Contract {
       // new game
     }
 
-    this.games(game).value.lastPlayedTime = new UintN64(Global.latestTimestamp)
+    this.games(game).value.lastPlayTime = new UintN64(Global.latestTimestamp)
+    this.games(game).value.lastPlayAmount = amount
     // lets check if the game has enough money for potential win scenario
     // 100_000_000 * 1_000_000 / 200_000 = 500_000_000
 
@@ -817,11 +827,12 @@ export class AvmSatoshiDice extends Contract {
       const winAmount: biguint = BigUint(
         (play.deposit.native * BigUint(1_000_000)) / BigUint(play.winProbability.native),
       )
+      const winNetAmount: biguint = winAmount - play.deposit.native
 
-      this.games(key).value.lastWinAmount = new UintN256(winAmount)
+      this.games(key).value.lastWinAmount = new UintN256(winNetAmount)
       this.games(key).value.lastWinTime = new UintN64(Global.latestTimestamp)
-      if (winAmount > game.biggestWinAmount.native) {
-        this.games(key).value.biggestWinAmount = new UintN256(winAmount)
+      if (winNetAmount > game.biggestWinAmount.native) {
+        this.games(key).value.biggestWinAmount = new UintN256(winNetAmount)
         this.games(key).value.biggestWinTime = new UintN64(Global.latestTimestamp)
       }
 

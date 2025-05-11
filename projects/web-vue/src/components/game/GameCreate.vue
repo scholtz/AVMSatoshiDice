@@ -2,6 +2,7 @@
 import { AlgoAmount } from "@algorandfoundation/algokit-utils/types/amount";
 import { useWallet } from "@txnlab/use-wallet-vue";
 import algosdk, { makeAssetTransferTxnWithSuggestedParamsFromObject, makePaymentTxnWithSuggestedParamsFromObject } from "algosdk";
+import { getArc200Client } from "arc200-client";
 import { useToast } from "primevue";
 import { computed, onMounted, reactive, watch } from "vue";
 import { useRouter } from "vue-router";
@@ -56,8 +57,9 @@ const handleSubmit = async () => {
     if (!canCreateGame.value) throw Error("Please select correct parameters");
     if (!activeAddress.value) throw Error("Address not selected");
     state.isCreating = true;
+    const algorandClient = appStore.getAlgorandClient();
     const client = new AvmSatoshiDiceClient({
-      algorand: appStore.getAlgorandClient(),
+      algorand: algorandClient,
       appId: appStore.state.appId,
       defaultSender: algosdk.decodeAddress(activeAddress.value),
       defaultSigner: transactionSigner,
@@ -83,7 +85,7 @@ const handleSubmit = async () => {
           game: ret.return,
           id: `${activeAddress.value}-${state.assetId}`,
           idObj: { assetId: BigInt(state.assetId), owner: activeAddress.value },
-          token: await getAssetAsync(state.assetId, appStore.getAlgorandClient()),
+          token: await getAssetAsync(state.assetId, algorandClient),
         });
       }
       console.log("executing native deposit done");
@@ -129,16 +131,42 @@ const handleSubmit = async () => {
     }
     if (state.tokenType == "arc200") {
       console.log("executing arc200 deposit");
-      const ret = await client.send.createGameWithArc200Token({
+
+      const arc200 = getArc200Client({
+        algorand: algorandClient,
+        appId: BigInt(state.assetId),
+        defaultSender: activeAddress.value,
+        defaultSigner: transactionSigner,
+        appName: undefined,
+        approvalSourceMap: undefined,
+        clearSourceMap: undefined,
+      });
+
+      const approveTx = await arc200.createTransaction.arc200Approve({
         args: {
-          amount: amountUint,
-          assetId: state.assetId,
-          winRatio: winRatioUint,
+          spender: algosdk.encodeAddress(client.appAddress.publicKey),
+          value: amountUint,
         },
       });
-      if (ret.return) {
+
+      const group = await client
+        .newGroup()
+        .addTransaction(approveTx.transactions[0], transactionSigner)
+        .createGameWithArc200Token({
+          args: {
+            amount: amountUint,
+            assetId: BigInt(state.assetId),
+            winRatio: winRatioUint,
+          },
+          staticFee: AlgoAmount.MicroAlgo(2000),
+          maxFee: AlgoAmount.MicroAlgo(4000),
+        })
+        .send();
+
+      console.log("executing arc200 deposit done", group);
+      if (group.returns[0]) {
         gameStore.updateGame({
-          game: ret.return,
+          game: group.returns[0],
           id: `${activeAddress.value}-${state.assetId}`,
           idObj: { assetId: BigInt(state.assetId), owner: activeAddress.value },
           token: await getAssetAsync(state.assetId, appStore.getAlgorandClient()),

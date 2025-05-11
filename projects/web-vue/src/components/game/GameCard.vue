@@ -36,8 +36,8 @@ const formattedWinRatio = computed(() => {
 });
 
 const lastPlayedFormatted = computed(() => {
-  if (!props.game.game.lastPlayedTime) return "Never played";
-  return new Date(Number(props.game.game.lastPlayedTime * 1000n)).toLocaleString();
+  if (!props.game.game.lastPlayTime) return "Never played";
+  return new Date(Number(props.game.game.lastPlayTime * 1000n)).toLocaleString();
 });
 
 const viewGameDetails = () => {

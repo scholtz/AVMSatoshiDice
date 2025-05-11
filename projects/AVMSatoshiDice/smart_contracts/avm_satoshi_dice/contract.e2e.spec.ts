@@ -54,6 +54,9 @@ describe('AvmSatoshiDice contract', () => {
         totalSupply: BigInt(10_000_000_000n * 1_000_000n),
       },
     })
+    const arc200AppInfo = await localnet.algorand.client.algod.getApplicationByID(appClient.appId).do()
+    expect(arc200AppInfo.params.globalState).not.toBe(undefined)
+    console.log('arc200AppInfo', arc200AppInfo)
     return { clientArc200: appClient }
   }
 

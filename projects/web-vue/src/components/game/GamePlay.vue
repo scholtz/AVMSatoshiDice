@@ -2,6 +2,7 @@
 import { AlgoAmount } from "@algorandfoundation/algokit-utils/types/amount";
 import { useWallet } from "@txnlab/use-wallet-vue";
 import algosdk, { makeAssetTransferTxnWithSuggestedParamsFromObject, makePaymentTxnWithSuggestedParamsFromObject } from "algosdk";
+import { getArc200Client } from "arc200-client";
 import { useToast } from "primevue";
 import { computed, onMounted, reactive, ref, watch } from "vue";
 import { useRoute } from "vue-router";
@@ -229,9 +230,9 @@ const startPlay = async () => {
     // Create game play record
     if (!activeAddress.value) throw Error("Active Address is missing");
     state.isDepositing = true;
-
+    const algorandClient = appStore.getAlgorandClient();
     const client = new AvmSatoshiDiceClient({
-      algorand: appStore.getAlgorandClient(),
+      algorand: algorandClient,
       appId: appStore.state.appId,
       defaultSender: algosdk.decodeAddress(activeAddress.value),
       defaultSigner: transactionSigner,
@@ -274,6 +275,43 @@ const startPlay = async () => {
       });
       if (ret.return) {
         state.play = ret.return;
+        gameStore.setLastGamePlay(state.play);
+      }
+    }
+
+    if (props.game.token.type == "arc200") {
+      const arc200 = getArc200Client({
+        algorand: algorandClient,
+        appId: BigInt(props.game.idObj.assetId),
+        defaultSender: activeAddress.value,
+        defaultSigner: transactionSigner,
+        appName: undefined,
+        approvalSourceMap: undefined,
+        clearSourceMap: undefined,
+      });
+      const amountUint = BigInt(state.depositAmount * 10 ** Number(props.game.token.decimals));
+      const approveTx = await arc200.createTransaction.arc200Approve({
+        args: {
+          spender: algosdk.encodeAddress(client.appAddress.publicKey),
+          value: amountUint,
+        },
+      });
+      const group = await client
+        .newGroup()
+        .addTransaction(approveTx.transactions[0], transactionSigner)
+        .startGameWithArc200Token({
+          args: {
+            game: props.game.idObj,
+            amount: amountUint,
+            assetId: props.game.idObj.assetId,
+            winProbability: BigInt(state.winProbability * 10000),
+          },
+          staticFee: AlgoAmount.MicroAlgo(2000),
+          maxFee: AlgoAmount.MicroAlgo(4000),
+        })
+        .send();
+      if (group.returns[0]) {
+        state.play = group.returns[0];
         gameStore.setLastGamePlay(state.play);
       }
     }
@@ -339,6 +377,20 @@ const handleClaim = async () => {
         gameStore.setLastGamePlay(state.play);
       }
     }
+    if (props.game.token.type == "arc200") {
+      const ret = await client.send.claimGame({
+        args: {},
+        firstValidRound: firstValid,
+        lastValidRound: lastValid,
+        staticFee: AlgoAmount.MicroAlgo(2000),
+        maxFee: AlgoAmount.MicroAlgo(4000),
+      });
+      console.log("claimGame.ret", ret);
+      if (ret.return) {
+        state.play = ret.return;
+        gameStore.setLastGamePlay(state.play);
+      }
+    }
     await appStore.updateBalance(props.game.token.id, props.game.token.type, activeAddress, transactionSigner, appStore.state.env);
     // do the deposit
     state.isClaiming = false;
@@ -371,7 +423,7 @@ const playAgainClick = async () => {
     return;
   }
 
-  state.depositAmount = Number(state.play.deposit) / 10 ** props.game.token.decimals;
+  state.depositAmount = Number(state.play.deposit) / 10 ** Number(props.game.token.decimals);
   state.winProbability = Number(state.play.winProbability) / 10000;
   state.gamePlayStep = 1;
   showFireworks.value = false;
@@ -434,7 +486,8 @@ const playAgainClick = async () => {
                 />
               </div>
               <div class="mt-1 text-sm text-gray-400">
-                Your balance: {{ (Number(tokenBalance) / 10 ** game.token.decimals).toLocaleString() }} {{ appStore.state.tokenName }}
+                Your balance: {{ (Number(tokenBalance) / 10 ** Number(game.token.decimals)).toLocaleString() }}
+                {{ appStore.state.tokenName }}
               </div>
               <div v-if="!canAffordBet" class="mt-1 text-sm text-error-500">Insufficient balance</div>
             </div>
@@ -489,7 +542,7 @@ const playAgainClick = async () => {
             <div class="flex justify-between items-center">
               <span class="text-gray-400">Game Balance:</span>
               <span class="font-semibold text-white">
-                {{ (Number(game.game.balance) / 10 ** game.token.decimals).toLocaleString() }} {{ game.token.unitName }}
+                {{ (Number(game.game.balance) / 10 ** Number(game.token.decimals)).toLocaleString() }} {{ game.token.unitName }}
               </span>
             </div>
 
@@ -612,7 +665,7 @@ const playAgainClick = async () => {
             <div class="flex justify-between items-center" v-if="state.play">
               <span class="text-gray-400">Deposit Amount:</span>
               <span class="font-semibold text-white">
-                {{ (Number(state.play.deposit) / 10 ** game.token.decimals).toLocaleString() }} {{ game.token.unitName }}
+                {{ (Number(state.play.deposit) / 10 ** Number(game.token.decimals)).toLocaleString() }} {{ game.token.unitName }}
               </span>
             </div>
 

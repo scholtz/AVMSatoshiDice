@@ -57,7 +57,7 @@ export interface IState {
   assetHolding: IAssetHolding[];
 }
 const defaultState: IState = {
-  appId: 6029n,
+  appId: 6169,
   // algodHost: "https://mainnet-api.algonode.cloud",
   // algodPort: 443,
   // algodToken: "",
@@ -178,6 +178,8 @@ export const useAppStore = defineStore("app", () => {
       }
     }
     if (state.tokenType == "arc200" && state.assetId > 0) {
+      const appInfo = await algorandClient.client.algod.getApplicationByID(state.assetId).do();
+      console.log("appInfo", appInfo);
       const arc200 = getArc200Client({
         algorand: algorandClient,
         appId: state.assetId,
@@ -193,7 +195,18 @@ export const useAppStore = defineStore("app", () => {
     }
     console.log("updateBalance", state);
   };
-  return { state, loadAllUserAssets, getBalanceForToken, updateBalance, getAlgorandClient };
+  const tokenTypeToText = (type: "native" | "asa" | "arc200" | "other") => {
+    switch (type) {
+      case "arc200":
+        return "ARC200";
+      case "asa":
+        return "ASA";
+      case "native":
+        return "Native token";
+    }
+    return "Unknown";
+  };
+  return { state, loadAllUserAssets, getBalanceForToken, updateBalance, getAlgorandClient, tokenTypeToText };
 });
 
 export const resetConfiguration = () => {

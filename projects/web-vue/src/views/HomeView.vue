@@ -29,7 +29,7 @@ useMotion(heroRef, {
         AVM Satoshi Dice
       </h1>
       <p class="text-xl text-gray-300 max-w-3xl mx-auto">
-        Create games, set your own win ratios, and play for a chance to win big with your favorite tokens.
+        Play proovable fair random onchain games for a chance to win big with your favorite tokens.
       </p>
     </div>
 
