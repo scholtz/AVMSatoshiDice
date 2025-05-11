@@ -30,7 +30,7 @@ const checkCurrentGameState = async () => {
   try {
     if (!activeAddress.value) return;
     const client = new AvmSatoshiDiceClient({
-      algorand: appStore.getAlgorandClient(),
+      algorand: appStore.getAlgorandClient(props.game.chain),
       appId: appStore.state.appId,
       defaultSender: algosdk.decodeAddress(activeAddress.value),
       defaultSigner: transactionSigner,
@@ -41,7 +41,7 @@ const checkCurrentGameState = async () => {
       gameStore.setLastGamePlay(play);
     }
   } catch (e: any) {
-    console.error(e);
+    console.error("error in checkCurrentGameState", props.game.chain, e);
   }
 };
 const isGameCreator = computed(() => {
@@ -90,18 +90,18 @@ const formattedBiggestWinAmount = computed(() => {
 });
 
 const playGame = () => {
-  router.push(`/game/${props.game.id}/play`);
+  router.push(`/game/${props.game.chain}/${props.game.id}/play`);
 };
 
 const goToLastGameOverviewClick = () => {
-  router.push(`/game/${props.game.id}/overview`);
+  router.push(`/game/${props.game.chain}/${props.game.id}/overview`);
 };
 
 const handleWithdraw = async () => {
   try {
     if (!activeAddress.value) throw Error("Address not selected");
     state.toSign = true;
-    const algorandClient = appStore.getAlgorandClient();
+    const algorandClient = appStore.getAlgorandClient(props.game.chain);
     const client = new AvmSatoshiDiceClient({
       algorand: algorandClient,
       appId: appStore.state.appId,
@@ -140,6 +140,7 @@ const handleWithdraw = async () => {
       game: updatedGame,
       idObj: props.game.idObj,
       token: props.game.token,
+      chain: props.game.chain,
     });
 
     state.toSign = false;

@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { useWallet } from "@txnlab/use-wallet-vue";
-import algosdk from "algosdk";
 import { computed, onMounted, reactive } from "vue";
-import { AvmSatoshiDiceClient } from "../../../../AVMSatoshiDice/smart_contracts/artifacts/avm_satoshi_dice/AvmSatoshiDiceClient";
 import { useAppStore } from "../../stores/app";
 import { useGameStore } from "../../stores/game";
 import AppLoader from "../common/AppLoader.vue";
@@ -18,14 +16,6 @@ const { activeAddress, transactionSigner } = useWallet();
 onMounted(async () => {
   console.log("gamelist onmounted");
   if (!activeAddress.value) return;
-  const client = new AvmSatoshiDiceClient({
-    algorand: appStore.getAlgorandClient(),
-    appId: appStore.state.appId,
-    defaultSender: algosdk.decodeAddress(activeAddress.value),
-    defaultSigner: transactionSigner,
-  });
-  await gameStore.loadGames(client);
-  console.log("gamelist onmounted done");
 });
 const tokens = computed(() => {
   return gameStore.tokens;

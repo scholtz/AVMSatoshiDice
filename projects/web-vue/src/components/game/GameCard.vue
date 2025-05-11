@@ -41,11 +41,11 @@ const lastPlayedFormatted = computed(() => {
 });
 
 const viewGameDetails = () => {
-  router.push(`/game/${props.game.id}`);
+  router.push(`/game/${props.game.chain}/${props.game.id}`);
 };
 
 const playGame = () => {
-  router.push(`/game/${props.game.id}/play`);
+  router.push(`/game/${props.game.chain}/${props.game.id}/play`);
 };
 </script>
 

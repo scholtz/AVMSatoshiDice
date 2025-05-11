@@ -19,6 +19,7 @@ const appStore = useAppStore();
 
 const { activeAddress, transactionSigner } = useWallet();
 const state = reactive({
+  chain: appStore.state.env,
   assetId: 0,
   initialDeposit: 0,
   winRatio: 95,
@@ -31,6 +32,17 @@ onMounted(async () => {
   await appStore.loadAllUserAssets(activeAddress);
   // check all user's tokens
 });
+
+watch(
+  () => state.chain,
+  async () => {
+    state.tokenType = "native";
+    state.assetId = 0;
+    await appStore.setEnv(state.chain);
+    await appStore.updateBalance(state.assetId, state.tokenType, activeAddress, transactionSigner, appStore.state.env);
+  },
+);
+
 watch(
   () => state.assetId,
   async () => {
@@ -57,7 +69,7 @@ const handleSubmit = async () => {
     if (!canCreateGame.value) throw Error("Please select correct parameters");
     if (!activeAddress.value) throw Error("Address not selected");
     state.isCreating = true;
-    const algorandClient = appStore.getAlgorandClient();
+    const algorandClient = appStore.getAlgorandClient(appStore.state.env);
     const client = new AvmSatoshiDiceClient({
       algorand: algorandClient,
       appId: appStore.state.appId,
@@ -86,6 +98,7 @@ const handleSubmit = async () => {
           id: `${activeAddress.value}-${state.assetId}`,
           idObj: { assetId: BigInt(state.assetId), owner: activeAddress.value },
           token: await getAssetAsync(state.assetId, algorandClient),
+          chain: appStore.state.env,
         });
       }
       console.log("executing native deposit done");
@@ -125,7 +138,8 @@ const handleSubmit = async () => {
           game: group.returns[1],
           id: `${activeAddress.value}-${state.assetId}`,
           idObj: { assetId: BigInt(state.assetId), owner: activeAddress.value },
-          token: await getAssetAsync(state.assetId, appStore.getAlgorandClient()),
+          token: await getAssetAsync(state.assetId, appStore.getAlgorandClient(appStore.state.env)),
+          chain: appStore.state.env,
         });
       }
     }
@@ -169,13 +183,14 @@ const handleSubmit = async () => {
           game: group.returns[0],
           id: `${activeAddress.value}-${state.assetId}`,
           idObj: { assetId: BigInt(state.assetId), owner: activeAddress.value },
-          token: await getAssetAsync(state.assetId, appStore.getAlgorandClient()),
+          token: await getAssetAsync(state.assetId, appStore.getAlgorandClient(appStore.state.env)),
+          chain: appStore.state.env,
         });
       }
     }
 
     state.isCreating = false;
-    router.push(`/game/${client.appAddress}-${state.assetId}`);
+    router.push(`/game/${state.chain}/${activeAddress.value}-${state.assetId}`);
   } catch (e: any) {
     state.isCreating = false;
     console.error(e);
@@ -208,7 +223,13 @@ const handleSubmit = async () => {
           additional 20% fee from the profit of the deposit from the user failed play. The profit fee is calculated from the game win ratio
           (1-win ratio)*0.2.
         </p>
-        <div class="grid grid-cols-1 gap-6" :class="state.tokenType == 'native' ? 'md:grid-cols-2' : 'md:grid-cols-3'">
+        <div class="grid grid-cols-1 gap-6" :class="state.tokenType == 'native' ? 'md:grid-cols-3' : 'md:grid-cols-4'">
+          <div>
+            <label class="label" for="tokenType">Chain</label>
+            <select class="input w-full" id="tokenType" v-model="state.chain">
+              <option v-for="chain in Object.values(appStore.state.chains)" :key="chain.code" :value="chain.code">{{ chain.name }}</option>
+            </select>
+          </div>
           <div>
             <label class="label" for="tokenType">Token type</label>
             <select class="input w-full" id="tokenType" v-model="state.tokenType">

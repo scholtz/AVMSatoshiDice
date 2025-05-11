@@ -1,7 +1,11 @@
 <script setup lang="ts">
+import { useWallet } from "@txnlab/use-wallet-vue";
 import { useMotion } from "@vueuse/motion";
-import { ref, Ref } from "vue";
+import algosdk from "algosdk";
+import { onMounted, ref, Ref } from "vue";
 import GameList from "../components/game/GameList.vue";
+import { useAppStore } from "../stores/app";
+import { useGameStore } from "../stores/game";
 
 const heroRef: Ref<HTMLElement | null> = ref(null);
 
@@ -17,6 +21,22 @@ useMotion(heroRef, {
       duration: 600,
     },
   },
+});
+
+const appStore = useAppStore();
+const gameStore = useGameStore();
+const { activeAddress, transactionSigner } = useWallet();
+onMounted(async () => {
+  console.log("gamelist onmounted");
+  if (activeAddress.value) {
+    const clients = appStore.getAppClients(activeAddress.value, transactionSigner);
+    await gameStore.loadGames(clients);
+  } else {
+    const account = algosdk.generateAccount();
+    const address = algosdk.encodeAddress(account.addr.publicKey);
+    const clients = appStore.getAppClients(address, transactionSigner);
+    await gameStore.loadGames(clients);
+  }
 });
 </script>
 

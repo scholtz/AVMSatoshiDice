@@ -40,6 +40,26 @@ export const getAssetAsync = async (assetId: string | number | bigint, avmClient
         url: "https://www.algorand.com",
         urlB64: new Uint8Array(Buffer.from("https://www.algorand.com", "ascii")),
       };
+    } else if (network.genesisId == "testnet-v1.0") {
+      return {
+        id: 0n,
+        type: "native",
+        creator: "",
+        decimals: 6,
+        total: 10_000_000_000_000_000n,
+        clawback: undefined,
+        defaultFrozen: false,
+        freeze: undefined,
+        manager: undefined,
+        metadataHash: undefined,
+        name: "Testnet",
+        nameB64: new Uint8Array(Buffer.from("Testnet", "ascii")),
+        reserve: undefined,
+        unitName: "T",
+        unitNameB64: new Uint8Array(Buffer.from("T", "ascii")),
+        url: "https://www.algorand.com",
+        urlB64: new Uint8Array(Buffer.from("https://www.algorand.com", "ascii")),
+      };
     } else if (network.genesisId == "voimain-v1.0") {
       return {
         id: 0n,

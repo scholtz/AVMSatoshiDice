@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import { useWallet } from "@txnlab/use-wallet-vue";
 import { ref } from "vue";
-import { RouterLink, useRoute, useRouter } from "vue-router";
+import { RouterLink, useRouter } from "vue-router";
 import AppButton from "./AppButton.vue";
 
-const route = useRoute();
 const router = useRouter();
 const isMenuOpen = ref(false);
-const { activeWallet, algodClient, transactionSigner, wallets, activeAddress } = useWallet();
+const { activeWallet, activeAddress } = useWallet();
 
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;

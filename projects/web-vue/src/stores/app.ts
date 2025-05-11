@@ -1,9 +1,12 @@
 import { AlgorandClient } from "@algorandfoundation/algokit-utils";
+import { WalletId } from "@txnlab/use-wallet-vue";
 import algosdk from "algosdk";
 import { getArc200Client } from "arc200-client";
 import { defineStore } from "pinia";
 import { ComputedRef, reactive } from "vue";
+import { AvmSatoshiDiceClient } from "../../../AVMSatoshiDice/smart_contracts/artifacts/avm_satoshi_dice/AvmSatoshiDiceClient";
 import { getAssetAsync } from "../scripts/algorand/getAssetAsync";
+import { IChainCode2AppClient } from "../types/IChainCode2AppClient";
 
 type UserStruct = {
   balance: bigint;
@@ -55,9 +58,26 @@ export interface IState {
   userBalance: bigint;
   assetDecimals: number;
   assetHolding: IAssetHolding[];
+  chains: IChainCode2Chain;
+}
+interface IChain {
+  appId: bigint;
+  name: string;
+  code: "mainnet-v1.0" | "aramidmain-v1.0" | "testnet-v1.0" | "betanet-v1.0" | "voimain-v1.0" | "fnet-v1" | "dockernet-v1";
+  algodHost: string;
+  algodPort: number;
+  algodToken: string;
+  indexerHost: string;
+  indexerPort: number;
+  indexerToken: string;
+  tokenName: string;
+  wallets: string[];
+}
+interface IChainCode2Chain {
+  [key: string]: IChain;
 }
 const defaultState: IState = {
-  appId: 6169,
+  appId: 6169n,
   // algodHost: "https://mainnet-api.algonode.cloud",
   // algodPort: 443,
   // algodToken: "",
@@ -82,6 +102,73 @@ const defaultState: IState = {
   userBalance: 0n,
   assetDecimals: 6,
   assetHolding: [],
+  chains: {
+    "mainnet-v1.0": {
+      appId: 2987731428n,
+      name: "Algorand Mainnet",
+      code: "mainnet-v1.0",
+      algodHost: "https://mainnet-api.4160.nodely.dev",
+      algodPort: 443,
+      algodToken: "",
+      indexerHost: "https://mainnet-idx.4160.nodely.dev",
+      indexerPort: 443,
+      indexerToken: "",
+      tokenName: "ALGO",
+      wallets: [WalletId.BIATEC, WalletId.DEFLY, WalletId.EXODUS, WalletId.PERA, WalletId.KIBISIS, WalletId.WALLETCONNECT],
+    },
+    "voimain-v1.0": {
+      appId: 40051512n,
+      name: "Voi Mainnet",
+      code: "voimain-v1.0",
+      algodHost: "https://mainnet-api.voi.nodely.dev",
+      algodPort: 443,
+      algodToken: "",
+      indexerHost: "https://mainnet-idx.voi.nodely.dev",
+      indexerPort: 443,
+      indexerToken: "",
+      tokenName: "VOI",
+      wallets: [WalletId.BIATEC, WalletId.KIBISIS, WalletId.DEFLY, WalletId.WALLETCONNECT],
+    },
+    "aramidmain-v1.0": {
+      appId: 187516n,
+      name: "Aramid Mainnet",
+      code: "aramidmain-v1.0",
+      algodHost: "https://algod.aramidmain.a-wallet.net",
+      algodPort: 443,
+      algodToken: "",
+      indexerHost: "https://aramidindexer.de-k1.a-wallet.net",
+      indexerPort: 443,
+      indexerToken: "",
+      tokenName: "Aramid",
+      wallets: [WalletId.BIATEC, WalletId.DEFLY, WalletId.WALLETCONNECT],
+    },
+    "testnet-v1.0": {
+      appId: 739345318n,
+      name: "Algorand Testnet",
+      code: "testnet-v1.0",
+      algodHost: "https://testnet-api.4160.nodely.dev",
+      algodPort: 443,
+      algodToken: "",
+      indexerHost: "https://testnet-idx.4160.nodely.dev",
+      indexerPort: 443,
+      indexerToken: "",
+      tokenName: "TestA",
+      wallets: [WalletId.BIATEC, WalletId.DEFLY, WalletId.PERA, WalletId.WALLETCONNECT],
+    },
+    // "dockernet-v1": {
+    //   appId: 6169n,
+    //   name: "Localnet",
+    //   code: "dockernet-v1",
+    //   algodHost: "http://localhost",
+    //   algodPort: 4001,
+    //   algodToken: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    //   indexerHost: "http://localhost",
+    //   indexerPort: 8980,
+    //   indexerToken: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    //   tokenName: "local",
+    //   wallets: [WalletId.BIATEC, WalletId.KIBISIS, WalletId.DEFLY, WalletId.PERA, WalletId.WALLETCONNECT],
+    // },
+  },
 };
 export const useAppStore = defineStore("app", () => {
   let lastTheme = localStorage.getItem("lastTheme");
@@ -95,17 +182,43 @@ export const useAppStore = defineStore("app", () => {
   ): number {
     return Number(state.token2balance[`${chainId}-${tokenId.toString()}`] || 0n);
   }
-  const getAlgorandClient = () => {
+  const getAppId = (
+    chain: "mainnet-v1.0" | "aramidmain-v1.0" | "testnet-v1.0" | "betanet-v1.0" | "voimain-v1.0" | "fnet-v1" | "dockernet-v1",
+  ) => {
+    return state.chains[chain].appId;
+  };
+  const getAppClients = (
+    activeAddress: string,
+    transactionSigner: (txnGroup: algosdk.Transaction[], indexesToSign: number[]) => Promise<Uint8Array[]>,
+  ) => {
+    if (!activeAddress) throw Error("activeAddress is empty");
+
+    const ret: IChainCode2AppClient = {};
+
+    Object.values(state.chains).map((c) => {
+      ret[c.code] = new AvmSatoshiDiceClient({
+        algorand: getAlgorandClient(c.code),
+        appId: getAppId(c.code),
+        defaultSender: algosdk.decodeAddress(activeAddress),
+        defaultSigner: transactionSigner,
+      });
+    });
+    return ret;
+  };
+  const getAlgorandClient = (
+    chain: "mainnet-v1.0" | "aramidmain-v1.0" | "testnet-v1.0" | "betanet-v1.0" | "voimain-v1.0" | "fnet-v1" | "dockernet-v1",
+  ) => {
+    console.log("client for ", chain);
     return AlgorandClient.fromConfig({
       algodConfig: {
-        server: state.algodHost,
-        port: state.algodPort,
-        token: state.algodToken,
+        server: state.chains[chain].algodHost,
+        port: state.chains[chain].algodPort,
+        token: state.chains[chain].algodToken,
       },
       indexerConfig: {
-        server: state.indexerHost,
-        port: state.indexerPort,
-        token: state.indexerToken,
+        server: state.chains[chain].indexerHost,
+        port: state.chains[chain].indexerPort,
+        token: state.chains[chain].indexerToken,
       },
     });
   };
@@ -113,7 +226,7 @@ export const useAppStore = defineStore("app", () => {
     if (!activeAddress.value) {
       return;
     }
-    const algorandClient = getAlgorandClient();
+    const algorandClient = getAlgorandClient(state.env);
     const info = await algorandClient.client.algod.accountInformation(activeAddress.value).do();
     const allAssets = [];
     for (let asset of info?.assets ?? []) {
@@ -148,7 +261,7 @@ export const useAppStore = defineStore("app", () => {
       state.userBalance = 0n;
       return;
     }
-    const algorandClient = getAlgorandClient();
+    const algorandClient = getAlgorandClient(chainId);
     if (state.tokenType == "native") {
       const info = await algorandClient.client.algod.accountInformation(activeAddress.value).do();
       console.log("info", info);
@@ -206,7 +319,34 @@ export const useAppStore = defineStore("app", () => {
     }
     return "Unknown";
   };
-  return { state, loadAllUserAssets, getBalanceForToken, updateBalance, getAlgorandClient, tokenTypeToText };
+  const setEnv = (
+    env: "mainnet-v1.0" | "aramidmain-v1.0" | "testnet-v1.0" | "betanet-v1.0" | "voimain-v1.0" | "fnet-v1" | "dockernet-v1",
+  ) => {
+    console.log("client for", env);
+    state.algodHost = state.chains[env].algodHost;
+    state.algodPort = state.chains[env].algodPort;
+    state.algodToken = state.chains[env].algodToken;
+
+    state.indexerHost = state.chains[env].indexerHost;
+    state.indexerPort = state.chains[env].indexerPort;
+    state.indexerToken = state.chains[env].indexerToken;
+
+    state.appId = state.chains[env].appId;
+    state.tokenName = state.chains[env].tokenName;
+
+    state.env = env;
+  };
+  return {
+    state,
+    setEnv,
+    getAppId,
+    loadAllUserAssets,
+    getBalanceForToken,
+    updateBalance,
+    getAlgorandClient,
+    getAppClients,
+    tokenTypeToText,
+  };
 });
 
 export const resetConfiguration = () => {

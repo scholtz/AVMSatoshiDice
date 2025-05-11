@@ -8,6 +8,7 @@ export default defineConfig({
     testTimeout: 60000,
     coverage: {
       provider: 'v8',
+      reporter: ['text', 'html'], // enables HTML output
     },
   },
   plugins: [

@@ -159,6 +159,32 @@ export class AvmSatoshiDice extends Contract {
    */
   version = GlobalState<string>({ key: 'scver' })
   /**
+   * Initial setup
+   */
+  public constructor() {
+    super()
+    this.version.value = 'AVMSatoshiDice#1'
+  }
+
+  private _ConvertToUintN64UsingInterpretAsArc4(n: UintN256): UintN64 {
+    // Check that all higher-order bytes are zero
+    const bytes: bytes = n.bytes
+    assert(bytes.length === 32)
+
+    const part1 = arc4.interpretAsArc4<arc4.UintN64>(bytes.slice(0, 8), 'none')
+    assert(part1.native === 0, 'Buffer overflow - part1')
+
+    const part2 = arc4.interpretAsArc4<arc4.UintN64>(bytes.slice(8, 16), 'none')
+    assert(part2.native === 0, 'Buffer overflow - part1')
+
+    const part3 = arc4.interpretAsArc4<arc4.UintN64>(bytes.slice(16, 24), 'none')
+    assert(part3.native === 0, 'Buffer overflow - part3')
+
+    const uint64Bytes = bytes.slice(24, 32)
+    return arc4.interpretAsArc4<arc4.UintN64>(uint64Bytes, 'none')
+  }
+
+  /**
    * addressUdpater from global biatec configuration is allowed to update application
    */
   @arc4.abimethod({ allowActions: 'UpdateApplication' })
@@ -194,7 +220,53 @@ export class AvmSatoshiDice extends Contract {
       .submit()
     return itxnResult.txnId
   }
+  /**
+   * Shows the current withdrawable amount for the user
+   * @param assetId Asset
+   * @param isArc200Token True if asset is arc200
+   * @returns
+   */
+  @arc4.abimethod({ readonly: true })
+  public withdrawable(assetId: UintN64, isArc200Token: Bool): biguint {
+    const key = new AddressAssetStruct({
+      assetId: assetId,
+      owner: new Address(Txn.sender),
+    })
 
+    if (this.games(key).exists) {
+      let toWithdrawIncludingFee: biguint = this.games(key).value.balance.native
+      const fee: biguint = toWithdrawIncludingFee / BigUint(40)
+      const toWithdrawNet: biguint = toWithdrawIncludingFee - fee
+      return toWithdrawNet
+    } else {
+      if (Global.creatorAddress === Txn.sender) {
+        if (assetId.native === 0) {
+          // Global.currentApplicationAddress.balance = 10246877n
+          // Global.currentApplicationAddress.minBalance = 291500n
+          // this.allDeposits(assetId).value.native = 0n
+          return (
+            BigUint(Global.currentApplicationAddress.balance - Global.currentApplicationAddress.minBalance) -
+            this.allDeposits(assetId).value.native
+          )
+          // const maxWithdrawableBalance: uint64 =
+          //   Global.currentApplicationAddress.balance -
+          //   Global.currentApplicationAddress.minBalance -
+          //   new UintN64(this.allDeposits(assetId).value.native).native
+          // return BigUint(maxWithdrawableBalance)
+        } else {
+          if (isArc200Token.native) {
+            return 0n // todo
+          } else {
+            const balance = Asset(assetId.native).balance(Global.currentApplicationAddress)
+            const maxWithdrawableBalance: uint64 = balance - new UintN64(this.allDeposits(assetId).value.native).native
+            return BigUint(maxWithdrawableBalance)
+          }
+        }
+      } else {
+        return 0n
+      }
+    }
+  }
   /**
    * Biatec can withdraw service fees. The current balance
    *
@@ -204,7 +276,7 @@ export class AvmSatoshiDice extends Contract {
    * @returns
    */
   @arc4.abimethod()
-  public withdraw(receiver: Address, amount: UintN256, assetId: UintN64, isArc200Token: Bool): void {
+  public withdraw(receiver: Address, amount: UintN256, assetId: UintN64, isArc200Token: Bool): biguint {
     const key = new AddressAssetStruct({
       assetId: assetId,
       owner: new Address(Txn.sender),
@@ -225,8 +297,15 @@ export class AvmSatoshiDice extends Contract {
         'Game creator can withdraw from the game only the game deposit',
       )
 
+      assert(
+        this.allDeposits(assetId).value.native >= toWithdrawIncludingFee,
+        'allDeposits is smaller then withdrawal request',
+      )
+
       this.games(key).value.balance = new UintN256(game.balance.native - toWithdrawIncludingFee)
-      this.allDeposits(assetId).value = new UintN256(this.allDeposits(assetId).value.native - toWithdrawNet)
+      const prevAllDeposits: biguint = this.allDeposits(assetId).value.native
+      const newAllDepositValue: biguint = prevAllDeposits - toWithdrawIncludingFee
+      this.allDeposits(assetId).value = new UintN256(newAllDepositValue)
 
       if (game.isNativeToken.native) {
         itxn
@@ -237,6 +316,7 @@ export class AvmSatoshiDice extends Contract {
             fee: 0,
           })
           .submit()
+        return toWithdrawNet
       }
       if (game.isASAToken.native) {
         itxn
@@ -248,6 +328,7 @@ export class AvmSatoshiDice extends Contract {
             fee: 0,
           })
           .submit()
+        return toWithdrawNet
       }
       if (game.isArc200Token.native) {
         // ARC 200
@@ -259,21 +340,30 @@ export class AvmSatoshiDice extends Contract {
             note: 'user withdrawal',
           })
           .submit()
+        return toWithdrawNet
       }
+
+      return BigUint(0)
     } else {
       // box does not exists
       if (Global.creatorAddress === Txn.sender) {
         // global deployer can perform fee transfer
 
         if (assetId.native === 0) {
-          const maxWithdrawableBalance: uint64 =
-            Global.currentApplicationAddress.balance -
-            Global.currentApplicationAddress.minBalance -
-            new UintN64(this.allDeposits(assetId).value.native).native
-          assert(amount.native <= BigUint(maxWithdrawableBalance), 'maxWithdrawableBalance is less then requested')
-          let toWidraw: uint64 = new UintN64(amount.native).native
+          assert(
+            BigUint(Global.currentApplicationAddress.balance - Global.currentApplicationAddress.minBalance) >=
+              this.allDeposits(assetId).value.native,
+            'The curren balance plus min balance must be grater then all deposits to be able to withdraw',
+          )
+
+          const maxWithdrawableBalance: biguint =
+            BigUint(Global.currentApplicationAddress.balance - Global.currentApplicationAddress.minBalance) -
+            this.allDeposits(assetId).value.native
+
+          assert(amount.native <= maxWithdrawableBalance, 'maxWithdrawableBalance is less then requested')
+          let toWidraw: uint64 = this._ConvertToUintN64UsingInterpretAsArc4(amount).native
           if (toWidraw === 0) {
-            toWidraw = maxWithdrawableBalance
+            toWidraw = this._ConvertToUintN64UsingInterpretAsArc4(new UintN256(maxWithdrawableBalance)).native
           }
 
           itxn
@@ -284,6 +374,7 @@ export class AvmSatoshiDice extends Contract {
               fee: 0,
             })
             .submit()
+          return BigUint(toWidraw)
         } else if (isArc200Token.native) {
           // arc200 withdrawal
           // TODO .. check the balance
@@ -307,6 +398,7 @@ export class AvmSatoshiDice extends Contract {
               note: 'admin withdrawal',
             })
             .submit()
+          return amount.native
         } else {
           // asa
           const balance = Asset(assetId.native).balance(Global.currentApplicationAddress)
@@ -326,6 +418,7 @@ export class AvmSatoshiDice extends Contract {
               fee: 0,
             })
             .submit()
+          return BigUint(toWidraw)
         }
       } else {
         err('The game for this asset does not exists')
@@ -844,10 +937,10 @@ export class AvmSatoshiDice extends Contract {
           prevDeposit = this.allDeposits(key.assetId).value
         }
         assert(prevDeposit.native >= winAmount, 'There is not enough money in the sc to cover this win tx')
-        this.allDeposits(key.assetId).value = new UintN256(prevDeposit.native - winAmount)
+        this.allDeposits(key.assetId).value = new UintN256(prevDeposit.native - winNetAmount - play.deposit.native)
 
         assert(game.balance.native >= winAmount, 'There is not enough money in the sc to cover this win tx')
-        this.games(key).value.balance = new UintN256(game.balance.native - winAmount)
+        this.games(key).value.balance = new UintN256(game.balance.native - winNetAmount)
 
         this.plays(sender).value.state = new UintN64(2) // mark the state of the game 2 - win
 
@@ -869,10 +962,10 @@ export class AvmSatoshiDice extends Contract {
           prevDeposit = this.allDeposits(key.assetId).value
         }
         assert(prevDeposit.native >= winAmount, 'There is not enough money in the sc to cover this win tx')
-        this.allDeposits(key.assetId).value = new UintN256(prevDeposit.native - winAmount)
+        this.allDeposits(key.assetId).value = new UintN256(prevDeposit.native - winNetAmount - play.deposit.native)
 
         assert(game.balance.native >= winAmount, 'There is not enough money in the sc to cover this win tx')
-        this.games(key).value.balance = new UintN256(game.balance.native - winAmount)
+        this.games(key).value.balance = new UintN256(game.balance.native - winNetAmount)
 
         this.plays(sender).value.state = new UintN64(2) // mark the state of the game 2 - win
 
@@ -892,10 +985,10 @@ export class AvmSatoshiDice extends Contract {
           prevDeposit = this.allDeposits(key.assetId).value
         }
         assert(prevDeposit.native >= winAmount, 'There is not enough money in the sc to cover this win tx')
-        this.allDeposits(key.assetId).value = new UintN256(prevDeposit.native - winAmount)
+        this.allDeposits(key.assetId).value = new UintN256(prevDeposit.native - winNetAmount - play.deposit.native)
 
         assert(game.balance.native >= winAmount, 'There is not enough money in the sc to cover this win tx')
-        this.games(key).value.balance = new UintN256(game.balance.native - winAmount)
+        this.games(key).value.balance = new UintN256(game.balance.native - winNetAmount)
 
         this.plays(sender).value.state = new UintN64(2) // mark the state of the game 2 - win
 

@@ -3,7 +3,6 @@ import { useWallet } from "@txnlab/use-wallet-vue";
 import algosdk from "algosdk";
 import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { AvmSatoshiDiceClient } from "../../../AVMSatoshiDice/smart_contracts/artifacts/avm_satoshi_dice/AvmSatoshiDiceClient";
 import AppButton from "../components/common/AppButton.vue";
 import AppLoader from "../components/common/AppLoader.vue";
 import GameDetails from "../components/game/GameDetails.vue";
@@ -17,27 +16,31 @@ const gameStore = useGameStore();
 
 const isLoading = ref(true);
 const gameId = route.params.id as string;
+const chainId = route.params.chain as
+  | "mainnet-v1.0"
+  | "aramidmain-v1.0"
+  | "testnet-v1.0"
+  | "betanet-v1.0"
+  | "voimain-v1.0"
+  | "fnet-v1"
+  | "dockernet-v1";
 
 const { activeAddress, transactionSigner } = useWallet();
 onMounted(async () => {
   console.log("gamelist onmounted");
-  if (!activeAddress.value) return;
-  const client = new AvmSatoshiDiceClient({
-    algorand: appStore.getAlgorandClient(),
-    appId: appStore.state.appId,
-    defaultSender: algosdk.decodeAddress(activeAddress.value),
-    defaultSigner: transactionSigner,
-  });
-  await gameStore.loadGames(client);
-
-  gameStore.setCurrentGame(gameId);
+  if (activeAddress.value) {
+    const clients = appStore.getAppClients(activeAddress.value, transactionSigner);
+    await gameStore.loadGames(clients);
+  } else {
+    const account = algosdk.generateAccount();
+    const address = algosdk.encodeAddress(account.addr.publicKey);
+    const clients = appStore.getAppClients(address, transactionSigner);
+    await gameStore.loadGames(clients);
+  }
+  gameStore.setCurrentGame(gameId, chainId);
   console.log("gamelist onmounted done");
   isLoading.value = false;
 });
-
-const playGame = () => {
-  router.push(`/game/${gameId}/play`);
-};
 </script>
 
 <template>

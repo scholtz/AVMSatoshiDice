@@ -2,18 +2,19 @@ import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 import {
   AddressAssetStruct,
-  AvmSatoshiDiceClient,
   GameStruct,
   PlayStruct,
 } from "../../../AVMSatoshiDice/smart_contracts/artifacts/avm_satoshi_dice/AvmSatoshiDiceClient";
 import { getAssetAsync } from "../scripts/algorand/getAssetAsync";
 import { IAssetParams } from "../types/IAssetParams";
+import { IChainCode2AppClient } from "../types/IChainCode2AppClient";
 
 export interface IGameStruct {
   id: string;
   idObj: AddressAssetStruct;
   game: GameStruct;
   token: IAssetParams;
+  chain: "mainnet-v1.0" | "aramidmain-v1.0" | "testnet-v1.0" | "betanet-v1.0" | "voimain-v1.0" | "fnet-v1" | "dockernet-v1";
 }
 interface IAsset2AssetParams {
   [key: string]: IAssetParams;
@@ -26,23 +27,39 @@ export const useGameStore = defineStore("game", () => {
   const currentGame = ref<IGameStruct | null>(null);
   const currentGamePlay = ref<PlayStruct | null>(null);
 
-  const loadGames = async (client: AvmSatoshiDiceClient) => {
-    const gamesMap = await client.state.box.games.getMap();
+  const loadGames = async (clients: IChainCode2AppClient) => {
     const gamesData: IGameStruct[] = [];
-    const tokensLocal: IAsset2AssetParams = {};
-    for (let item of gamesMap) {
-      const tokenidStr = BigInt(item[0].assetId).toString();
-      const token = await getAssetAsync(item[0].assetId, client.algorand);
-      tokensLocal[tokenidStr] = token;
-      gamesData.push({
-        id: `${item[0].owner}-${item[0].assetId}`,
-        idObj: item[0],
-        game: item[1],
-        token: token,
-      });
+    console.log("clients", clients);
+    for (let chain of Object.keys(clients)) {
+      try {
+        const client = clients[chain];
+
+        const gamesMap = await client.state.box.games.getMap();
+        for (let item of gamesMap) {
+          try {
+            const token = await getAssetAsync(item[0].assetId, client.algorand);
+            gamesData.push({
+              id: `${item[0].owner}-${item[0].assetId}`,
+              idObj: item[0],
+              game: item[1],
+              token: token,
+              chain: chain as
+                | "mainnet-v1.0"
+                | "aramidmain-v1.0"
+                | "testnet-v1.0"
+                | "betanet-v1.0"
+                | "voimain-v1.0"
+                | "fnet-v1"
+                | "dockernet-v1",
+            });
+          } catch (e) {
+            console.error("Error loading data for game ", chain, item, e);
+          }
+        }
+      } catch (e) {
+        console.error("Error loading games from chain", chain, e);
+      }
     }
-    console.log("tokensLocal", tokensLocal);
-    tokens.value = Object.values(tokensLocal);
 
     games.value = gamesData;
     console.log("games", games);
@@ -73,8 +90,11 @@ export const useGameStore = defineStore("game", () => {
     selectedTokenFilter.value = tokenId;
   }
 
-  function getGameById(id: string) {
-    return games.value.find((game) => game.id === id) || null;
+  function getGameById(
+    id: string,
+    chain: "mainnet-v1.0" | "aramidmain-v1.0" | "testnet-v1.0" | "betanet-v1.0" | "voimain-v1.0" | "fnet-v1" | "dockernet-v1",
+  ) {
+    return games.value.find((game) => game.id === id && game.chain == chain) || null;
   }
 
   function updateGame(updatedGame: IGameStruct) {
@@ -87,8 +107,11 @@ export const useGameStore = defineStore("game", () => {
       console.log("game updated - new", updatedGame);
     }
   }
-  function setCurrentGame(gameId: string) {
-    currentGame.value = getGameById(gameId);
+  function setCurrentGame(
+    gameId: string,
+    chain: "mainnet-v1.0" | "aramidmain-v1.0" | "testnet-v1.0" | "betanet-v1.0" | "voimain-v1.0" | "fnet-v1" | "dockernet-v1",
+  ) {
+    currentGame.value = getGameById(gameId, chain);
   }
   const setLastGamePlay = (play: PlayStruct) => {
     currentGamePlay.value = play;

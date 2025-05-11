@@ -33,7 +33,7 @@ const checkCurrentRound = async () => {
     if (!gameStore.currentGamePlay) return;
     console.log("checkCurrentRound", gameStore.currentGamePlay.state);
     if (gameStore.currentGamePlay.state == 1n) {
-      const client = appStore.getAlgorandClient();
+      const client = appStore.getAlgorandClient(props.game.chain);
       const params = await client.client.algod.getTransactionParams().do();
       state.currentRound = params.firstValid;
     }
@@ -50,6 +50,7 @@ async function startRoundChecker() {
 startRoundChecker();
 
 onMounted(async () => {
+  appStore.setEnv(props.game.chain);
   await appStore.updateBalance(props.game.token.id, props.game.token.type, activeAddress, transactionSigner, appStore.state.env);
   await checkCurrentGameState();
   if (route.name == "game-play-overview") {
@@ -70,7 +71,7 @@ function bufferToDecimal(buf: Buffer): bigint {
 const goToProof = async () => {
   if (!gameStore.currentGamePlay) throw Error("Game play not found");
 
-  const algorand = appStore.getAlgorandClient();
+  const algorand = appStore.getAlgorandClient(props.game.chain);
   const round = await algorand.client.algod.block(gameStore.currentGamePlay.round + 2n).do();
   state.seedInB64 = Buffer.from(round.block.header.seed).toString("base64");
   state.seedInHex = Buffer.from(round.block.header.seed).toString("hex");
@@ -87,7 +88,7 @@ const checkCurrentGameState = async (moveToCheckOnResult: boolean = false) => {
   try {
     if (!activeAddress.value) return;
     const client = new AvmSatoshiDiceClient({
-      algorand: appStore.getAlgorandClient(),
+      algorand: appStore.getAlgorandClient(props.game.chain),
       appId: appStore.state.appId,
       defaultSender: algosdk.decodeAddress(activeAddress.value),
       defaultSigner: transactionSigner,
@@ -143,7 +144,7 @@ const cannotClaim = computed(() => {
 
 const potentialWinAmount = computed(() => {
   const probabilityDecimal = state.winProbability / 100;
-  return Math.floor(state.depositAmount / probabilityDecimal);
+  return Math.floor((state.depositAmount / probabilityDecimal) * 10 ** props.game.token.decimals) / 10 ** props.game.token.decimals;
 });
 
 const gameProofPlayerBigint = computed(() => {
@@ -157,7 +158,10 @@ const gameProofRand01Bigint = computed(() => {
 });
 const potentialNetWinAmount = computed(() => {
   const probabilityDecimal = state.winProbability / 100;
-  return Math.floor(state.depositAmount / probabilityDecimal) - state.depositAmount;
+  return (
+    Math.floor((state.depositAmount * 10 ** props.game.token.decimals) / probabilityDecimal) / 10 ** props.game.token.decimals -
+    state.depositAmount
+  );
 });
 
 const probabilityPercentage = computed(() => {
@@ -230,7 +234,7 @@ const startPlay = async () => {
     // Create game play record
     if (!activeAddress.value) throw Error("Active Address is missing");
     state.isDepositing = true;
-    const algorandClient = appStore.getAlgorandClient();
+    const algorandClient = appStore.getAlgorandClient(props.game.chain);
     const client = new AvmSatoshiDiceClient({
       algorand: algorandClient,
       appId: appStore.state.appId,
@@ -242,12 +246,12 @@ const startPlay = async () => {
         args: {
           game: props.game.idObj,
           txnDeposit: makePaymentTxnWithSuggestedParamsFromObject({
-            amount: BigInt(state.depositAmount * 10 ** Number(props.game.token.decimals)),
+            amount: BigInt(Math.round(state.depositAmount * 10 ** Number(props.game.token.decimals))),
             receiver: algosdk.encodeAddress(client.appAddress.publicKey),
             sender: activeAddress.value,
             suggestedParams: await client.algorand.client.algod.getTransactionParams().do(),
           }),
-          winProbability: BigInt(state.winProbability * 10000),
+          winProbability: BigInt(Math.round(state.winProbability * 10000)),
         },
         //staticFee: AlgoAmount.MicroAlgo(2000),
         maxFee: AlgoAmount.MicroAlgo(4000),
@@ -263,12 +267,12 @@ const startPlay = async () => {
           game: props.game.idObj,
           txnDeposit: makeAssetTransferTxnWithSuggestedParamsFromObject({
             assetIndex: props.game.idObj.assetId,
-            amount: BigInt(state.depositAmount * 10 ** Number(props.game.token.decimals)),
+            amount: BigInt(Math.round(state.depositAmount * 10 ** Number(props.game.token.decimals))),
             receiver: algosdk.encodeAddress(client.appAddress.publicKey),
             sender: activeAddress.value,
             suggestedParams: await client.algorand.client.algod.getTransactionParams().do(),
           }),
-          winProbability: BigInt(state.winProbability * 10000),
+          winProbability: BigInt(Math.round(state.winProbability * 10000)),
         },
         //staticFee: AlgoAmount.MicroAlgo(2000),
         maxFee: AlgoAmount.MicroAlgo(4000),
@@ -289,7 +293,7 @@ const startPlay = async () => {
         approvalSourceMap: undefined,
         clearSourceMap: undefined,
       });
-      const amountUint = BigInt(state.depositAmount * 10 ** Number(props.game.token.decimals));
+      const amountUint = BigInt(Math.round(state.depositAmount * 10 ** Number(props.game.token.decimals)));
       const approveTx = await arc200.createTransaction.arc200Approve({
         args: {
           spender: algosdk.encodeAddress(client.appAddress.publicKey),
@@ -304,7 +308,7 @@ const startPlay = async () => {
             game: props.game.idObj,
             amount: amountUint,
             assetId: props.game.idObj.assetId,
-            winProbability: BigInt(state.winProbability * 10000),
+            winProbability: BigInt(Math.round(state.winProbability * 10000)),
           },
           staticFee: AlgoAmount.MicroAlgo(2000),
           maxFee: AlgoAmount.MicroAlgo(4000),
@@ -340,7 +344,7 @@ const handleClaim = async () => {
     if (!activeAddress.value) throw Error("Active Address is missing");
     if (!state.play) throw Error("Cannot find current game");
     const client = new AvmSatoshiDiceClient({
-      algorand: appStore.getAlgorandClient(),
+      algorand: appStore.getAlgorandClient(props.game.chain),
       appId: appStore.state.appId,
       defaultSender: algosdk.decodeAddress(activeAddress.value),
       defaultSigner: transactionSigner,
@@ -531,18 +535,19 @@ const playAgainClick = async () => {
             <div class="flex justify-between items-center">
               <span class="text-gray-400">Potential Win:</span>
               <span :class="['font-semibold text-lg', canWinAmount ? 'text-success-400' : 'text-error-500']">
-                {{ potentialWinAmount.toLocaleString() }} {{ game.token.unitName }}
+                {{ potentialWinAmount.toFixed(game.token.decimals).toLocaleString() }} {{ game.token.unitName }}
               </span>
             </div>
             <div class="flex justify-between items-center">
               <span class="text-gray-400">Potential Net Win:</span>
-              <span> {{ potentialNetWinAmount.toLocaleString() }} {{ game.token.unitName }} </span>
+              <span> {{ potentialNetWinAmount.toFixed(game.token.decimals).toLocaleString() }} {{ game.token.unitName }} </span>
             </div>
 
             <div class="flex justify-between items-center">
               <span class="text-gray-400">Game Balance:</span>
               <span class="font-semibold text-white">
-                {{ (Number(game.game.balance) / 10 ** Number(game.token.decimals)).toLocaleString() }} {{ game.token.unitName }}
+                {{ (Number(game.game.balance) / 10 ** Number(game.token.decimals)).toFixed(game.token.decimals).toLocaleString() }}
+                {{ game.token.unitName }}
               </span>
             </div>
 
@@ -589,10 +594,6 @@ const playAgainClick = async () => {
               <span class="font-semibold text-white"> {{ potentialNetWinAmount.toLocaleString() }} {{ game.token.unitName }} </span>
             </div>
           </div>
-
-          <div>
-            <AppButton @click="state.gamePlayStep = 1" variant="primary" class="px-8"> Cancel </AppButton>
-          </div>
         </div>
 
         <!-- Step 3: Claim -->
@@ -637,8 +638,8 @@ const playAgainClick = async () => {
 
           <div>
             <AppButton @click="handleClaim" variant="primary" :disabled="cannotClaim" class="px-8">
-              <AppLoader v-if="state.isClaiming" size="sm" color="white" class="mr-2" />
-              {{ state.isClaiming ? "Processing..." : "Claim Now" }}
+              <AppLoader v-if="state.isClaiming || cannotClaim" size="sm" color="white" class="mr-2" />
+              {{ state.isClaiming ? "Processing... Check your wallet.." : cannotClaim ? "Wait few blocks.." : "Claim Now" }}
             </AppButton>
           </div>
         </div>
