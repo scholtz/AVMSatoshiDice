@@ -6,7 +6,7 @@ import { getArc200Client } from "arc200-client";
 import { useToast } from "primevue";
 import { computed, onMounted, reactive, watch } from "vue";
 import { useRouter } from "vue-router";
-import { AvmSatoshiDiceClient } from "../../../../AVMSatoshiDice/smart_contracts/artifacts/avm_satoshi_dice/AvmSatoshiDiceClient";
+import { AvmSatoshiDiceClient } from "avm-satoshi-dice";
 import { getAssetAsync } from "../../scripts/algorand/getAssetAsync";
 import { useAppStore } from "../../stores/app";
 import { useGameStore } from "../../stores/game";

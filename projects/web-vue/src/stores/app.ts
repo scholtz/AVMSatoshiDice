@@ -4,7 +4,7 @@ import algosdk from "algosdk";
 import { getArc200Client } from "arc200-client";
 import { defineStore } from "pinia";
 import { ComputedRef, reactive } from "vue";
-import { AvmSatoshiDiceClient } from "../../../AVMSatoshiDice/smart_contracts/artifacts/avm_satoshi_dice/AvmSatoshiDiceClient";
+import { AvmSatoshiDiceClient } from "avm-satoshi-dice";
 import { getAssetAsync } from "../scripts/algorand/getAssetAsync";
 import { IChainCode2AppClient } from "../types/IChainCode2AppClient";
 
@@ -229,7 +229,7 @@ export const useAppStore = defineStore("app", () => {
     const algorandClient = getAlgorandClient(state.env);
     const info = await algorandClient.client.algod.accountInformation(activeAddress.value).do();
     const allAssets = [];
-    for (let asset of info?.assets ?? []) {
+    for (const asset of info?.assets ?? []) {
       const assetInfo = await getAssetAsync(asset.assetId, algorandClient);
       const assetData = {
         amount: asset.amount,

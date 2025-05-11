@@ -6,10 +6,7 @@ import { getArc200Client } from "arc200-client";
 import { useToast } from "primevue";
 import { computed, onMounted, reactive, ref, watch } from "vue";
 import { useRoute } from "vue-router";
-import {
-  AvmSatoshiDiceClient,
-  PlayStruct,
-} from "../../../../AVMSatoshiDice/smart_contracts/artifacts/avm_satoshi_dice/AvmSatoshiDiceClient";
+import { AvmSatoshiDiceClient, PlayStruct } from "avm-satoshi-dice";
 import { useAppStore } from "../../stores/app";
 import { IGameStruct, useGameStore } from "../../stores/game";
 import AppButton from "../common/AppButton.vue";
@@ -692,15 +689,15 @@ const playAgainClick = async () => {
             </div>
             <div class="flex justify-between items-center" v-if="state.seedInB64">
               <span class="text-gray-400">Seed B64:</span>
-              <span class="font-semibold text-white"><Abbr :text="state.seedInB64"></Abbr></span>
+              <span class="font-semibold text-white"><AbbrText :text="state.seedInB64"></AbbrText></span>
             </div>
             <div class="flex justify-between items-center" v-if="state.seedInHex">
               <span class="text-gray-400">Seed HEX:</span>
-              <span class="font-semibold text-white"><Abbr :text="state.seedInHex"></Abbr></span>
+              <span class="font-semibold text-white"><AbbrText :text="state.seedInHex"></AbbrText></span>
             </div>
             <div class="flex justify-between items-center" v-if="state.seedInDec">
               <span class="text-gray-400">Seed decimal:</span>
-              <span class="font-semibold text-white"><Abbr :text="state.seedInDec?.toString()"></Abbr></span>
+              <span class="font-semibold text-white"><AbbrText :text="state.seedInDec?.toString()"></AbbrText></span>
             </div>
             <div class="flex justify-between items-center" v-if="state.seedInDec">
               <span class="text-gray-400">Random number (R):</span>

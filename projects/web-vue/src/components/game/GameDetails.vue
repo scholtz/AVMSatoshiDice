@@ -5,7 +5,7 @@ import algosdk from "algosdk";
 import { useToast } from "primevue";
 import { computed, onMounted, reactive } from "vue";
 import { useRouter } from "vue-router";
-import { AvmSatoshiDiceClient } from "../../../../AVMSatoshiDice/smart_contracts/artifacts/avm_satoshi_dice/AvmSatoshiDiceClient";
+import { AvmSatoshiDiceClient } from "avm-satoshi-dice";
 import { useAppStore } from "../../stores/app";
 import { IGameStruct, useGameStore } from "../../stores/game";
 import AppButton from "../common/AppButton.vue";
@@ -185,7 +185,7 @@ const handleWithdraw = async () => {
 
             <div class="flex justify-between items-center">
               <span class="text-gray-400">Created By:</span>
-              <span class="font-semibold text-white"><Abbr :text="game.idObj.owner"></Abbr> </span>
+              <span class="font-semibold text-white"><AbbrText :text="game.idObj.owner"></AbbrText> </span>
             </div>
 
             <div class="flex justify-between items-center">

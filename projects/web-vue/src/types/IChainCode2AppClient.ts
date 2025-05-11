@@ -1,4 +1,4 @@
-import { AvmSatoshiDiceClient } from "../../../AVMSatoshiDice/smart_contracts/artifacts/avm_satoshi_dice/AvmSatoshiDiceClient";
+import { AvmSatoshiDiceClient } from "avm-satoshi-dice";
 
 export interface IChainCode2AppClient {
   [key: string]: AvmSatoshiDiceClient;

@@ -6,7 +6,7 @@ import NavBar from "./components/common/NavBar.vue";
 
 import { onMounted } from "vue";
 
-let gradient = new Gradient();
+const gradient = new Gradient();
 onMounted(() => {
   console.log("gradient init");
   gradient.initGradient("#gradient-canvas");

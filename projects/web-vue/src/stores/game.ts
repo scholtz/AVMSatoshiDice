@@ -1,10 +1,6 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
-import {
-  AddressAssetStruct,
-  GameStruct,
-  PlayStruct,
-} from "../../../AVMSatoshiDice/smart_contracts/artifacts/avm_satoshi_dice/AvmSatoshiDiceClient";
+import { AddressAssetStruct, GameStruct, PlayStruct } from "avm-satoshi-dice";
 import { getAssetAsync } from "../scripts/algorand/getAssetAsync";
 import { IAssetParams } from "../types/IAssetParams";
 import { IChainCode2AppClient } from "../types/IChainCode2AppClient";
