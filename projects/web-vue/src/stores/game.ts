@@ -16,9 +16,7 @@ export interface IGameStruct {
   token: IAssetParams;
   chain: "mainnet-v1.0" | "aramidmain-v1.0" | "testnet-v1.0" | "betanet-v1.0" | "voimain-v1.0" | "fnet-v1" | "dockernet-v1";
 }
-interface IAsset2AssetParams {
-  [key: string]: IAssetParams;
-}
+
 export const useGameStore = defineStore("game", () => {
   // State
   const games = ref<IGameStruct[]>([]);
@@ -30,12 +28,12 @@ export const useGameStore = defineStore("game", () => {
   const loadGames = async (clients: IChainCode2AppClient) => {
     const gamesData: IGameStruct[] = [];
     console.log("clients", clients);
-    for (let chain of Object.keys(clients)) {
+    for (const chain of Object.keys(clients)) {
       try {
         const client = clients[chain];
 
         const gamesMap = await client.state.box.games.getMap();
-        for (let item of gamesMap) {
+        for (const item of gamesMap) {
           try {
             const token = await getAssetAsync(item[0].assetId, client.algorand);
             gamesData.push({

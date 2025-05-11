@@ -1,18 +1,16 @@
 <script setup lang="ts">
 import { useWallet } from "@txnlab/use-wallet-vue";
 import { computed, onMounted, reactive } from "vue";
-import { useAppStore } from "../../stores/app";
 import { useGameStore } from "../../stores/game";
 import AppLoader from "../common/AppLoader.vue";
 import GameCard from "./GameCard.vue";
 
-const appStore = useAppStore();
 const gameStore = useGameStore();
 const state = reactive({
   isLoading: false,
 });
 
-const { activeAddress, transactionSigner } = useWallet();
+const { activeAddress } = useWallet();
 onMounted(async () => {
   console.log("gamelist onmounted");
   if (!activeAddress.value) return;
