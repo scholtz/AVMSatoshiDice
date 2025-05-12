@@ -104,6 +104,7 @@ class PlayStruct extends arc4.Struct<{
    * 1 - initiated
    * 2 - won
    * 3 - lost
+   * 4 - timeout - user did not claimed the win within the time
    */
   state: UintN64
   /**
@@ -902,6 +903,7 @@ export class AvmSatoshiDice extends Contract {
     // 100 rounds @ 1 sec is ~ 2 minutes, at 2.7 sec its 4-5 min
     if (play.round.native < Global.round - 100) {
       this.LooseGame(key, game, play, sender)
+      this.plays(sender).value.state = new UintN64(4) // mark the state of the game 4 - timeout
       return this.plays(sender).value
     }
 

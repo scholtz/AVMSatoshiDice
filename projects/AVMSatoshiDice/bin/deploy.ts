@@ -9,6 +9,7 @@ const deploy = async () => {
 set -o allexport
 source .env
 set +o allexport  
+./deploy.sh
   */
   // console.log('process', process)
   // console.log('process.env', process.env)

@@ -1,6 +1,6 @@
+import { AddressAssetStruct, GameStruct, PlayStruct } from "avm-satoshi-dice";
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
-import { AddressAssetStruct, GameStruct, PlayStruct } from "avm-satoshi-dice";
 import { getAssetAsync } from "../scripts/algorand/getAssetAsync";
 import { IAssetParams } from "../types/IAssetParams";
 import { IChainCode2AppClient } from "../types/IChainCode2AppClient";
@@ -116,6 +116,7 @@ export const useGameStore = defineStore("game", () => {
     if (currentGamePlay.value.state == 1n) return "Waiting for result";
     if (currentGamePlay.value.state == 2n) return "Win";
     if (currentGamePlay.value.state == 3n) return "Lost";
+    if (currentGamePlay.value.state == 4n) return "User did not claim in time";
     return "Unknown";
   };
   return {
