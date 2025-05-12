@@ -316,9 +316,18 @@ export const useAppStore = defineStore("app", () => {
         approvalSourceMap: undefined,
         clearSourceMap: undefined,
       });
+      console.log("arc200", arc200);
       const balance = await arc200.arc200BalanceOf({ args: { owner: activeAddress.value } });
       state.userBalance = balance;
       state.token2balance[extendedTokenId] = balance;
+      const assetInfo = await getAssetAsync(state.assetId, algorandClient);
+      if (assetInfo) {
+        state.assetDecimals = assetInfo.decimals;
+        if (assetInfo.name) {
+          state.tokenName = assetInfo.name;
+        }
+      }
+      console.log("assetInfo", assetInfo);
     }
     console.log("updateBalance", state);
   };

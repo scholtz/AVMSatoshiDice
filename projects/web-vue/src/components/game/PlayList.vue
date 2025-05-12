@@ -48,18 +48,15 @@ const refreshList = async () => {
     try {
       const client = clients[chain];
       const txs = await client.algorand.client.indexer.searchForTransactions().txType("appl").address(client.appAddress).limit(200).do();
-      console.log("txs", chain, txs);
       for (let tx of txs.transactions) {
         try {
           if (!tx.id) continue;
           if (tx.applicationTransaction?.applicationArgs && tx.applicationTransaction.applicationArgs.length > 0) {
-            console.log("arg", Buffer.from(tx.applicationTransaction.applicationArgs[0]).toString("hex"));
+            //console.log("arg", Buffer.from(tx.applicationTransaction.applicationArgs[0]).toString("hex"));
           }
           if (tx.logs && tx.logs.length == 1) {
             //client..decodeReturnValue<PlayStruct>(undefined,  )
-            console.log("arg", Buffer.from(tx.logs[0]).toString("hex"));
             const play = parsePlayStruct(tx.logs[0]);
-            console.log("play", play);
             plays.push({
               txId: tx.id,
               play: play,
@@ -78,7 +75,6 @@ const refreshList = async () => {
           console.error("error fetching plays", e);
         }
       }
-      console.log("txs", chain, txs);
     } catch (e: any) {
       console.error("error fetching plays", e);
     }

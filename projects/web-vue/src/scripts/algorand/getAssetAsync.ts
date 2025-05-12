@@ -150,14 +150,18 @@ export const getAssetAsync = async (assetId: string | number | bigint, avmClient
   } catch {
     try {
       const app = await avmClient.client.algod.getApplicationByID(assetBigInt).do();
+      const transactionSigner = async (txnGroup: algosdk.Transaction[], indexesToSign: number[]): Promise<Uint8Array[]> => {
+        console.log("transactionSigner", txnGroup, indexesToSign);
+        return [] as Uint8Array[];
+      };
       const arc200 = getArc200Client({
         algorand: avmClient,
         appId: assetBigInt,
         appName: undefined,
         approvalSourceMap: undefined,
         clearSourceMap: undefined,
-        defaultSender: undefined,
-        defaultSigner: undefined,
+        defaultSender: "TESTNTTTJDHIF5PJZUBTTDYYSKLCLM6KXCTWIOOTZJX5HO7263DPPMM2SU",
+        defaultSigner: transactionSigner,
       });
       const state = await arc200.state.global.getAll();
       const params: IAssetParams = {
@@ -187,10 +191,41 @@ export const getAssetAsync = async (assetId: string | number | bigint, avmClient
           | "fnet-v1"
           | "dockernet-v1",
       };
+      const nameBuf = await arc200.arc200Name({ args: {} });
+
+      if (nameBuf) {
+        let end = nameBuf.length;
+        while (end > 0 && nameBuf[end - 1] === 0x00) end--;
+        const trimmed = nameBuf.slice(0, end);
+
+        const name = await Buffer.from(trimmed).toString("utf-8").trim();
+        console.log("nameBuf", nameBuf, Buffer.from(nameBuf).toString("hex"), name);
+        if (name) {
+          params.name = name;
+          params.unitNameB64 = new Uint8Array(Buffer.from(params.name));
+        }
+      }
+      const decimals = await arc200.arc200Decimals({ args: {} });
+
+      params.decimals = decimals;
+
+      const symbolBuf = await arc200.arc200Symbol({ args: {} });
+      if (symbolBuf) {
+        let end = nameBuf.length;
+        while (end > 0 && nameBuf[end - 1] === 0x00) end--;
+        const trimmed = nameBuf.slice(0, end);
+
+        const symbol = await Buffer.from(trimmed).toString("utf-8").trim();
+        if (symbol) {
+          params.unitName = symbol;
+          params.unitNameB64 = new Uint8Array(Buffer.from(params.unitName));
+        }
+      }
+
       if (!cache[network.genesisId]) cache[network.genesisId] = {};
       cache[network.genesisId][assetStr] = params;
     } catch (e) {
-      console.error("Count not fetch info about the asset asa ASA nor ARC200", assetBigInt);
+      console.error("Could not fetch info about the asset asa ASA nor ARC200", assetBigInt, e);
       const params: IAssetParams = {
         id: assetBigInt,
         type: "other",
