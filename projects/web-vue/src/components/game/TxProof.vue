@@ -130,10 +130,7 @@ watch(
       <div class="p-6">
         <!-- Step 4: Result -->
         <div class="text-center py-6 space-y-6">
-          <div
-            v-if="gameStore.currentGameState() == 'Win'"
-            class="mb-6 bg-success-900 rounded-xl p-6 border border-success-700 neon-border-success"
-          >
+          <div v-if="props.play.state == 2n" class="mb-6 bg-success-900 rounded-xl p-6 border border-success-700 neon-border-success">
             <div class="text-2xl font-bold text-white mb-2">🎉 Congratulations! 🎉</div>
             <p class="text-success-300 text-lg">
               You won
