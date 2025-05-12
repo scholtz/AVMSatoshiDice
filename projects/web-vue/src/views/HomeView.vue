@@ -3,6 +3,7 @@ import { useWallet } from "@txnlab/use-wallet-vue";
 import { useMotion } from "@vueuse/motion";
 import algosdk from "algosdk";
 import { onMounted, ref, Ref } from "vue";
+import PlayList from "../components/game/PlayList.vue";
 import GameList from "../components/game/GameList.vue";
 import { useAppStore } from "../stores/app";
 import { useGameStore } from "../stores/game";
@@ -53,6 +54,7 @@ onMounted(async () => {
       </p>
     </div>
 
+    <PlayList />
     <GameList />
   </div>
 </template>

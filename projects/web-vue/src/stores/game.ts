@@ -18,12 +18,16 @@ export const useGameStore = defineStore("game", () => {
   const games = ref<IGameStruct[]>([]);
   const tokens = ref<IAssetParams[]>([]);
   const selectedTokenFilter = ref<bigint | null>(null);
+  const selectedTokenFilterChain = ref<
+    "mainnet-v1.0" | "aramidmain-v1.0" | "testnet-v1.0" | "betanet-v1.0" | "voimain-v1.0" | "fnet-v1" | "dockernet-v1" | null
+  >(null);
   const currentGame = ref<IGameStruct | null>(null);
   const currentGamePlay = ref<PlayStruct | null>(null);
 
   const loadGames = async (clients: IChainCode2AppClient) => {
     const gamesData: IGameStruct[] = [];
     console.log("clients", clients);
+    const tokensList: IAssetParams[] = [];
     for (const chain of Object.keys(clients)) {
       try {
         const client = clients[chain];
@@ -32,6 +36,12 @@ export const useGameStore = defineStore("game", () => {
         for (const item of gamesMap) {
           try {
             const token = await getAssetAsync(item[0].assetId, client.algorand);
+            console.log("loadGames.token", token, tokensList.indexOf(token));
+            if (token.id === 0n) {
+              if (!tokensList.find((t) => t.id == token.id && t.chain == token.chain)) {
+                tokensList.push(token);
+              }
+            }
             gamesData.push({
               id: `${item[0].owner}-${item[0].assetId}`,
               idObj: item[0],
@@ -54,7 +64,8 @@ export const useGameStore = defineStore("game", () => {
         console.error("Error loading games from chain", chain, e);
       }
     }
-
+    tokens.value = tokensList;
+    console.log("tokens.value", tokens.value);
     games.value = gamesData;
     console.log("games", games);
   };
@@ -66,6 +77,9 @@ export const useGameStore = defineStore("game", () => {
     console.log("filter", selectedTokenFilter.value);
     if (selectedTokenFilter.value !== null) {
       result = result.filter((game) => game.token.id === selectedTokenFilter.value);
+    }
+    if (selectedTokenFilterChain.value !== null) {
+      result = result.filter((game) => game.token.chain === selectedTokenFilterChain.value);
     }
 
     // Sort by win ratio (desc) and then by balance (desc)
@@ -80,8 +94,12 @@ export const useGameStore = defineStore("game", () => {
   });
 
   // Actions
-  function setTokenFilter(tokenId: bigint | null) {
+  function setTokenFilter(
+    tokenId: bigint | null,
+    chain: null | "mainnet-v1.0" | "aramidmain-v1.0" | "testnet-v1.0" | "betanet-v1.0" | "voimain-v1.0" | "fnet-v1" | "dockernet-v1",
+  ) {
     selectedTokenFilter.value = tokenId;
+    selectedTokenFilterChain.value = chain;
   }
 
   function getGameById(
@@ -111,13 +129,17 @@ export const useGameStore = defineStore("game", () => {
     currentGamePlay.value = play;
     console.log("last play: ", play);
   };
+  const playState2Text = (state: bigint) => {
+    if (!state) return "No game played";
+    if (state == 1n) return "Waiting for result";
+    if (state == 2n) return "Win";
+    if (state == 3n) return "Lost";
+    if (state == 4n) return "User did not claim in time";
+    return "Unknown";
+  };
   const currentGameState = () => {
     if (!currentGamePlay.value) return "No game played";
-    if (currentGamePlay.value.state == 1n) return "Waiting for result";
-    if (currentGamePlay.value.state == 2n) return "Win";
-    if (currentGamePlay.value.state == 3n) return "Lost";
-    if (currentGamePlay.value.state == 4n) return "User did not claim in time";
-    return "Unknown";
+    return playState2Text(currentGamePlay.value.state);
   };
   return {
     games,
@@ -125,6 +147,7 @@ export const useGameStore = defineStore("game", () => {
     tokens,
     filteredGames,
     selectedTokenFilter,
+    selectedTokenFilterChain,
     currentGame,
     currentGamePlay,
     setTokenFilter,
@@ -133,5 +156,6 @@ export const useGameStore = defineStore("game", () => {
     setLastGamePlay,
     currentGameState,
     updateGame,
+    playState2Text,
   };
 });

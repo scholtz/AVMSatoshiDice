@@ -25,9 +25,19 @@ const router = createRouter({
       component: () => import("../views/GamePlayView.vue"),
     },
     {
+      path: "/proof/:chain/:txId",
+      name: "proof",
+      component: () => import("../views/TxProof.vue"),
+    },
+    {
       path: "/create-game",
       name: "create-game",
       component: () => import("../views/CreateGameView.vue"),
+    },
+    {
+      path: "/proovable-fair-onchain-game",
+      name: "proovable-fair-onchain-game",
+      component: () => import("../views/Rules.vue"),
     },
     {
       path: "/:pathMatch(.*)*",

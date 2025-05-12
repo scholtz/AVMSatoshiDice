@@ -7,6 +7,8 @@
     "lib": ["ES2023"],
     "moduleResolution": "Bundler",
     "resolveJsonModule": true,
+    "types": ["node"],
+    "typeRoots": ["node_modules/@types"],
     "esModuleInterop": true
   },
   "include": ["**/*.ts", "**/*.mts"],

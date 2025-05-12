@@ -69,7 +69,7 @@ set +o allexport
         },
       }),
       //updatable: true,
-      appName: 'AVMSatoshiDice',
+      appName: 'AVMSatoshiDice#1',
       defaultSender: msigAddress,
       defaultSigner: signer,
     })
@@ -92,7 +92,7 @@ set +o allexport
         },
       }),
       appId: appId,
-      appName: 'AVMSatoshiDice',
+      appName: 'AVMSatoshiDice#1',
       defaultSender: msigAddress,
       defaultSigner: signer,
     })

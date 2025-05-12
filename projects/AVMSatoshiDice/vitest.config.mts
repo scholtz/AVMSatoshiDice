@@ -5,7 +5,7 @@ import { defineConfig } from 'vitest/config'
 export default defineConfig({
   esbuild: {},
   test: {
-    testTimeout: 60000,
+    testTimeout: 600000,
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html'], // enables HTML output

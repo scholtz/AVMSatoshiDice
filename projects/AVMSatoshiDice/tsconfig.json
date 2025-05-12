@@ -16,6 +16,8 @@
     "moduleResolution": "Node",
     "resolveJsonModule": true,
     "isolatedModules": true,
+    "types": ["node"],
+    "typeRoots": ["node_modules/@types"],
     "noEmit": true
   },
   "include": ["smart_contracts/**/*.ts", "smart_contracts/avm_satoshi_dice/contract.spec.ts.x"],

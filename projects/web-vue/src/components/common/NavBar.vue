@@ -43,6 +43,12 @@ const disconnectClick = () => {
             <div class="ml-10 flex items-baseline space-x-4">
               <RouterLink to="/" class="px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-gray-800">Games</RouterLink>
               <RouterLink
+                to="/proovable-fair-onchain-game"
+                class="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-gray-800 hover:text-white"
+              >
+                Rules
+              </RouterLink>
+              <RouterLink
                 to="/create-game"
                 class="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-gray-800 hover:text-white"
               >
@@ -88,6 +94,12 @@ const disconnectClick = () => {
     <div :class="isMenuOpen ? 'block' : 'hidden'" class="md:hidden">
       <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
         <RouterLink to="/" class="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-gray-800">Games</RouterLink>
+        <RouterLink
+          to="/proovable-fair-onchain-game"
+          class="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-gray-800 hover:text-white"
+        >
+          Rules
+        </RouterLink>
         <RouterLink
           to="/create-game"
           class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:bg-gray-800 hover:text-white"

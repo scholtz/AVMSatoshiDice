@@ -4,9 +4,9 @@ import { algorandFixture } from '@algorandfoundation/algokit-utils/testing'
 import { AlgoAmount } from '@algorandfoundation/algokit-utils/types/amount'
 import algosdk, { Address, makePaymentTxnWithSuggestedParamsFromObject } from 'algosdk'
 import { beforeAll, beforeEach, describe, expect, test } from 'vitest'
+import { parseGameStruct } from '../../src/parseGameStruct'
 import { Arc200Factory } from '../artifacts/arc200/Arc200Client'
 import { AvmSatoshiDiceFactory } from '../artifacts/avm_satoshi_dice/AvmSatoshiDiceClient'
-
 describe('AvmSatoshiDice contract', () => {
   const localnet = algorandFixture()
   beforeAll(() => {
@@ -85,192 +85,7 @@ describe('AvmSatoshiDice contract', () => {
   //   })
   // })
 
-  // test('check correct balances at play process - win ratio 100', async () => {
-  //   const deployerAccount = await localnet.context.generateAccount({ initialFunds: AlgoAmount.Algo(10000) })
-  //   const deployerAccountAddr = algosdk.encodeAddress(deployerAccount.addr.publicKey)
-  //   const { client } = await deploy(deployerAccount)
-
-  //   const testAccount = await localnet.context.generateAccount({ initialFunds: AlgoAmount.Algo(10000) })
-  //   const testAccountAddr = algosdk.encodeAddress(testAccount.addr.publicKey)
-
-  //   console.log('Deployed contract: ', client.appId)
-
-  //   const result = await client.send.createGameWithNativeToken({
-  //     args: {
-  //       txnDeposit: makePaymentTxnWithSuggestedParamsFromObject({
-  //         amount: BigInt(1_000_000),
-  //         receiver: client.appAddress,
-  //         sender: testAccount,
-  //         suggestedParams: await localnet.context.algod.getTransactionParams().do(),
-  //       }),
-  //       winRatio: 1_000_000,
-  //     },
-  //     sender: testAccountAddr,
-  //   })
-
-  //   expect(result.return?.balance).toBe(975000n)
-  //   let allDeposits = await client.state.box.allDeposits.getMap()
-  //   expect(allDeposits.get(0n)).toBe(975000n)
-
-  //   const deposit = await client.send.startGameWithNativeToken({
-  //     args: {
-  //       txnDeposit: makePaymentTxnWithSuggestedParamsFromObject({
-  //         amount: BigInt(100_000),
-  //         receiver: client.appAddress,
-  //         sender: testAccount,
-  //         suggestedParams: await localnet.context.algod.getTransactionParams().do(),
-  //       }),
-  //       game: {
-  //         assetId: 0n,
-  //         owner: testAccountAddr,
-  //       },
-  //       winProbability: 1_000_000,
-  //     },
-  //     sender: testAccount,
-  //   })
-  //   expect(deposit.return?.deposit).toBe(100_000n)
-  //   allDeposits = await client.state.box.allDeposits.getMap()
-  //   expect(allDeposits.get(0n)).toBe(1075000n)
-  //   expect(
-  //     (
-  //       await client.game({
-  //         args: {
-  //           assetId: 0n,
-  //           creator: testAccountAddr,
-  //         },
-  //       })
-  //     ).balance,
-  //   ).toBe(975000n)
-
-  //   await localnet.context.generateAccount({ initialFunds: AlgoAmount.Algo(100) }) // generate new tx on chain, so that we move one block further
-  //   await localnet.context.generateAccount({ initialFunds: AlgoAmount.Algo(100) }) // generate new tx on chain, so that we move one block further
-  //   await localnet.context.generateAccount({ initialFunds: AlgoAmount.Algo(100) }) // generate new tx on chain, so that we move one block further
-
-  //   const claim = await client.send.claimGame({
-  //     args: {},
-  //     sender: testAccountAddr,
-  //     staticFee: AlgoAmount.MicroAlgos(2000),
-  //     maxFee: AlgoAmount.MicroAlgos(3000),
-  //   })
-
-  //   expect(claim.return?.state).toBe(2n) // win
-  //   expect(
-  //     (
-  //       await client.game({
-  //         args: {
-  //           assetId: 0n,
-  //           creator: testAccountAddr,
-  //         },
-  //       })
-  //     ).balance,
-  //   ).toBe(975_000n)
-
-  //   allDeposits = await client.state.box.allDeposits.getMap()
-  //   expect(allDeposits.get(0n)).toBe(975_000n)
-
-  //   const deposit2 = await client.send.startGameWithNativeToken({
-  //     args: {
-  //       txnDeposit: makePaymentTxnWithSuggestedParamsFromObject({
-  //         amount: 100n,
-  //         receiver: client.appAddress,
-  //         sender: testAccount,
-  //         suggestedParams: await localnet.context.algod.getTransactionParams().do(),
-  //       }),
-  //       game: {
-  //         assetId: 0n,
-  //         owner: testAccountAddr,
-  //       },
-  //       winProbability: 50_000, // 5% to get to wrong testing branch
-  //     },
-  //     sender: testAccount,
-  //   })
-  //   expect(deposit2.return?.deposit).toBe(100n)
-  //   expect(
-  //     (
-  //       await client.game({
-  //         args: {
-  //           assetId: 0n,
-  //           creator: testAccountAddr,
-  //         },
-  //       })
-  //     ).balance,
-  //   ).toBe(975_000n)
-  //   allDeposits = await client.state.box.allDeposits.getMap()
-  //   expect(allDeposits.get(0n)).toBe(975_100n)
-
-  //   await localnet.context.generateAccount({ initialFunds: AlgoAmount.Algo(100) }) // generate new tx on chain, so that we move one block further
-  //   await localnet.context.generateAccount({ initialFunds: AlgoAmount.Algo(100) }) // generate new tx on chain, so that we move one block further
-  //   await localnet.context.generateAccount({ initialFunds: AlgoAmount.Algo(100) }) // generate new tx on chain, so that we move one block further
-
-  //   const claim2 = await client.send.claimGame({
-  //     args: {},
-  //     sender: testAccountAddr,
-  //     staticFee: AlgoAmount.MicroAlgos(2000),
-  //     maxFee: AlgoAmount.MicroAlgos(3000),
-  //   })
-
-  //   if (claim2.return?.state == 3n) {
-  //     console.log('lost, correct testing scenario')
-  //     expect(
-  //       (
-  //         await client.game({
-  //           args: {
-  //             assetId: 0n,
-  //             creator: testAccountAddr,
-  //           },
-  //         })
-  //       ).balance,
-  //     ).toBe(975_100n)
-
-  //     allDeposits = await client.state.box.allDeposits.getMap()
-  //     expect(allDeposits.get(0n)).toBe(975_100n)
-
-  //     let withdrawable = await client.withdrawable({
-  //       args: {
-  //         assetId: 0n,
-  //         isArc200Token: false,
-  //       },
-  //       sender: testAccountAddr,
-  //     })
-  //     expect(withdrawable).toBe(950_723n)
-  //     const withdrawGameCreator = await client.send.withdraw({
-  //       args: {
-  //         amount: 0n,
-  //         assetId: 0n,
-  //         isArc200Token: false,
-  //         receiver: testAccountAddr,
-  //       },
-  //       staticFee: AlgoAmount.MicroAlgo(2000),
-  //       sender: testAccountAddr,
-  //     })
-  //     expect(withdrawGameCreator.return).toBe(950_723n) // 975_100n - 975_100n / 40 = 853222.5 (protocol fee)
-  //     allDeposits = await client.state.box.allDeposits.getMap()
-  //     expect(allDeposits.get(0n)).toBe(0n)
-
-  //     withdrawable = await client.withdrawable({
-  //       args: {
-  //         assetId: 0n,
-  //         isArc200Token: false,
-  //       },
-  //       sender: deployerAccountAddr,
-  //     })
-  //     expect(withdrawable).toBe(9_857_877n)
-  //     const withdrawDeployer = await client.send.withdraw({
-  //       args: {
-  //         amount: 0n,
-  //         assetId: 0n,
-  //         isArc200Token: false,
-  //         receiver: deployerAccountAddr,
-  //       },
-  //       staticFee: AlgoAmount.MicroAlgo(2000),
-  //       sender: deployerAccountAddr,
-  //     })
-  //     expect(withdrawDeployer.return).toBe(9_857_877n)
-  //   } else {
-  //     console.log('did not loose')
-  //   }
-  // })
-  test('check correct balances at play process - win probability 80', async () => {
+  test('check correct balances at play process - win ratio 100', async () => {
     const deployerAccount = await localnet.context.generateAccount({ initialFunds: AlgoAmount.Algo(10000) })
     const deployerAccountAddr = algosdk.encodeAddress(deployerAccount.addr.publicKey)
     const { client } = await deploy(deployerAccount)
@@ -309,7 +124,7 @@ describe('AvmSatoshiDice contract', () => {
           assetId: 0n,
           owner: testAccountAddr,
         },
-        winProbability: 800_000,
+        winProbability: 1_000_000,
       },
       sender: testAccount,
     })
@@ -337,7 +152,7 @@ describe('AvmSatoshiDice contract', () => {
       staticFee: AlgoAmount.MicroAlgos(2000),
       maxFee: AlgoAmount.MicroAlgos(3000),
     })
-    if (claim.return?.state == 3n) return // do not test further if we lost here.. 10% chance
+
     expect(claim.return?.state).toBe(2n) // win
     expect(
       (
@@ -348,9 +163,319 @@ describe('AvmSatoshiDice contract', () => {
           },
         })
       ).balance,
-    ).toBe(950000n)
-    // deposit 100_000 , ratio 80%, win ratio 100%, expected win 125_000 , net win 25_000 .. 975000n - 25000= 950000n
+    ).toBe(975_000n)
+
+    allDeposits = await client.state.box.allDeposits.getMap()
+    expect(allDeposits.get(0n)).toBe(975_000n)
+
+    const deposit2 = await client.send.startGameWithNativeToken({
+      args: {
+        txnDeposit: makePaymentTxnWithSuggestedParamsFromObject({
+          amount: 100n,
+          receiver: client.appAddress,
+          sender: testAccount,
+          suggestedParams: await localnet.context.algod.getTransactionParams().do(),
+        }),
+        game: {
+          assetId: 0n,
+          owner: testAccountAddr,
+        },
+        winProbability: 50_000, // 5% to get to wrong testing branch
+      },
+      sender: testAccount,
+    })
+    expect(deposit2.return?.deposit).toBe(100n)
+    expect(
+      (
+        await client.game({
+          args: {
+            assetId: 0n,
+            creator: testAccountAddr,
+          },
+        })
+      ).balance,
+    ).toBe(975_000n)
+    allDeposits = await client.state.box.allDeposits.getMap()
+    expect(allDeposits.get(0n)).toBe(975_100n)
+
+    await localnet.context.generateAccount({ initialFunds: AlgoAmount.Algo(100) }) // generate new tx on chain, so that we move one block further
+    await localnet.context.generateAccount({ initialFunds: AlgoAmount.Algo(100) }) // generate new tx on chain, so that we move one block further
+    await localnet.context.generateAccount({ initialFunds: AlgoAmount.Algo(100) }) // generate new tx on chain, so that we move one block further
+
+    const claim2 = await client.send.claimGame({
+      args: {},
+      sender: testAccountAddr,
+      staticFee: AlgoAmount.MicroAlgos(2000),
+      maxFee: AlgoAmount.MicroAlgos(3000),
+    })
+
+    if (claim2.return?.state == 3n) {
+      console.log('lost, correct testing scenario')
+      expect(
+        (
+          await client.game({
+            args: {
+              assetId: 0n,
+              creator: testAccountAddr,
+            },
+          })
+        ).balance,
+      ).toBe(975_100n)
+
+      allDeposits = await client.state.box.allDeposits.getMap()
+      expect(allDeposits.get(0n)).toBe(975_100n)
+
+      let withdrawable = await client.withdrawable({
+        args: {
+          assetId: 0n,
+          isArc200Token: false,
+        },
+        sender: testAccountAddr,
+      })
+      expect(withdrawable).toBe(950_723n)
+      const withdrawGameCreator = await client.send.withdraw({
+        args: {
+          amount: 0n,
+          assetId: 0n,
+          isArc200Token: false,
+          receiver: testAccountAddr,
+        },
+        staticFee: AlgoAmount.MicroAlgo(2000),
+        sender: testAccountAddr,
+      })
+      expect(withdrawGameCreator.return).toBe(950_723n) // 975_100n - 975_100n / 40 = 853222.5 (protocol fee)
+      allDeposits = await client.state.box.allDeposits.getMap()
+      expect(allDeposits.get(0n)).toBe(0n)
+
+      withdrawable = await client.withdrawable({
+        args: {
+          assetId: 0n,
+          isArc200Token: false,
+        },
+        sender: deployerAccountAddr,
+      })
+      expect(withdrawable).toBe(9_829_077n)
+      const withdrawDeployer = await client.send.withdraw({
+        args: {
+          amount: 0n,
+          assetId: 0n,
+          isArc200Token: false,
+          receiver: deployerAccountAddr,
+        },
+        staticFee: AlgoAmount.MicroAlgo(2000),
+        sender: deployerAccountAddr,
+      })
+      expect(withdrawDeployer.return).toBe(9_829_077n)
+    } else {
+      console.log('did not loose')
+    }
   })
+  // test('check correct balances at play process - play at 50 - timeout works', async () => {
+  //   const deployerAccount = await localnet.context.generateAccount({ initialFunds: AlgoAmount.Algo(10000) })
+  //   const deployerAccountAddr = algosdk.encodeAddress(deployerAccount.addr.publicKey)
+  //   const { client } = await deploy(deployerAccount)
+
+  //   const testAccount = await localnet.context.generateAccount({ initialFunds: AlgoAmount.Algo(10000) })
+  //   const testAccountAddr = algosdk.encodeAddress(testAccount.addr.publicKey)
+
+  //   console.log('Deployed contract: ', client.appId)
+
+  //   const result = await client.send.createGameWithNativeToken({
+  //     args: {
+  //       txnDeposit: makePaymentTxnWithSuggestedParamsFromObject({
+  //         amount: BigInt(100_000_000),
+  //         receiver: client.appAddress,
+  //         sender: testAccount,
+  //         suggestedParams: await localnet.context.algod.getTransactionParams().do(),
+  //       }),
+  //       winRatio: 900_000,
+  //     },
+  //     sender: testAccountAddr,
+  //   })
+
+  //   expect(result.return?.balance).toBe(97_500_000n)
+  //   let allDeposits = await client.state.box.allDeposits.getMap()
+  //   expect(allDeposits.get(0n)).toBe(97_500_000n)
+
+  //   const deposit = await client.send.startGameWithNativeToken({
+  //     args: {
+  //       txnDeposit: makePaymentTxnWithSuggestedParamsFromObject({
+  //         amount: BigInt(1_000_000),
+  //         receiver: client.appAddress,
+  //         sender: testAccount,
+  //         suggestedParams: await localnet.context.algod.getTransactionParams().do(),
+  //       }),
+  //       game: {
+  //         assetId: 0n,
+  //         owner: testAccountAddr,
+  //       },
+  //       winProbability: 500_000,
+  //     },
+  //     sender: testAccount,
+  //   })
+  //   expect(deposit.return?.deposit).toBe(1_000_000n)
+  //   allDeposits = await client.state.box.allDeposits.getMap()
+  //   expect(allDeposits.get(0n)).toBe(98_500_000n)
+  //   expect(
+  //     (
+  //       await client.game({
+  //         args: {
+  //           assetId: 0n,
+  //           creator: testAccountAddr,
+  //         },
+  //       })
+  //     ).balance,
+  //   ).toBe(97_500_000n)
+
+  //   for (let i = 0; i < 110; i++) {
+  //     await localnet.context.generateAccount({ initialFunds: AlgoAmount.Algo(1) }) // generate new tx on chain, so that we move one block further
+  //   }
+
+  //   const claim = await client.send.claimGame({
+  //     args: {},
+  //     sender: testAccountAddr,
+  //     staticFee: AlgoAmount.MicroAlgos(2000),
+  //     maxFee: AlgoAmount.MicroAlgos(3000),
+  //   })
+  //   expect(claim.return?.state).toBe(4n)
+  //   // user lost on timeout
+
+  //   expect(
+  //     (
+  //       await client.game({
+  //         args: {
+  //           assetId: 0n,
+  //           creator: testAccountAddr,
+  //         },
+  //       })
+  //     ).balance,
+  //   ).toBe(98_480_000n)
+  //   // deposit 1_000_000 , ratio 50%, win ratio 90%, profit 100_000, share of the profit 20_000, result 98_480_000n
+  // })
+
+  // test('should parse return value into PlayStruct', () => {
+  //   // Remove the ARC4 return prefix (0x151f7c75) if present
+  //   const hex =
+  //     '151f7c75000000000000000200000000000cb735000000000311936900000000000000000000000000000000000000000000000000000000000f42400000000000000000992536ce7348ce82f5e9cd03398f18929625b3cab8a76439d3ca6fd3bbfaf6c6992536ce7348ce82f5e9cd03398f18929625b3cab8a76439d3ca6fd3bbfaf6c6'
+
+  //   const bytes = Uint8Array.from(Buffer.from(hex, 'hex'))
+  //   const playStruct = parsePlayStruct(bytes)
+
+  //   expect(playStruct.state).toBe(2n)
+  //   expect(playStruct.winProbability).toBe(833333n)
+  //   expect(playStruct.round).toBe(51483497n)
+  //   expect(playStruct.deposit).toBe(1000000n)
+  //   expect(playStruct.assetId).toBe(0n)
+  //   expect(playStruct.gameCreator).toBe('TESTNTTTJDHIF5PJZUBTTDYYSKLCLM6KXCTWIOOTZJX5HO7263DPPMM2SU')
+  //   expect(playStruct.owner).toBe('TESTNTTTJDHIF5PJZUBTTDYYSKLCLM6KXCTWIOOTZJX5HO7263DPPMM2SU')
+  // })
+  test('should parse return value into GameStruct', () => {
+    // Remove the ARC4 return prefix (0x151f7c75) if present
+    const b64 =
+      'FR98dQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALn3bAAAAAAAAAAACAAAAAAGgGNJMAAAAAAAAcTgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADn7wmSU2znNIzoL16c0DOY8YkpYls8q4p2Q508pv07v69sY='
+
+    const bytes = Uint8Array.from(Buffer.from(b64, 'base64'))
+
+    const gameStruct = parseGameStruct(bytes)
+    console.log('gameStruct', gameStruct)
+
+    expect(gameStruct.balance).toBe(195000000n)
+    expect(gameStruct.assetId).toBe(0n)
+    expect(gameStruct.isNativeToken).toBe(true)
+    expect(gameStruct.isAsaToken).toBe(false)
+    expect(gameStruct.isArc200Token).toBe(false)
+    expect(gameStruct.createdAtTime).toBe(1745237139n)
+    expect(gameStruct.createdAtRound).toBe(7246n)
+    expect(gameStruct.lastPlayTime).toBe(0n)
+    expect(gameStruct.lastPlayAmount).toBe(0n)
+    expect(gameStruct.lastWinTime).toBe(0n)
+    expect(gameStruct.lastWinAmount).toBe(0n)
+    expect(gameStruct.biggestWinTime).toBe(0n)
+    expect(gameStruct.biggestWinAmount).toBe(0n)
+    expect(gameStruct.winRatio).toBe(950000n)
+    expect(gameStruct.owner).toBe('TESTNTTTJDHIF5PJZUBTTDYYSKLCLM6KXCTWIOOTZJX5HO7263DPPMM2SU')
+  })
+  // test('check correct balances at play process - win probability 80', async () => {
+  //   const deployerAccount = await localnet.context.generateAccount({ initialFunds: AlgoAmount.Algo(10000) })
+  //   const deployerAccountAddr = algosdk.encodeAddress(deployerAccount.addr.publicKey)
+  //   const { client } = await deploy(deployerAccount)
+
+  //   const testAccount = await localnet.context.generateAccount({ initialFunds: AlgoAmount.Algo(10000) })
+  //   const testAccountAddr = algosdk.encodeAddress(testAccount.addr.publicKey)
+
+  //   console.log('Deployed contract: ', client.appId)
+
+  //   const result = await client.send.createGameWithNativeToken({
+  //     args: {
+  //       txnDeposit: makePaymentTxnWithSuggestedParamsFromObject({
+  //         amount: BigInt(1_000_000),
+  //         receiver: client.appAddress,
+  //         sender: testAccount,
+  //         suggestedParams: await localnet.context.algod.getTransactionParams().do(),
+  //       }),
+  //       winRatio: 1_000_000,
+  //     },
+  //     sender: testAccountAddr,
+  //   })
+
+  //   expect(result.return?.balance).toBe(975_000n)
+  //   let allDeposits = await client.state.box.allDeposits.getMap()
+  //   expect(allDeposits.get(0n)).toBe(975_000n)
+
+  //   const deposit = await client.send.startGameWithNativeToken({
+  //     args: {
+  //       txnDeposit: makePaymentTxnWithSuggestedParamsFromObject({
+  //         amount: BigInt(100_000),
+  //         receiver: client.appAddress,
+  //         sender: testAccount,
+  //         suggestedParams: await localnet.context.algod.getTransactionParams().do(),
+  //       }),
+  //       game: {
+  //         assetId: 0n,
+  //         owner: testAccountAddr,
+  //       },
+  //       winProbability: 800_000,
+  //     },
+  //     sender: testAccount,
+  //   })
+  //   expect(deposit.return?.deposit).toBe(100_000n)
+  //   allDeposits = await client.state.box.allDeposits.getMap()
+  //   expect(allDeposits.get(0n)).toBe(1_075_000n)
+  //   expect(
+  //     (
+  //       await client.game({
+  //         args: {
+  //           assetId: 0n,
+  //           creator: testAccountAddr,
+  //         },
+  //       })
+  //     ).balance,
+  //   ).toBe(975000n)
+
+  //   await localnet.context.generateAccount({ initialFunds: AlgoAmount.Algo(100) }) // generate new tx on chain, so that we move one block further
+  //   await localnet.context.generateAccount({ initialFunds: AlgoAmount.Algo(100) }) // generate new tx on chain, so that we move one block further
+  //   await localnet.context.generateAccount({ initialFunds: AlgoAmount.Algo(100) }) // generate new tx on chain, so that we move one block further
+
+  //   const claim = await client.send.claimGame({
+  //     args: {},
+  //     sender: testAccountAddr,
+  //     staticFee: AlgoAmount.MicroAlgos(2000),
+  //     maxFee: AlgoAmount.MicroAlgos(3000),
+  //   })
+  //   if (claim.return?.state == 3n) return // do not test further if we lost here.. 10% chance
+  //   expect(claim.return?.state).toBe(2n) // win
+  //   expect(
+  //     (
+  //       await client.game({
+  //         args: {
+  //           assetId: 0n,
+  //           creator: testAccountAddr,
+  //         },
+  //       })
+  //     ).balance,
+  //   ).toBe(950000n)
+  //   // deposit 100_000 , ratio 80%, win ratio 100%, expected win 125_000 , net win 25_000 .. 975000n - 25000= 950000n
+  // })
   // test('check correct balances at play process - win ratio 90', async () => {
   //   const deployerAccount = await localnet.context.generateAccount({ initialFunds: AlgoAmount.Algo(10000) })
   //   const deployerAccountAddr = algosdk.encodeAddress(deployerAccount.addr.publicKey)

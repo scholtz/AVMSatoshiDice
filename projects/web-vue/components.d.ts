@@ -13,6 +13,7 @@ declare module 'vue' {
     AppLoader: typeof import('./src/components/common/AppLoader.vue')['default']
     AuthScreen: typeof import('./src/components/AuthScreen.vue')['default']
     Button: typeof import('primevue/button')['default']
+    copy: typeof import('./src/components/game/GamePlay copy.vue')['default']
     Fireworks: typeof import('./src/components/effects/Fireworks.vue')['default']
     FireworksEffect: typeof import('./src/components/effects/FireworksEffect.vue')['default']
     GameCard: typeof import('./src/components/game/GameCard.vue')['default']
@@ -25,7 +26,9 @@ declare module 'vue' {
     MainButton: typeof import('./src/components/MainButton.vue')['default']
     MainPanel: typeof import('./src/components/MainPanel.vue')['default']
     NavBar: typeof import('./src/components/common/NavBar.vue')['default']
+    PlayList: typeof import('./src/components/game/PlayList.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    TxProof: typeof import('./src/components/game/TxProof.vue')['default']
   }
 }

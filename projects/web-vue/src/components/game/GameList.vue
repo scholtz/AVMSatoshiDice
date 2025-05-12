@@ -23,8 +23,11 @@ const filteredGames = computed(() => {
   return gameStore.filteredGames;
 });
 
-const handleTokenFilter = (tokenId: bigint | null) => {
-  gameStore.setTokenFilter(tokenId);
+const handleTokenFilter = (
+  tokenId: bigint | null,
+  chain: null | "mainnet-v1.0" | "aramidmain-v1.0" | "testnet-v1.0" | "betanet-v1.0" | "voimain-v1.0" | "fnet-v1" | "dockernet-v1",
+) => {
+  gameStore.setTokenFilter(tokenId, chain);
 };
 
 // Simulate loading
@@ -41,7 +44,7 @@ setTimeout(() => {
 
       <div class="flex items-center space-x-2">
         <button
-          @click="handleTokenFilter(null)"
+          @click="handleTokenFilter(null, null)"
           :class="[
             'px-3 py-1.5 rounded-full text-sm font-medium transition-colors',
             gameStore.selectedTokenFilter === null ? 'bg-primary-600 text-white' : 'bg-gray-800 text-gray-300 hover:bg-gray-700',
@@ -53,10 +56,12 @@ setTimeout(() => {
         <button
           v-for="token in tokens"
           :key="token.id.toString()"
-          @click="handleTokenFilter(token.id)"
+          @click="handleTokenFilter(token.id, token.chain)"
           :class="[
             'px-3 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center',
-            gameStore.selectedTokenFilter === token.id ? 'bg-primary-600 text-white' : 'bg-gray-800 text-gray-300 hover:bg-gray-700',
+            gameStore.selectedTokenFilter === token.id && gameStore.selectedTokenFilterChain === token.chain
+              ? 'bg-primary-600 text-white'
+              : 'bg-gray-800 text-gray-300 hover:bg-gray-700',
           ]"
         >
           <span v-if="token.name" class="w-4 h-4 rounded-full bg-gray-700 mr-1 flex items-center justify-center text-xs font-bold">

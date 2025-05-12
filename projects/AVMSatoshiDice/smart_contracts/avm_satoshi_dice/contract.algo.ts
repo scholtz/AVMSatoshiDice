@@ -137,6 +137,14 @@ class PlayStruct extends arc4.Struct<{
    */
   deposit: UintN256
   /**
+   * The expected win transfer (gross amount)
+   */
+  expectedWin: UintN256
+  /**
+   * The real transfer. The expected win if user won, or 0 if user lost game.
+   */
+  realTransfer: UintN256
+  /**
    * The game asset id
    */
   assetId: UintN64
@@ -148,6 +156,10 @@ class PlayStruct extends arc4.Struct<{
    * Owner of the play. Person who did play the game.
    */
   owner: Address
+  /**
+   * Timestamp of last update
+   */
+  update: UintN64
 }> {}
 
 export class AvmSatoshiDice extends Contract {
@@ -706,9 +718,12 @@ export class AvmSatoshiDice extends Contract {
       state: new UintN64(1),
       winProbability: winProbability,
       deposit: new UintN256(BigUint(txnDeposit.amount)),
+      expectedWin: new UintN256(winAmount),
+      realTransfer: new UintN256(0n),
       owner: sender,
       gameCreator: game.owner,
       assetId: game.assetId,
+      update: new UintN64(Global.latestTimestamp),
     })
 
     this.plays(sender).value = newValue.copy()
@@ -769,9 +784,12 @@ export class AvmSatoshiDice extends Contract {
       state: new UintN64(1),
       winProbability: winProbability,
       deposit: new UintN256(BigUint(txnDeposit.assetAmount)),
+      expectedWin: new UintN256(winAmount),
+      realTransfer: new UintN256(0n),
       owner: sender,
       gameCreator: game.owner,
       assetId: game.assetId,
+      update: new UintN64(Global.latestTimestamp),
     })
 
     this.plays(sender).value = newValue.copy()
@@ -844,9 +862,12 @@ export class AvmSatoshiDice extends Contract {
       state: new UintN64(1),
       winProbability: winProbability,
       deposit: new UintN256(amount.native),
+      expectedWin: new UintN256(winAmount),
+      realTransfer: new UintN256(0n),
       owner: sender,
       gameCreator: game.owner,
       assetId: game.assetId,
+      update: new UintN64(Global.latestTimestamp),
     })
 
     this.plays(sender).value = newValue.copy()
@@ -899,6 +920,8 @@ export class AvmSatoshiDice extends Contract {
     assert(this.games(key).exists, 'Did not found the game')
     const game = this.games(key).value.copy()
 
+    this.plays(sender).value.update = new UintN64(Global.latestTimestamp)
+
     // player did not claim the tx in time
     // 100 rounds @ 1 sec is ~ 2 minutes, at 2.7 sec its 4-5 min
     if (play.round.native < Global.round - 100) {
@@ -922,6 +945,7 @@ export class AvmSatoshiDice extends Contract {
       const winAmount: biguint = BigUint(
         (play.deposit.native * BigUint(1_000_000)) / BigUint(play.winProbability.native),
       )
+      this.plays(sender).value.realTransfer = new UintN256(winAmount)
       const winNetAmount: biguint = winAmount - play.deposit.native
 
       this.games(key).value.lastWinAmount = new UintN256(winNetAmount)

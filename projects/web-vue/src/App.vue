@@ -17,7 +17,7 @@ onMounted(() => {
 <template>
   <canvas id="gradient-canvas" data-transition-in />
   <Toast />
-  <div class="min-h-full flex flex-col items-center justify-center w-full">
+  <div class="min-h-full flex flex-col w-full">
     <NavBar />
     <main class="py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto flex flex-grow-1 grow w-full">
       <RouterView />

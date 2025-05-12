@@ -6,5 +6,8 @@ import {
   type PlayStruct,
 } from '../smart_contracts/artifacts/avm_satoshi_dice/AvmSatoshiDiceClient'
 
-export { AvmSatoshiDiceClient, AvmSatoshiDiceFactory }
+import { parseGameStruct } from './parseGameStruct'
+import { parsePlayStruct } from './parsePlayStruct'
+
+export { AvmSatoshiDiceClient, AvmSatoshiDiceFactory, parseGameStruct, parsePlayStruct }
 export type { AddressAssetStruct, GameStruct, PlayStruct }

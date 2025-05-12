@@ -2,9 +2,9 @@ import { AlgorandClient } from "@algorandfoundation/algokit-utils";
 import { WalletId } from "@txnlab/use-wallet-vue";
 import algosdk from "algosdk";
 import { getArc200Client } from "arc200-client";
+import { AvmSatoshiDiceClient } from "avm-satoshi-dice";
 import { defineStore } from "pinia";
 import { ComputedRef, reactive } from "vue";
-import { AvmSatoshiDiceClient } from "avm-satoshi-dice";
 import { getAssetAsync } from "../scripts/algorand/getAssetAsync";
 import { IChainCode2AppClient } from "../types/IChainCode2AppClient";
 
@@ -143,7 +143,7 @@ const defaultState: IState = {
       wallets: [WalletId.BIATEC, WalletId.DEFLY, WalletId.WALLETCONNECT],
     },
     "testnet-v1.0": {
-      appId: 739345318n,
+      appId: 739400482n,
       name: "Algorand Testnet",
       code: "testnet-v1.0",
       algodHost: "https://testnet-api.4160.nodely.dev",
@@ -156,7 +156,7 @@ const defaultState: IState = {
       wallets: [WalletId.BIATEC, WalletId.DEFLY, WalletId.PERA, WalletId.WALLETCONNECT],
     },
     // "dockernet-v1": {
-    //   appId: 6169n,
+    //   appId: 9982n,
     //   name: "Localnet",
     //   code: "dockernet-v1",
     //   algodHost: "http://localhost",
@@ -204,6 +204,20 @@ export const useAppStore = defineStore("app", () => {
       });
     });
     return ret;
+  };
+  const getAppClient = (
+    activeAddress: string,
+    transactionSigner: (txnGroup: algosdk.Transaction[], indexesToSign: number[]) => Promise<Uint8Array[]>,
+    chain: "mainnet-v1.0" | "aramidmain-v1.0" | "testnet-v1.0" | "betanet-v1.0" | "voimain-v1.0" | "fnet-v1" | "dockernet-v1",
+  ): AvmSatoshiDiceClient => {
+    if (!activeAddress) throw Error("activeAddress is empty");
+
+    return new AvmSatoshiDiceClient({
+      algorand: getAlgorandClient(chain),
+      appId: getAppId(chain),
+      defaultSender: algosdk.decodeAddress(activeAddress),
+      defaultSigner: transactionSigner,
+    });
   };
   const getAlgorandClient = (
     chain: "mainnet-v1.0" | "aramidmain-v1.0" | "testnet-v1.0" | "betanet-v1.0" | "voimain-v1.0" | "fnet-v1" | "dockernet-v1",
@@ -344,6 +358,7 @@ export const useAppStore = defineStore("app", () => {
     getBalanceForToken,
     updateBalance,
     getAlgorandClient,
+    getAppClient,
     getAppClients,
     tokenTypeToText,
   };

@@ -3,10 +3,10 @@ import { AlgoAmount } from "@algorandfoundation/algokit-utils/types/amount";
 import { useWallet } from "@txnlab/use-wallet-vue";
 import algosdk, { makeAssetTransferTxnWithSuggestedParamsFromObject, makePaymentTxnWithSuggestedParamsFromObject } from "algosdk";
 import { getArc200Client } from "arc200-client";
+import { AvmSatoshiDiceClient } from "avm-satoshi-dice";
 import { useToast } from "primevue";
 import { computed, onMounted, reactive, watch } from "vue";
 import { useRouter } from "vue-router";
-import { AvmSatoshiDiceClient } from "avm-satoshi-dice";
 import { getAssetAsync } from "../../scripts/algorand/getAssetAsync";
 import { useAppStore } from "../../stores/app";
 import { useGameStore } from "../../stores/game";
@@ -213,15 +213,8 @@ const handleSubmit = async () => {
     <div class="p-6">
       <form @submit.prevent="handleSubmit" class="space-y-6">
         <p>
-          You can create the AVM Satoshi Game. Please select which token will be used, select initial deposit and select the win ratio. Win
-          ratio is the game modifier which reduces the player chance to win. With AVM Satoshi Game players choose their probability of
-          winning. With player 100% probability and 100% win ratio from the game, the player always win his deposit. The amount of money he
-          will win depends on the probability which he is willing to risk. If he selects 50% probability, it is likely that every second
-          game he is going to win with double of his deposit. Setting game win ratio to 90% will mean that if user selects 50% probabilty,
-          his probability of winning will be 45%. As creator you can deposit and withdraw from the game deposit as you like with applied fee
-          2.5%. If the asset you want to add is ASA, there is fixed charge 10 {{ appStore.state.nativeTokenName }}. Protocol receives
-          additional 20% fee from the profit of the deposit from the user failed play. The profit fee is calculated from the game win ratio
-          (1-win ratio)*0.2.
+          Select blockchain, token and initial deposit to setup the game. You can deposit more tokens to your game or modify the win ratio
+          with this form.
         </p>
         <div class="grid grid-cols-1 gap-6" :class="state.tokenType == 'native' ? 'md:grid-cols-3' : 'md:grid-cols-4'">
           <div>

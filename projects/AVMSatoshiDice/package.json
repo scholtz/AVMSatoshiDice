@@ -4,7 +4,7 @@
     "Algorand",
     "Other"
   ],
-  "version": "1.0.1",
+  "version": "1.0.4",
   "description": "The npm provides the generated client which communicates with the smart contract of AVM Satoshi Dice",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -31,7 +31,8 @@
     "npm": ">=9.0"
   },
   "dependencies": {
-    "@algorandfoundation/algorand-typescript": "~1.0.0-beta.68 <1.0.0"
+    "@algorandfoundation/algorand-typescript": "~1.0.0-beta.68 <1.0.0",
+    "buffer": "^6.0.3"
   },
   "devDependencies": {
     "@algorandfoundation/algokit-client-generator": "^5.0.0",
@@ -42,6 +43,7 @@
     "@eslint/js": "^9.18.0",
     "@rollup/plugin-typescript": "^12.1.2",
     "@tsconfig/node22": "^22.0.0",
+    "@types/node": "^22.15.17",
     "@vitest/coverage-v8": "^2.1.8",
     "algosdk": "^3.0.0",
     "better-npm-audit": "^3.11.0",

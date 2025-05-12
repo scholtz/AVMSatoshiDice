@@ -8,6 +8,10 @@ export interface IAssetParams {
    * The asset Type
    */
   type: "native" | "asa" | "arc200" | "other";
+  /**
+   * Chain id
+   */
+  chain: "mainnet-v1.0" | "aramidmain-v1.0" | "testnet-v1.0" | "betanet-v1.0" | "voimain-v1.0" | "fnet-v1" | "dockernet-v1";
 
   /**
    * The address that created this asset. This is the address where the parameters

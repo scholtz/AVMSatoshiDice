@@ -3,16 +3,17 @@ import { AlgoAmount } from "@algorandfoundation/algokit-utils/types/amount";
 import { useWallet } from "@txnlab/use-wallet-vue";
 import algosdk, { makeAssetTransferTxnWithSuggestedParamsFromObject, makePaymentTxnWithSuggestedParamsFromObject } from "algosdk";
 import { getArc200Client } from "arc200-client";
+import { AvmSatoshiDiceClient, PlayStruct } from "avm-satoshi-dice";
 import { useToast } from "primevue";
 import { computed, onMounted, reactive, ref, watch } from "vue";
 import { useRoute } from "vue-router";
-import { AvmSatoshiDiceClient, PlayStruct } from "avm-satoshi-dice";
 import { useAppStore } from "../../stores/app";
 import { IGameStruct, useGameStore } from "../../stores/game";
 import AppButton from "../common/AppButton.vue";
 import AppLoader from "../common/AppLoader.vue";
 import FireworksEffect from "../effects/FireworksEffect.vue";
 const toast = useToast();
+const gameStore = useGameStore();
 
 const props = defineProps<{
   game: IGameStruct;
@@ -112,7 +113,6 @@ const checkCurrentGameState = async (moveToCheckOnResult: boolean = false) => {
   }
 };
 
-const gameStore = useGameStore();
 const state = reactive({
   depositAmount: 1000,
   winProbability: 50,

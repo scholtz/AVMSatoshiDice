@@ -2,10 +2,10 @@
 import { AlgoAmount } from "@algorandfoundation/algokit-utils/types/amount";
 import { useWallet } from "@txnlab/use-wallet-vue";
 import algosdk from "algosdk";
+import { AvmSatoshiDiceClient } from "avm-satoshi-dice";
 import { useToast } from "primevue";
 import { computed, onMounted, reactive } from "vue";
 import { useRouter } from "vue-router";
-import { AvmSatoshiDiceClient } from "avm-satoshi-dice";
 import { useAppStore } from "../../stores/app";
 import { IGameStruct, useGameStore } from "../../stores/game";
 import AppButton from "../common/AppButton.vue";
@@ -176,6 +176,11 @@ const handleWithdraw = async () => {
             <div class="flex justify-between items-center">
               <span class="text-gray-400">Balance:</span>
               <span class="font-semibold text-white">{{ formattedBalance }} {{ game.token.unitName }}</span>
+            </div>
+
+            <div class="flex justify-between items-center">
+              <span class="text-gray-400">Blockchain:</span>
+              <span class="font-semibold text-white">{{ game.chain }}</span>
             </div>
 
             <div class="flex justify-between items-center">

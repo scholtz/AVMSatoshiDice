@@ -39,6 +39,7 @@ export const getAssetAsync = async (assetId: string | number | bigint, avmClient
         unitNameB64: new Uint8Array(Buffer.from("Algo", "ascii")),
         url: "https://www.algorand.com",
         urlB64: new Uint8Array(Buffer.from("https://www.algorand.com", "ascii")),
+        chain: network.genesisId,
       };
     } else if (network.genesisId == "testnet-v1.0") {
       return {
@@ -59,6 +60,7 @@ export const getAssetAsync = async (assetId: string | number | bigint, avmClient
         unitNameB64: new Uint8Array(Buffer.from("T", "ascii")),
         url: "https://www.algorand.com",
         urlB64: new Uint8Array(Buffer.from("https://www.algorand.com", "ascii")),
+        chain: network.genesisId,
       };
     } else if (network.genesisId == "voimain-v1.0") {
       return {
@@ -79,6 +81,7 @@ export const getAssetAsync = async (assetId: string | number | bigint, avmClient
         unitNameB64: new Uint8Array(Buffer.from("Voi", "ascii")),
         url: "https://www.voi.network",
         urlB64: new Uint8Array(Buffer.from("https://www.voi.network", "ascii")),
+        chain: network.genesisId,
       };
     } else if (network.genesisId == "aramidmain-v1.0") {
       return {
@@ -99,6 +102,7 @@ export const getAssetAsync = async (assetId: string | number | bigint, avmClient
         unitNameB64: new Uint8Array(Buffer.from("Aramid", "ascii")),
         url: "https://aramid.finance",
         urlB64: new Uint8Array(Buffer.from("https://aramid.finance", "ascii")),
+        chain: network.genesisId,
       };
     } else if (network.genesisId == "dockernet-v1") {
       return {
@@ -119,6 +123,7 @@ export const getAssetAsync = async (assetId: string | number | bigint, avmClient
         unitNameB64: new Uint8Array(Buffer.from("Local", "ascii")),
         url: "https://lora.algokit.io/localnet",
         urlB64: new Uint8Array(Buffer.from("https://lora.algokit.io/localnet", "ascii")),
+        chain: network.genesisId,
       };
     } else {
       console.error("requets for native token, but token genesis not identified", network);
@@ -128,7 +133,19 @@ export const getAssetAsync = async (assetId: string | number | bigint, avmClient
     const assetInfo = await avmClient.client.algod.getAssetByID(assetBigInt).do();
     if (assetInfo?.params) {
       if (!cache[network.genesisId]) cache[network.genesisId] = {};
-      cache[network.genesisId][assetStr] = { ...assetInfo.params, id: assetBigInt, type: "asa" };
+      cache[network.genesisId][assetStr] = {
+        ...assetInfo.params,
+        id: assetBigInt,
+        type: "asa",
+        chain: network.genesisId as
+          | "mainnet-v1.0"
+          | "aramidmain-v1.0"
+          | "testnet-v1.0"
+          | "betanet-v1.0"
+          | "voimain-v1.0"
+          | "fnet-v1"
+          | "dockernet-v1",
+      };
     }
   } catch {
     try {
@@ -161,6 +178,14 @@ export const getAssetAsync = async (assetId: string | number | bigint, avmClient
         unitNameB64: new Uint8Array(Buffer.from(state.symbol?.buffer ?? Buffer.from("U", "ascii"))),
         url: undefined,
         urlB64: undefined,
+        chain: network.genesisId as
+          | "mainnet-v1.0"
+          | "aramidmain-v1.0"
+          | "testnet-v1.0"
+          | "betanet-v1.0"
+          | "voimain-v1.0"
+          | "fnet-v1"
+          | "dockernet-v1",
       };
       if (!cache[network.genesisId]) cache[network.genesisId] = {};
       cache[network.genesisId][assetStr] = params;
@@ -184,6 +209,14 @@ export const getAssetAsync = async (assetId: string | number | bigint, avmClient
         unitNameB64: new Uint8Array(Buffer.from(Buffer.from("U", "ascii"))),
         url: undefined,
         urlB64: undefined,
+        chain: network.genesisId as
+          | "mainnet-v1.0"
+          | "aramidmain-v1.0"
+          | "testnet-v1.0"
+          | "betanet-v1.0"
+          | "voimain-v1.0"
+          | "fnet-v1"
+          | "dockernet-v1",
       };
       return params;
     }
