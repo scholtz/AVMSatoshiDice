@@ -81,6 +81,7 @@ const refreshList = async () => {
   }
 
   state.plays = plays
+    .filter((p) => p.play.state > 1n)
     .sort((a, b) => {
       return Number(b.play.update - a.play.update);
     })
