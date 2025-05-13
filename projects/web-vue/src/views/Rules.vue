@@ -57,7 +57,8 @@ import MainPanel from "../components/MainPanel.vue";
           There are protocol fees in place - deposit and withdrawal fee is 2.5%. The profit sharing fee is 20%. If the user looses against
           the game, the game receives his deposit minus the profit sharing fee. The profit sharing fee is 1-win game ratio. For game with
           90% win game ratio, the profit from deposit {{ Number(100000).toLocaleString() }} tokens is 10% =
-          {{ Number(10000).toLocaleString() }} tokens. The protocol profit sharing fee is {{ Number(2000).toLocaleString() }} tokens.
+          {{ Number(10000).toLocaleString() }} tokens. The protocol profit sharing fee is {{ Number(2000).toLocaleString() }} tokens. When
+          creating game with ASA token, 10 native tokens fee applies when signing the smart contract optin transaction.
         </p>
 
         <RouterLink to="/">

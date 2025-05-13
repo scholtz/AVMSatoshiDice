@@ -596,9 +596,10 @@ const playAgainClick = async () => {
         <!-- Step 3: Claim -->
         <div v-else-if="state.gamePlayStep === 3" class="text-center py-6 space-y-6">
           <div class="mb-6">
-            <div class="text-xl font-medium text-white mb-2">Claim Winnings</div>
+            <div class="text-xl font-medium text-white mb-2">Check results</div>
             <p class="text-gray-400">
-              Try your luck! Click the button below to see if you've won. Make sure to claim within 100 rounds from the play start!
+              Try your luck! Click the button below to see if you've won. Make sure to check results within 100 rounds from the play start,
+              otherwise the game will time out!
             </p>
           </div>
 
@@ -636,7 +637,7 @@ const playAgainClick = async () => {
           <div>
             <AppButton @click="handleClaim" variant="primary" :disabled="cannotClaim" class="px-8">
               <AppLoader v-if="state.isClaiming || cannotClaim" size="sm" color="white" class="mr-2" />
-              {{ state.isClaiming ? "Processing... Check your wallet.." : cannotClaim ? "Wait few blocks.." : "Claim Now" }}
+              {{ state.isClaiming ? "Processing... Check your wallet.." : cannotClaim ? "Wait few blocks.." : "Check the results" }}
             </AppButton>
           </div>
         </div>

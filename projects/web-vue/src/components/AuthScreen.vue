@@ -98,8 +98,8 @@ const selectChainClick = (chain: any) => {
           </MainButton>
         </div>
 
-        <H2 class="text-center">Wallet selection</H2>
-        <div>
+        <H2 v-if="state.wallets.length > 0" class="text-center">Wallet selection</H2>
+        <div v-if="state.wallets.length > 0">
           <div class="bg-background-dark grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 rounded-lg p-10">
             <div v-for="wallet in state.wallets" :key="wallet.id">
               <MainButton
