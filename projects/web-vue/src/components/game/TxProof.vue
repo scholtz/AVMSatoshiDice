@@ -248,6 +248,9 @@ watch(
             <RouterLink to="/">
               <AppButton variant="outline"> Go back </AppButton>
             </RouterLink>
+            <RouterLink :to="`/game/${props.game.chain}/${props.game.id}/play`">
+              <AppButton variant="primary"> Play the game </AppButton>
+            </RouterLink>
           </div>
         </div>
       </div>

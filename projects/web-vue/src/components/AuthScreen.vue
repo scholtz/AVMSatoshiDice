@@ -84,7 +84,7 @@ const selectChainClick = (chain: any) => {
   </div>
   <div v-else class="flex flex-col items-center justify-center w-full">
     <div class="flex-1 w-full">
-      <MainPanel class="w-200 text-white m-8 p-6">
+      <MainPanel class="w-200 text-white p-6">
         <H2 class="text-center">Blockchain selection</H2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 mb-4">
           <MainButton
