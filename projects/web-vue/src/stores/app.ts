@@ -114,7 +114,7 @@ const defaultState: IState = {
       indexerPort: 443,
       indexerToken: "",
       tokenName: "ALGO",
-      wallets: [WalletId.BIATEC, WalletId.DEFLY, WalletId.EXODUS, WalletId.PERA, WalletId.KIBISIS, WalletId.WALLETCONNECT],
+      wallets: [WalletId.BIATEC, WalletId.DEFLY, WalletId.EXODUS, WalletId.PERA, WalletId.KIBISIS, WalletId.WALLETCONNECT, WalletId.LUTE],
     },
     "voimain-v1.0": {
       appId: 40051512n,
@@ -127,7 +127,7 @@ const defaultState: IState = {
       indexerPort: 443,
       indexerToken: "",
       tokenName: "VOI",
-      wallets: [WalletId.BIATEC, WalletId.KIBISIS, WalletId.DEFLY, WalletId.WALLETCONNECT],
+      wallets: [WalletId.BIATEC, WalletId.KIBISIS, WalletId.DEFLY, WalletId.WALLETCONNECT, WalletId.LUTE],
     },
     "aramidmain-v1.0": {
       appId: 187516n,
@@ -153,7 +153,7 @@ const defaultState: IState = {
       indexerPort: 443,
       indexerToken: "",
       tokenName: "TestA",
-      wallets: [WalletId.BIATEC, WalletId.DEFLY, WalletId.PERA, WalletId.WALLETCONNECT],
+      wallets: [WalletId.BIATEC, WalletId.DEFLY, WalletId.PERA, WalletId.WALLETCONNECT, WalletId.LUTE],
     },
     // "dockernet-v1": {
     //   appId: 9982n,

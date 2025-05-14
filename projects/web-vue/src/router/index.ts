@@ -40,6 +40,16 @@ const router = createRouter({
       component: () => import("../views/Rules.vue"),
     },
     {
+      path: "/admin",
+      name: "admin",
+      component: () => import("../views/AdminView.vue"),
+    },
+    {
+      path: "/admin/:chain/online",
+      name: "admin-online",
+      component: () => import("../views/AdminOnlineAccount.vue"),
+    },
+    {
       path: "/:pathMatch(.*)*",
       name: "404",
       component: () => import("../views/Error404.vue"),
