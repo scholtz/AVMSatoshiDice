@@ -25,7 +25,7 @@ onMounted(async () => {
   if (!activeAddress.value) return;
   const clients = appStore.getAppClients(activeAddress.value, transactionSigner);
 
-  for (let chain of Object.keys(clients)) {
+  for (const chain of Object.keys(clients)) {
     try {
       const client = clients[chain];
       console.log("checking ", chain);
@@ -34,6 +34,9 @@ onMounted(async () => {
       const map = await client.state.box.allDeposits.getMap();
       for (const [assetId, value] of map) {
         try {
+          if (value == 1111111111n) {
+            console.log("1111111111n");
+          }
           const asset = await getAssetAsync(assetId, client.algorand);
           let allDeposits = 0n;
           if (asset.type == "arc200") {

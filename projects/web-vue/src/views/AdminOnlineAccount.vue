@@ -3,7 +3,7 @@ import { useWallet } from "@txnlab/use-wallet-vue";
 import algosdk from "algosdk";
 import { useToast } from "primevue";
 import { onMounted, reactive } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import H1 from "../components/H1.vue";
 import MainPanel from "../components/MainPanel.vue";
 import { useAppStore } from "../stores/app";
