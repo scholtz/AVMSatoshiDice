@@ -502,6 +502,10 @@ const setBalance = (byButton: boolean = true) => {
               It seems your account is empty on {{ game.token.name }}. You can get some at one of the
               <a class="underline" href="https://algorand.co/ecosystem/directory?tags=DEX" target="_blank">Algorand's DEXes</a>.
             </Message>
+            <Message severity="warn" v-if="game.chain == 'testnet-v1.0'">
+              It seems your account is empty on {{ game.token.name }}. You can get some at
+              <a class="underline" href="https://bank.testnet.algorand.network/" target="_blank">Algorand's testnet faucet</a>.
+            </Message>
           </div>
 
           <div class="md:grid grid-cols-1 md:grid-cols-6 lg:grid-cols-12 gap-2 hidden">

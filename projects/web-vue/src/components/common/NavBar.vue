@@ -62,7 +62,7 @@ const disconnectClick = () => {
             <div v-if="activeAddress" class="relative">
               <div class="flex items-center">
                 <span class="bg-gradient-to-r from-primary-600 to-secondary-600 px-3 py-2 rounded-l-md text-white font-medium">
-                  {{ activeAddress.substring(0, 5) + "..." + activeAddress.substring(activeAddress.length - 5) }}
+                  <AbbrText :text="activeAddress"></AbbrText>
                 </span>
                 <AppButton @click="disconnectClick" class="rounded-l-none"> Disconnect </AppButton>
               </div>
@@ -103,14 +103,15 @@ const disconnectClick = () => {
         <RouterLink
           to="/create-game"
           class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:bg-gray-800 hover:text-white"
-          >Create Game</RouterLink
         >
+          Create Game
+        </RouterLink>
       </div>
       <div class="pt-4 pb-3 border-t border-gray-700">
         <div class="flex items-center px-5">
           <div v-if="activeAddress" class="w-full">
             <div class="text-base font-medium leading-none text-white mb-2">
-              {{ activeAddress.substring(0, 5) + "..." + activeAddress.substring(activeAddress.length - 5) }}
+              <AbbrText :text="activeAddress"></AbbrText>
             </div>
             <AppButton @click="disconnectClick" class="w-full"> Disconnect </AppButton>
           </div>
