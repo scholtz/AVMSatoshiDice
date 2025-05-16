@@ -42,6 +42,10 @@ import MainPanel from "../components/MainPanel.vue";
           User pays the network fees ~ 0.01 token per game. At algo price $1/Algo, user can play at least 100 games for $1 net worth of the
           network fees.
         </p>
+        <p>
+          The maximum win amount is 10% of the amount of tokens in the game. The maximum win amount is a value which will transfered from
+          the smart contract to user and includes the deposit amount.
+        </p>
         <p class="my-4">If you are not of legal age in your country, please do not play the game. Playing may lead to addiction.</p>
 
         <H2>Who can create game?</H2>

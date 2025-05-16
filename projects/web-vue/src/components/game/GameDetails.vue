@@ -60,7 +60,7 @@ const formattedBalance = computed(() => {
   return (Number(props.game.game.balance) / 10 ** Number(props.game.token.decimals)).toLocaleString();
 });
 const formattedMaxWinBalance = computed(() => {
-  return (Number(props.game.game.balance / 2n) / 10 ** Number(props.game.token.decimals)).toLocaleString();
+  return (Number(props.game.game.balance / 10n) / 10 ** Number(props.game.token.decimals)).toLocaleString();
 });
 
 const formattedLastPlayAmount = computed(() => {

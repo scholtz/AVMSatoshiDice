@@ -28,7 +28,7 @@ useMotion(gameCardRef, {
 });
 
 const formattedWinUpToBalance = computed(() => {
-  return (Number(props.game.game.balance / 2n) / 10 ** Number(props.game.token.decimals)).toLocaleString();
+  return (Number(props.game.game.balance / 10n) / 10 ** Number(props.game.token.decimals)).toLocaleString();
 });
 
 const formattedWinRatio = computed(() => {

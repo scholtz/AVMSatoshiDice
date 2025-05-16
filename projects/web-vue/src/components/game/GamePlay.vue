@@ -70,7 +70,7 @@ function bufferToDecimal(buf: Buffer): bigint {
   return result;
 }
 const formattedWinUpToBalance = computed(() => {
-  return (Number(props.game.game.balance / 2n) / 10 ** Number(props.game.token.decimals)).toLocaleString();
+  return (Number(props.game.game.balance / 10n) / 10 ** Number(props.game.token.decimals)).toLocaleString();
 });
 const goToProof = async () => {
   if (!gameStore.currentGamePlay) throw Error("Game play not found");
@@ -457,7 +457,7 @@ const setProbability = (probability: number, byButton: boolean = true) => {
 const setBalance = (byButton: boolean = true) => {
   if (!state.balanceModifiedByUser) {
     state.modifyingByButton = byButton;
-    const maxBalance = Math.floor((Number(props.game.game.balance / 2n) * state.winProbability) / 100) / 10 ** props.game.token.decimals;
+    const maxBalance = Math.floor((Number(props.game.game.balance / 10n) * state.winProbability) / 100) / 10 ** props.game.token.decimals;
 
     state.depositAmount = Math.min(maxBalance, tokenBalance.value / 10 ** props.game.token.decimals); //
 
