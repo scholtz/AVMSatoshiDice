@@ -28,6 +28,7 @@ declare module 'vue' {
     InputText: typeof import('primevue/inputtext')['default']
     MainButton: typeof import('./src/components/MainButton.vue')['default']
     MainPanel: typeof import('./src/components/MainPanel.vue')['default']
+    Message: typeof import('primevue/message')['default']
     NavBar: typeof import('./src/components/common/NavBar.vue')['default']
     PlayList: typeof import('./src/components/game/PlayList.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']

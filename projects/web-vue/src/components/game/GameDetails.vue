@@ -59,6 +59,9 @@ const formattedWinRatio = computed(() => {
 const formattedBalance = computed(() => {
   return (Number(props.game.game.balance) / 10 ** Number(props.game.token.decimals)).toLocaleString();
 });
+const formattedMaxWinBalance = computed(() => {
+  return (Number(props.game.game.balance / 2n) / 10 ** Number(props.game.token.decimals)).toLocaleString();
+});
 
 const formattedLastPlayAmount = computed(() => {
   if (!props.game.game.lastWinAmount) return "0";
@@ -176,6 +179,10 @@ const handleWithdraw = async () => {
             <div class="flex justify-between items-center">
               <span class="text-gray-400">Balance:</span>
               <span class="font-semibold text-white">{{ formattedBalance }} {{ game.token.unitName }}</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-400">Maximum win amount:</span>
+              <span class="font-semibold text-white">{{ formattedMaxWinBalance }} {{ game.token.unitName }}</span>
             </div>
 
             <div class="flex justify-between items-center">

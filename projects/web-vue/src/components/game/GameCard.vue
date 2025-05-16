@@ -27,8 +27,8 @@ useMotion(gameCardRef, {
   },
 });
 
-const formattedBalance = computed(() => {
-  return (Number(props.game.game.balance) / 10 ** Number(props.game.token.decimals)).toLocaleString();
+const formattedWinUpToBalance = computed(() => {
+  return (Number(props.game.game.balance / 2n) / 10 ** Number(props.game.token.decimals)).toLocaleString();
 });
 
 const formattedWinRatio = computed(() => {
@@ -64,8 +64,8 @@ const playGame = () => {
 
       <div class="grid grid-cols-2 gap-4 mb-6">
         <div class="bg-background-dark p-3 rounded-lg">
-          <div class="text-gray-400 text-xs mb-1">Balance</div>
-          <div class="font-semibold text-white">{{ formattedBalance }} {{ game.token.unitName }}</div>
+          <div class="text-gray-400 text-xs mb-1">Win Up To</div>
+          <div class="font-semibold text-white">{{ formattedWinUpToBalance }} {{ game.token.unitName }}</div>
         </div>
 
         <div class="bg-background-dark p-3 rounded-lg">

@@ -58,6 +58,9 @@ onMounted(async () => {
       await goToProof();
     }
   }
+
+  setBalance(true);
+  state.loaded = true;
 });
 function bufferToDecimal(buf: Buffer): bigint {
   let result = 0n;
@@ -66,6 +69,9 @@ function bufferToDecimal(buf: Buffer): bigint {
   }
   return result;
 }
+const formattedWinUpToBalance = computed(() => {
+  return (Number(props.game.game.balance / 2n) / 10 ** Number(props.game.token.decimals)).toLocaleString();
+});
 const goToProof = async () => {
   if (!gameStore.currentGamePlay) throw Error("Game play not found");
 
@@ -114,10 +120,13 @@ const checkCurrentGameState = async (moveToCheckOnResult: boolean = false) => {
 };
 
 const state = reactive({
+  loaded: false,
   depositAmount: 1000,
   winProbability: 50,
   isDepositing: false,
   isClaiming: false,
+  balanceModifiedByUser: false,
+  modifyingByButton: false,
   gamePlayStep: 1, // 1: Setup, 2: Deposit, 3: Claim, 4: Result
   errorMessage: "",
   play: undefined as undefined | PlayStruct,
@@ -126,6 +135,15 @@ const state = reactive({
   seedInB64: undefined as undefined | string,
   seedInDec: undefined as undefined | bigint,
 });
+
+watch(
+  () => state.depositAmount,
+  () => {
+    if (!state.modifyingByButton) {
+      state.balanceModifiedByUser = true;
+    }
+  },
+);
 
 const showFireworks = ref(false);
 
@@ -431,13 +449,30 @@ const playAgainClick = async () => {
   state.errorMessage = "";
   await startPlay();
 };
+
+const setProbability = (probability: number, byButton: boolean = true) => {
+  state.winProbability = probability;
+  setBalance(byButton);
+};
+const setBalance = (byButton: boolean = true) => {
+  if (!state.balanceModifiedByUser) {
+    state.modifyingByButton = byButton;
+    const maxBalance = Math.floor((Number(props.game.game.balance / 2n) * state.winProbability) / 100) / 10 ** props.game.token.decimals;
+
+    state.depositAmount = Math.min(maxBalance, tokenBalance.value / 10 ** props.game.token.decimals); //
+
+    setTimeout(() => {
+      state.modifyingByButton = false;
+    }, 100);
+  }
+};
 </script>
 
 <template>
   <div class="w-full">
     <FireworksEffect v-if="showFireworks"></FireworksEffect>
 
-    <MainPanel>
+    <MainPanel v-if="state.loaded">
       <div class="bg-gradient-to-r from-primary-900 to-background-dark p-4 border-b border-gray-800 flex items-center justify-between">
         <h3 class="text-lg font-semibold text-white">Play: {{ game.token.name }} game</h3>
 
@@ -458,19 +493,30 @@ const playAgainClick = async () => {
       <div class="p-6">
         <!-- Step 1: Setup -->
         <div v-if="state.gamePlayStep === 1" class="space-y-6">
+          <div v-if="!tokenBalance">
+            <Message severity="warn" v-if="game.chain == 'voimain-v1.0'">
+              It seems your account is empty on {{ game.token.name }}. You can get some at one of the
+              <a class="underline" href="https://www.voi.network/pages/projects/directory?type=DEX" target="_blank">VOI DEXes</a>.
+            </Message>
+            <Message severity="warn" v-if="game.chain == 'mainnet-v1.0'">
+              It seems your account is empty on {{ game.token.name }}. You can get some at one of the
+              <a class="underline" href="https://algorand.co/ecosystem/directory?tags=DEX" target="_blank">Algorand's DEXes</a>.
+            </Message>
+          </div>
+
           <div class="md:grid grid-cols-1 md:grid-cols-6 lg:grid-cols-12 gap-2 hidden">
-            <Button @click="state.winProbability = 0.1">Multiplier<br />1000x</Button>
-            <Button @click="state.winProbability = 1">Multiplier<br />100x</Button>
-            <Button @click="state.winProbability = 2">Multiplier<br />50x</Button>
-            <Button @click="state.winProbability = 4">Multiplier<br />25x</Button>
-            <Button @click="state.winProbability = 10">Multiplier<br />10x</Button>
-            <Button @click="state.winProbability = 33.3333">Multiplier<br />3x</Button>
-            <Button @click="state.winProbability = 50">Multiplier<br />2x</Button>
-            <Button @click="state.winProbability = 66.6666">Multiplier<br />1.5x</Button>
-            <Button @click="state.winProbability = 83.3333">Multiplier<br />1.2x</Button>
-            <Button @click="state.winProbability = 90.909">Multiplier<br />1.1x</Button>
-            <Button @click="state.winProbability = 95.238">Multiplier<br />1.05x</Button>
-            <Button @click="state.winProbability = 99.0099">Multiplier<br />1.01x</Button>
+            <Button @click="setProbability(0.1)">Multiplier<br />1000x</Button>
+            <Button @click="setProbability(1)">Multiplier<br />100x</Button>
+            <Button @click="setProbability(2)">Multiplier<br />50x</Button>
+            <Button @click="setProbability(4)">Multiplier<br />25x</Button>
+            <Button @click="setProbability(10)">Multiplier<br />10x</Button>
+            <Button @click="setProbability(33.3333)">Multiplier<br />3x</Button>
+            <Button @click="setProbability(50)">Multiplier<br />2x</Button>
+            <Button @click="setProbability(66.6666)">Multiplier<br />1.5x</Button>
+            <Button @click="setProbability(83.3333)">Multiplier<br />1.2x</Button>
+            <Button @click="setProbability(90.909)">Multiplier<br />1.1x</Button>
+            <Button @click="setProbability(95.238)">Multiplier<br />1.05x</Button>
+            <Button @click="setProbability(99.0099)">Multiplier<br />1.01x</Button>
           </div>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -530,6 +576,10 @@ const playAgainClick = async () => {
 
           <div class="bg-background-dark rounded-lg p-4 space-y-4">
             <div class="flex justify-between items-center">
+              <span class="text-gray-400">Maximum win amount:</span>
+              <span class="font-semibold text-lg"> {{ formattedWinUpToBalance }} {{ game.token.unitName }} </span>
+            </div>
+            <div class="flex justify-between items-center">
               <span class="text-gray-400">Potential Win:</span>
               <span :class="['font-semibold text-lg', canWinAmount ? 'text-success-400' : 'text-error-500']">
                 {{ potentialWinAmount.toFixed(game.token.decimals).toLocaleString() }} {{ game.token.unitName }}
@@ -549,7 +599,7 @@ const playAgainClick = async () => {
             </div>
 
             <div v-if="!canWinAmount" class="text-sm text-error-500">
-              Potential win amount exceeds 50% of the game balance. Adjust your deposit or probability.
+              Potential win amount exceeds maximum win balance. Adjust your deposit or probability.
             </div>
           </div>
 
@@ -768,5 +818,6 @@ const playAgainClick = async () => {
         </div>
       </div>
     </MainPanel>
+    <MainPanel v-else class="p-6"><AppLoader size="lg" color="primary" /></MainPanel>
   </div>
 </template>
