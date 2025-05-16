@@ -64,7 +64,13 @@ import MainPanel from "../components/MainPanel.vue";
           {{ Number(10000).toLocaleString() }} tokens. The protocol profit sharing fee is {{ Number(2000).toLocaleString() }} tokens. When
           creating game with ASA token, 10 native tokens fee applies when signing the smart contract optin transaction.
         </p>
-
+        <img src="../assets/netlogo-satoshi-dice-simulation.jpg" class="float-right ml-4 w-96" />
+        <p class="my-4">
+          To better decide on the parameters of the game, we recommend that you try the simulation in
+          <a href="https://ccl.northwestern.edu/netlogo/" target="_blank">NetLogo software</a>. We have created the basic game play
+          simulation and you can tune the parameters or play with the simulation code. You can download the
+          <a href="/files/simulation.nlogo">AVM Satoshi Dice simulation here</a>.
+        </p>
         <RouterLink to="/">
           <MainButton>Go home</MainButton>
         </RouterLink>
