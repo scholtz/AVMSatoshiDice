@@ -460,7 +460,7 @@ export class AvmSatoshiDice extends Contract {
 
     this.allDeposits(assetId).value = new UintN256(prevDeposit.native + BigUint(deposit))
 
-    assert(txnDeposit.receiver === Global.currentApplicationAddress, 'Receiver must be the gas station app')
+    assert(txnDeposit.receiver === Global.currentApplicationAddress, 'Receiver must be the app')
 
     const key = new AddressAssetStruct({
       assetId: assetId,
@@ -548,7 +548,7 @@ export class AvmSatoshiDice extends Contract {
 
     this.allDeposits(assetId).value = new UintN256(prevDeposit.native + BigUint(deposit))
 
-    assert(txnDeposit.assetReceiver === Global.currentApplicationAddress, 'Receiver must be the gas station app')
+    assert(txnDeposit.assetReceiver === Global.currentApplicationAddress, 'Receiver must be the app')
 
     const key = new AddressAssetStruct({
       assetId: assetId,
