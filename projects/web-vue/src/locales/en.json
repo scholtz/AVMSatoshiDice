@@ -79,7 +79,10 @@
     "neverPlayed": "Never played",
     "gameNotFound": "Game Not Found",
     "gameNotFoundMessage": "The game you're looking for doesn't exist or has been removed.",
-    "backToGames": "Back to Games"
+    "backToGames": "Back to Games",
+    "createNewGame": "Create New Game",
+    "selectBlockchainToken": "Select blockchain, token and initial deposit to setup the game. You can deposit more tokens to your game or modify the win ratio with this form.",
+    "chain": "Chain"
   },
   "wallet": {
     "connect": "Connect Wallet",
@@ -89,7 +92,13 @@
     "selectWallet": "Select Wallet",
     "walletRequired": "Wallet connection required",
     "transactionSigning": "Please sign the transaction in your wallet",
-    "transactionPending": "Transaction pending..."
+    "transactionPending": "Transaction pending...",
+    "blockchainSelection": "Blockchain selection",
+    "walletSelection": "Wallet selection",
+    "setActive": "Set Active",
+    "active": "[active]",
+    "email": "Email:",
+    "enterEmail": "Enter email to connect..."
   },
   "rules": {
     "title": "Provably Fair On-Chain Game Rules",

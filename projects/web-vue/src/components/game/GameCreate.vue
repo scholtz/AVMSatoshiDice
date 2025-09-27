@@ -207,24 +207,23 @@ const handleSubmit = async () => {
 <template>
   <MainPanel>
     <div class="bg-gradient-to-r from-primary-900 to-background-dark p-4 border-b border-gray-800">
-      <h3 class="text-lg font-semibold text-white">Create New Game</h3>
+      <h3 class="text-lg font-semibold text-white">{{ $t('game.createNewGame') }}</h3>
     </div>
 
     <div class="p-6">
       <form @submit.prevent="handleSubmit" class="space-y-6">
         <p>
-          Select blockchain, token and initial deposit to setup the game. You can deposit more tokens to your game or modify the win ratio
-          with this form.
+          {{ $t('game.selectBlockchainToken') }}
         </p>
         <div class="grid grid-cols-1 gap-6" :class="state.tokenType == 'native' ? 'md:grid-cols-3' : 'md:grid-cols-4'">
           <div>
-            <label class="label" for="tokenType">Chain</label>
+            <label class="label" for="tokenType">{{ $t('game.chain') }}</label>
             <select class="input w-full" id="tokenType" v-model="state.chain">
               <option v-for="chain in Object.values(appStore.state.chains)" :key="chain.code" :value="chain.code">{{ chain.name }}</option>
             </select>
           </div>
           <div>
-            <label class="label" for="tokenType">Token type</label>
+            <label class="label" for="tokenType">{{ $t('game.tokenType') }}</label>
             <select class="input w-full" id="tokenType" v-model="state.tokenType">
               <option value="native">Native token</option>
               <option value="asa">ASA</option>
