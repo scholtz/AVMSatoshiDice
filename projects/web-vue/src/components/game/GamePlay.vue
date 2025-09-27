@@ -474,7 +474,7 @@ const setBalance = (byButton: boolean = true) => {
 
     <MainPanel v-if="state.loaded">
       <div class="bg-gradient-to-r from-primary-900 to-background-dark p-4 border-b border-gray-800 flex items-center justify-between">
-        <h3 class="text-lg font-semibold text-white">Play: {{ game.token.name }} game</h3>
+        <h3 class="text-lg font-semibold text-white">{{ $t('game.playGameTitle', { token: game.token.name }) }}</h3>
 
         <div class="flex items-center space-x-2">
           <div class="flex items-center">
@@ -485,7 +485,7 @@ const setBalance = (byButton: boolean = true) => {
           </div>
 
           <div class="px-2 py-0.5 bg-primary-800 text-primary-300 rounded-full text-xs font-medium">
-            {{ (Number(game.game.winRatio) / 10000).toLocaleString() }}% Win Ratio
+            {{ (Number(game.game.winRatio) / 10000).toLocaleString() }}% {{ $t('common.winRatio') }}
           </div>
         </div>
       </div>
@@ -495,16 +495,16 @@ const setBalance = (byButton: boolean = true) => {
         <div v-if="state.gamePlayStep === 1" class="space-y-6">
           <div v-if="!tokenBalance">
             <Message severity="warn" v-if="game.chain == 'voimain-v1.0'">
-              It seems your account is empty on {{ game.token.name }}. You can get some at one of the
-              <a class="underline" href="https://www.voi.network/pages/projects/directory?type=DEX" target="_blank">VOI DEXes</a>.
+              {{ $t('game.accountEmpty') }} {{ game.token.name }}. {{ $t('game.getTokensVoi') }}
+              <a class="underline" href="https://www.voi.network/pages/projects/directory?type=DEX" target="_blank">{{ $t('game.voiDexes') }}</a>.
             </Message>
             <Message severity="warn" v-if="game.chain == 'mainnet-v1.0'">
-              It seems your account is empty on {{ game.token.name }}. You can get some at one of the
-              <a class="underline" href="https://algorand.co/ecosystem/directory?tags=DEX" target="_blank">Algorand's DEXes</a>.
+              {{ $t('game.accountEmpty') }} {{ game.token.name }}. {{ $t('game.getTokensAlgorand') }}
+              <a class="underline" href="https://algorand.co/ecosystem/directory?tags=DEX" target="_blank">{{ $t('game.algorandDexes') }}</a>.
             </Message>
             <Message severity="warn" v-if="game.chain == 'testnet-v1.0'">
-              It seems your account is empty on {{ game.token.name }}. You can get some at
-              <a class="underline" href="https://bank.testnet.algorand.network/" target="_blank">Algorand's testnet faucet</a>.
+              {{ $t('game.accountEmpty') }} {{ game.token.name }}. {{ $t('game.getTokensTestnet') }}
+              <a class="underline" href="https://bank.testnet.algorand.network/" target="_blank">{{ $t('game.algorandTestnetFaucet') }}</a>.
             </Message>
           </div>
 
@@ -524,7 +524,7 @@ const setBalance = (byButton: boolean = true) => {
           </div>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label class="label" for="state.depositAmount">Deposit Amount ({{ game.token.unitName }})</label>
+              <label class="label" for="state.depositAmount">{{ $t('game.depositAmount') }} ({{ game.token.unitName }})</label>
               <div class="flex items-center">
                 <input
                   id="state.depositAmount"
@@ -537,13 +537,13 @@ const setBalance = (byButton: boolean = true) => {
                 />
               </div>
               <div class="mt-1 text-sm text-gray-400">
-                Your balance: {{ (Number(tokenBalance) / 10 ** Number(game.token.decimals)).toLocaleString() }}
+                {{ $t('game.yourBalance') }}: {{ (Number(tokenBalance) / 10 ** Number(game.token.decimals)).toLocaleString() }}
                 {{ appStore.state.tokenName }}
               </div>
-              <div v-if="!canAffordBet" class="mt-1 text-sm text-error-500">Insufficient balance</div>
+              <div v-if="!canAffordBet" class="mt-1 text-sm text-error-500">{{ $t('game.insufficientBalanceShort') }}</div>
             </div>
             <div>
-              <label class="label" for="winProbability">Win probability (%)</label>
+              <label class="label" for="winProbability">{{ $t('game.winProbability') }} (%)</label>
               <div class="flex items-center">
                 <input
                   id="winProbability"
@@ -612,16 +612,16 @@ const setBalance = (byButton: boolean = true) => {
           </div>
 
           <div class="flex justify-end">
-            <AppButton @click="startPlay" variant="primary" :disabled="!canPlay"> Start game </AppButton>
+            <AppButton @click="startPlay" variant="primary" :disabled="!canPlay">{{ $t('game.startGame') }}</AppButton>
           </div>
         </div>
 
         <!-- Step 2: Deposit -->
         <div v-else-if="state.gamePlayStep === 2" class="text-center py-6 space-y-6">
           <div class="mb-6">
-            <div class="text-xl font-medium text-white mb-2">Deposit Tokens</div>
-            <p class="text-gray-400">Deposit {{ state.depositAmount }} {{ game.token.unitName }} tokens to start the game.</p>
-            <p class="text-red-400">Check your wallet to sign the transaction.</p>
+            <div class="text-xl font-medium text-white mb-2">{{ $t('game.depositTokens') }}</div>
+            <p class="text-gray-400">{{ $t('game.depositTokensMessage', { amount: state.depositAmount, token: game.token.unitName }) }}</p>
+            <p class="text-red-400">{{ $t('game.checkYourWallet') }}</p>
           </div>
 
           <div class="bg-background-dark rounded-lg p-4 mx-auto max-w-md">
@@ -631,7 +631,7 @@ const setBalance = (byButton: boolean = true) => {
             </div>
 
             <div class="flex justify-between items-center mb-3">
-              <span class="text-gray-400">Win Probability:</span>
+              <span class="text-gray-400">{{ $t('game.winProbability') }}:</span>
               <span class="font-semibold text-white"> {{ probabilityIncludingWinRatioPercentage }}% </span>
             </div>
 

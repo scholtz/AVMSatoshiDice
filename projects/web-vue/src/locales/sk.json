@@ -20,7 +20,10 @@
     "copied": "Skopírované!",
     "balance": "Zostatok",
     "amount": "Suma",
-    "probability": "Pravdepodobnosť"
+    "probability": "Pravdepodobnosť",
+    "details": "Podrobnosti",
+    "goHome": "Ísť domov",
+    "winRatio": "Výherný pomer"
   },
   "navigation": {
     "home": "Domov",
@@ -74,7 +77,23 @@
     "tryDifferentFilter": "Skúste vybrať iný filter tokenov alebo sa vráťte neskôr.",
     "winUpTo": "Vyhrať až",
     "lastPlayed": "Naposledy hrané",
-    "neverPlayed": "Nikdy nehrané"
+    "neverPlayed": "Nikdy nehrané",
+    "playGameTitle": "Hrať: {token} hra",
+    "gameTitle": "{token} hra",
+    "gameStatistics": "Štatistiky hry",
+    "accountEmpty": "Zdá sa, že váš účet je prázdny na",
+    "getTokensVoi": "Môžete ich získať na jednom z",
+    "voiDexes": "VOI DEXes",
+    "getTokensAlgorand": "Môžete ich získať na jednom z",
+    "algorandDexes": "Algorandových DEXov",
+    "getTokensTestnet": "Môžete ich získať na",
+    "algorandTestnetFaucet": "Algorandovom testnet faucete",
+    "yourBalance": "Váš zostatok",
+    "insufficientBalanceShort": "Nedostatočný zostatok",
+    "startGame": "Začať hru",
+    "depositTokens": "Vložiť tokeny",
+    "depositTokensMessage": "Vložte {amount} {token} tokenov na začatie hry.",
+    "checkYourWallet": "Skontrolujte svoju peňaženku na podpísanie transakcie."
   },
   "wallet": {
     "connect": "Pripojiť peňaženku",

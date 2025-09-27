@@ -22,7 +22,8 @@
     "amount": "Amount",
     "probability": "Probability",
     "details": "Details",
-    "goHome": "Go home"
+    "goHome": "Go home",
+    "winRatio": "Win Ratio"
   },
   "navigation": {
     "home": "Home",
@@ -82,7 +83,29 @@
     "backToGames": "Back to Games",
     "createNewGame": "Create New Game",
     "selectBlockchainToken": "Select blockchain, token and initial deposit to setup the game. You can deposit more tokens to your game or modify the win ratio with this form.",
-    "chain": "Chain"
+    "chain": "Chain",
+    "nativeTokenType": "Native token",
+    "asaTokenType": "ASA",
+    "arc200TokenType": "ARC200 Token",
+    "playGameTitle": "Play: {token} game",
+    "gameTitle": "{token} game",
+    "gameStatistics": "Game Statistics",
+    "accountEmpty": "It seems your account is empty on",
+    "getTokensVoi": "You can get some at one of the",
+    "voiDexes": "VOI DEXes",
+    "getTokensAlgorand": "You can get some at one of the",
+    "algorandDexes": "Algorand's DEXes",
+    "getTokensTestnet": "You can get some at",
+    "algorandTestnetFaucet": "Algorand's testnet faucet",
+    "yourBalance": "Your balance",
+    "insufficientBalanceShort": "Insufficient balance",
+    "startGame": "Start game",
+    "depositTokens": "Deposit Tokens",
+    "depositTokensMessage": "Deposit {amount} {token} tokens to start the game.",
+    "checkYourWallet": "Check your wallet to sign the transaction.",
+    "congratulations": "🎉 Congratulations! 🎉",
+    "betterLuckNextTime": "Better luck next time!",
+    "reviewGameProof": "Feel free to review the game proof below and try your luck again."
   },
   "wallet": {
     "connect": "Connect Wallet",
@@ -115,7 +138,14 @@
     "title": "Admin Panel",
     "onlineAccounts": "Online Accounts",
     "configuration": "Configuration",
-    "statistics": "Statistics"
+    "statistics": "Statistics",
+    "adminView": "Admin view",
+    "balance": "Balance",
+    "chain": "Chain",
+    "token": "Token",
+    "withdrawable": "Withdrawable",
+    "allDeposits": "All deposits",
+    "onlineState": "Online state"
   },
   "errors": {
     "pageNotFound": "Page Not Found",

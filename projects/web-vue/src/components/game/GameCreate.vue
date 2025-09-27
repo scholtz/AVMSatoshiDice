@@ -225,9 +225,9 @@ const handleSubmit = async () => {
           <div>
             <label class="label" for="tokenType">{{ $t('game.tokenType') }}</label>
             <select class="input w-full" id="tokenType" v-model="state.tokenType">
-              <option value="native">Native token</option>
-              <option value="asa">ASA</option>
-              <option value="arc200">ARC200 Teken</option>
+              <option value="native">{{ $t('game.nativeTokenType') }}</option>
+              <option value="asa">{{ $t('game.asaTokenType') }}</option>
+              <option value="arc200">{{ $t('game.arc200TokenType') }}</option>
             </select>
           </div>
           <div v-if="state.tokenType == 'arc200'">

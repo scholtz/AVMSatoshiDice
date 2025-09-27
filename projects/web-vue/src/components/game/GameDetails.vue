@@ -164,16 +164,16 @@ const handleWithdraw = async () => {
   <MainPanel>
     <div class="p-6">
       <div class="flex items-center justify-between mb-6">
-        <h2 class="text-2xl font-bold text-white">{{ game.token.name }} game</h2>
+        <h2 class="text-2xl font-bold text-white">{{ $t('game.gameTitle', { token: game.token.name }) }}</h2>
 
         <div class="flex items-center space-x-3">
-          <div class="px-3 py-1 bg-primary-900 text-primary-300 rounded-full text-sm font-medium">Win Ratio: {{ formattedWinRatio }}</div>
+          <div class="px-3 py-1 bg-primary-900 text-primary-300 rounded-full text-sm font-medium">{{ $t('common.winRatio') }}: {{ formattedWinRatio }}</div>
         </div>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <div>
-          <h3 class="text-lg font-semibold text-white mb-4">Game Statistics</h3>
+          <h3 class="text-lg font-semibold text-white mb-4">{{ $t('game.gameStatistics') }}</h3>
 
           <div class="bg-background-dark rounded-lg p-4 space-y-4">
             <div class="flex justify-between items-center">
