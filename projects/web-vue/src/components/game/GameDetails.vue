@@ -251,13 +251,13 @@ const handleWithdraw = async () => {
           <div class="bg-background-dark rounded-lg p-4 space-y-4">
             <form @submit.prevent="handleWithdraw" class="space-y-6">
               <div>
-                <label class="label" for="amount">Amount</label>
+                <label class="label" for="amount">{{ $t('common.amount') }}</label>
                 <input
                   id="amount"
                   v-model="state.amount"
                   type="number"
                   class="input w-full"
-                  placeholder="Enter a asset id for your game"
+                  :placeholder="$t('game.enterAmountToWithdraw')"
                   required
                 />
               </div>
