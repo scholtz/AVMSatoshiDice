@@ -17,62 +17,53 @@ useI18n(); // Initialize i18n for this component
         <H2>{{ $t('rules.gameRules') }}</H2>
         <img src="../assets/example-1.png" class="float-right ml-4 w-96" />
         <p class="my-4">
-          First, select your probability of winning. For example, if you choose 50%, you can double your deposit. Combination of game win
-          ratio and probability of winning is the game play probability of winning P (Up*Gp=P).
+          {{ $t('rules.gameRulesDescription1') }}
         </p>
-        <p class="my-4">Then make a deposit to the blockchain game. Deposit will be deposited in block B.</p>
+        <p class="my-4">{{ $t('rules.gameRulesDescription2') }}</p>
         <p class="my-4">
-          Few blocks (few seconds) afterwards, all blockchain transactions generate new block. Every block has its seed number which is the
-          input to another block (Thats why its called blockchain).
+          {{ $t('rules.gameRulesDescription3') }}
         </p>
         <p class="my-4">
-          Seed is 32 bytes long number. It can be represented in base64, hex or decimal representation. Modulo of the seed of
-          {{ Number(1_000_000).toLocaleString() }} will give you from the right side the number R.
-          {{ Number(123_456_789).toLocaleString() }} modulo {{ Number(1_000_000).toLocaleString() }} =
-          {{ Number(456_789).toLocaleString() }}. Game uses the R as random input to the game. If R < P
+          {{ $t('rules.gameRulesDescription4') }}
+          {{ Number(1_000_000).toLocaleString() }} {{ $t('rules.gameRulesDescription5') }}
+          {{ Number(123_456_789).toLocaleString() }} {{ $t('rules.gameRulesDescription6') }} {{ Number(1_000_000).toLocaleString() }} =
+          {{ Number(456_789).toLocaleString() }}. {{ $t('rules.gameRulesDescription7') }}
         </p>
-        <p class="my-4">If R < P user won the game. If R >= P user lost the game and deposit to the game is incresed.</p>
+        <p class="my-4">{{ $t('rules.gameRulesDescription8') }}</p>
         <p class="my-4">
-          If player wins, his reward is calculated as deposit / probability of winning. So if user chosen {{ Number(50).toLocaleString() }}%
-          as probability of winning and deposited {{ Number(1000).toLocaleString() }} tokens, {{ Number(1000).toLocaleString() }} /
-          {{ Number(0.5).toLocaleString() }} = {{ Number(2000).toLocaleString() }}, net profit {{ Number(1000).toLocaleString() }}. If user
-          chosen {{ Number(1).toLocaleString() }}% as probability of winning and deposited {{ Number(1000).toLocaleString() }} tokens,
-          {{ Number(1000).toLocaleString() }} / {{ Number(0.01).toLocaleString() }} = {{ Number(100000).toLocaleString() }}, net profit
-          {{ Number(99000).toLocaleString() }} tokens.
+          {{ $t('rules.gameRulesDescription9') }} {{ Number(50).toLocaleString() }}%
+          {{ $t('rules.gameRulesDescription10') }} {{ Number(1000).toLocaleString() }} {{ $t('rules.gameRulesDescription11') }} {{ Number(1000).toLocaleString() }} /
+          {{ Number(0.5).toLocaleString() }} = {{ Number(2000).toLocaleString() }}{{ $t('rules.gameRulesDescription12') }} {{ Number(1000).toLocaleString() }}. {{ $t('rules.gameRulesDescription13') }}
+          {{ Number(1).toLocaleString() }}% {{ $t('rules.gameRulesDescription10') }} {{ Number(1000).toLocaleString() }} {{ $t('rules.gameRulesDescription11') }}
+          {{ Number(1000).toLocaleString() }} / {{ Number(0.01).toLocaleString() }} = {{ Number(100000).toLocaleString() }}, {{ $t('rules.gameRulesDescription12') }}
+          {{ Number(99000).toLocaleString() }} {{ $t('rules.gameRulesDescription14') }}
         </p>
-        <p>Smallest user probability of winning is 0.0001%. Highest is 100%.</p>
+        <p>{{ $t('rules.gameRulesDescription15') }}</p>
         <p>
-          User pays the network fees ~ 0.01 token per game. At algo price $1/Algo, user can play at least 100 games for $1 net worth of the
-          network fees.
+          {{ $t('rules.gameRulesDescription16') }}
         </p>
         <p>
-          The maximum win amount is 10% of the amount of tokens in the game. The maximum win amount is a value which will transfered from
-          the smart contract to user and includes the deposit amount.
+          {{ $t('rules.gameRulesDescription17') }}
         </p>
-        <p class="my-4">If you are not of legal age in your country, please do not play the game. Playing may lead to addiction.</p>
+        <p class="my-4">{{ $t('rules.gameRulesDescription18') }}</p>
 
-        <H2>Who can create game?</H2>
+        <H2>{{ $t('rules.whoCanCreateGame') }}</H2>
         <p class="my-4">
-          Anyone who wants to make some tokens in long run, and believes in randomness of the AVM blockchain seed, can create a game. The
-          initial deposit is required. The token to be deposited can be native blockchain token, ASA or ARC200.
+          {{ $t('rules.whoCanCreateGameDescription1') }}
         </p>
         <p class="my-4">
-          You can select win ratio for your game (Gp). Win ratio is factor by which a player has smaller chance to win. Win ratio 90% means
-          that if user picked 100% win, at the end his game play probability of winning (P) will be 90%.
+          {{ $t('rules.whoCanCreateGameDescription2') }}
         </p>
         <p class="my-4">
-          There are protocol fees in place - deposit and withdrawal fee is 2.5%. The profit sharing fee is 20%. If the user looses against
-          the game, the game receives his deposit minus the profit sharing fee. The profit sharing fee is 1-win game ratio. For game with
-          90% win game ratio, the profit from deposit {{ Number(100000).toLocaleString() }} tokens is 10% =
-          {{ Number(10000).toLocaleString() }} tokens. The protocol profit sharing fee is {{ Number(2000).toLocaleString() }} tokens. When
-          creating game with ASA token, 10 native tokens fee applies when signing the smart contract optin transaction.
+          {{ $t('rules.whoCanCreateGameDescription3') }}
+          {{ Number(100000).toLocaleString() }} {{ $t('rules.whoCanCreateGameDescription4') }}
+          {{ Number(10000).toLocaleString() }} {{ $t('rules.whoCanCreateGameDescription5') }} {{ Number(2000).toLocaleString() }} {{ $t('rules.whoCanCreateGameDescription6') }}
         </p>
         <img src="../assets/netlogo-satoshi-dice-simulation.jpg" class="float-right ml-4 w-96" />
         <p class="my-4">
-          To better decide on the parameters of the game, we recommend that you try the simulation in
-          <a href="https://ccl.northwestern.edu/netlogo/" target="_blank">NetLogo software</a>. We have created the basic game play
-          simulation and you can tune the parameters or play with the simulation code. You can download the
-          <a href="/files/simulation.nlogo">AVM Satoshi Dice simulation here</a>.
+          {{ $t('rules.whoCanCreateGameDescription7') }}
+          <a href="https://ccl.northwestern.edu/netlogo/" target="_blank">{{ $t('rules.netLogoSoftware') }}</a>. {{ $t('rules.whoCanCreateGameDescription8') }}
+          <a href="/files/simulation.nlogo">{{ $t('rules.simulationDownload') }}</a>.
         </p>
         <RouterLink to="/">
           <MainButton>{{ $t('common.goHome') }}</MainButton>

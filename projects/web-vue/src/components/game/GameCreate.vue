@@ -231,18 +231,18 @@ const handleSubmit = async () => {
             </select>
           </div>
           <div v-if="state.tokenType == 'arc200'">
-            <label class="label" for="assetId">ARC200 app id</label>
+            <label class="label" for="assetId">{{ $t('game.arc200AppId') }}</label>
             <input
               id="assetId"
               v-model="state.assetId"
               type="text"
               class="input w-full"
-              placeholder="Enter a asset id for your game"
+              :placeholder="$t('game.enterAssetId')"
               required
             />
           </div>
           <div v-if="state.tokenType == 'asa'">
-            <label class="label" for="assetId">ASA id</label>
+            <label class="label" for="assetId">{{ $t('game.asaId') }}</label>
 
             <input
               v-if="appStore.state.assetHolding.length == 0"
@@ -250,7 +250,7 @@ const handleSubmit = async () => {
               v-model="state.assetId"
               type="text"
               class="input w-full"
-              placeholder="Enter a asset id for your game"
+              :placeholder="$t('game.enterAssetId')"
               required
             />
             <select
@@ -258,15 +258,15 @@ const handleSubmit = async () => {
               class="input w-full"
               id="tokenType"
               v-model="state.assetId"
-              placeholder="Select ASA from your account"
-              title="To add ASA to this list, get some asset first"
+              :placeholder="$t('game.selectAsaFromAccount')"
+              :title="$t('game.addAsaToList')"
             >
               <option v-for="asset in appStore.state.assetHolding" :value="asset.assetId">{{ asset.assetName }}</option>
             </select>
           </div>
 
           <div>
-            <label class="label" for="initialDeposit">Initial deposit ({{ appStore.state.tokenName }})</label>
+            <label class="label" for="initialDeposit">{{ $t('game.initialDeposit') }} ({{ appStore.state.tokenName }})</label>
             <input
               id="initialDeposit"
               v-model.number="state.initialDeposit"
@@ -276,8 +276,8 @@ const handleSubmit = async () => {
               class="input w-full"
               required
             />
-            <div class="mt-1 text-sm text-gray-400">Your balance: {{ tokenBalance }} {{ appStore.state.tokenName }}</div>
-            <div v-if="state.initialDeposit > tokenBalance" class="mt-1 text-sm text-error-500">Exceeds your available balance</div>
+            <div class="mt-1 text-sm text-gray-400">{{ $t('game.yourBalance') }}: {{ tokenBalance }} {{ appStore.state.tokenName }}</div>
+            <div v-if="state.initialDeposit > tokenBalance" class="mt-1 text-sm text-error-500">{{ $t('game.exceedsBalance') }}</div>
           </div>
         </div>
 

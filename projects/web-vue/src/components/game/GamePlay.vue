@@ -509,18 +509,18 @@ const setBalance = (byButton: boolean = true) => {
           </div>
 
           <div class="md:grid grid-cols-1 md:grid-cols-6 lg:grid-cols-12 gap-2 hidden">
-            <Button @click="setProbability(0.1)">Multiplier<br />1000x</Button>
-            <Button @click="setProbability(1)">Multiplier<br />100x</Button>
-            <Button @click="setProbability(2)">Multiplier<br />50x</Button>
-            <Button @click="setProbability(4)">Multiplier<br />25x</Button>
-            <Button @click="setProbability(10)">Multiplier<br />10x</Button>
-            <Button @click="setProbability(33.3333)">Multiplier<br />3x</Button>
-            <Button @click="setProbability(50)">Multiplier<br />2x</Button>
-            <Button @click="setProbability(66.6666)">Multiplier<br />1.5x</Button>
-            <Button @click="setProbability(83.3333)">Multiplier<br />1.2x</Button>
-            <Button @click="setProbability(90.909)">Multiplier<br />1.1x</Button>
-            <Button @click="setProbability(95.238)">Multiplier<br />1.05x</Button>
-            <Button @click="setProbability(99.0099)">Multiplier<br />1.01x</Button>
+            <Button @click="setProbability(0.1)">{{ $t('game.multiplier') }}<br />1000x</Button>
+            <Button @click="setProbability(1)">{{ $t('game.multiplier') }}<br />100x</Button>
+            <Button @click="setProbability(2)">{{ $t('game.multiplier') }}<br />50x</Button>
+            <Button @click="setProbability(4)">{{ $t('game.multiplier') }}<br />25x</Button>
+            <Button @click="setProbability(10)">{{ $t('game.multiplier') }}<br />10x</Button>
+            <Button @click="setProbability(33.3333)">{{ $t('game.multiplier') }}<br />3x</Button>
+            <Button @click="setProbability(50)">{{ $t('game.multiplier') }}<br />2x</Button>
+            <Button @click="setProbability(66.6666)">{{ $t('game.multiplier') }}<br />1.5x</Button>
+            <Button @click="setProbability(83.3333)">{{ $t('game.multiplier') }}<br />1.2x</Button>
+            <Button @click="setProbability(90.909)">{{ $t('game.multiplier') }}<br />1.1x</Button>
+            <Button @click="setProbability(95.238)">{{ $t('game.multiplier') }}<br />1.05x</Button>
+            <Button @click="setProbability(99.0099)">{{ $t('game.multiplier') }}<br />1.01x</Button>
           </div>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
