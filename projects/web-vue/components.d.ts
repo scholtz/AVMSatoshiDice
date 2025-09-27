@@ -24,6 +24,7 @@ declare module 'vue' {
     H2: typeof import('./src/components/H2.vue')['default']
     InputNumber: typeof import('primevue/inputnumber')['default']
     InputText: typeof import('primevue/inputtext')['default']
+    LanguageSwitcher: typeof import('./src/components/common/LanguageSwitcher.vue')['default']
     MainButton: typeof import('./src/components/MainButton.vue')['default']
     MainPanel: typeof import('./src/components/MainPanel.vue')['default']
     Message: typeof import('primevue/message')['default']

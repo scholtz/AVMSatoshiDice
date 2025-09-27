@@ -3,6 +3,8 @@ import { useWallet } from "@txnlab/use-wallet-vue";
 import { ref } from "vue";
 import { RouterLink, useRouter } from "vue-router";
 import AppButton from "./AppButton.vue";
+import LanguageSwitcher from "./LanguageSwitcher.vue";
+import AbbrText from "../AbbrText.vue";
 
 const router = useRouter();
 const isMenuOpen = ref(false);
@@ -41,30 +43,31 @@ const disconnectClick = () => {
           </RouterLink>
           <div class="hidden md:block">
             <div class="ml-10 flex items-baseline space-x-4">
-              <RouterLink to="/" class="px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-gray-800">Games</RouterLink>
+              <RouterLink to="/" class="px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-gray-800">{{ $t('common.games') }}</RouterLink>
               <RouterLink
                 to="/proovable-fair-onchain-game"
                 class="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-gray-800 hover:text-white"
               >
-                Rules
+                {{ $t('common.rules') }}
               </RouterLink>
               <RouterLink
                 to="/create-game"
                 class="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-gray-800 hover:text-white"
               >
-                Create Game
+                {{ $t('common.createGame') }}
               </RouterLink>
             </div>
           </div>
         </div>
         <div class="hidden md:block">
-          <div class="ml-4 flex items-center md:ml-6">
+          <div class="ml-4 flex items-center md:ml-6 space-x-4">
+            <LanguageSwitcher />
             <div v-if="activeAddress" class="relative">
               <div class="flex items-center">
                 <span class="bg-gradient-to-r from-primary-600 to-secondary-600 px-3 py-2 rounded-l-md text-white font-medium">
                   <AbbrText :text="activeAddress"></AbbrText>
                 </span>
-                <AppButton @click="disconnectClick" class="rounded-l-none"> Disconnect </AppButton>
+                <AppButton @click="disconnectClick" class="rounded-l-none">{{ $t('common.disconnect') }}</AppButton>
               </div>
             </div>
           </div>
@@ -75,7 +78,7 @@ const disconnectClick = () => {
             type="button"
             class="bg-gray-800 inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white"
           >
-            <span class="sr-only">Open main menu</span>
+            <span class="sr-only">{{ $t('common.openMainMenu') }}</span>
             <svg
               class="block h-6 w-6"
               xmlns="http://www.w3.org/2000/svg"
@@ -93,27 +96,30 @@ const disconnectClick = () => {
 
     <div :class="isMenuOpen ? 'block' : 'hidden'" class="md:hidden">
       <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-        <RouterLink to="/" class="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-gray-800">Games</RouterLink>
+        <RouterLink to="/" class="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-gray-800">{{ $t('common.games') }}</RouterLink>
         <RouterLink
           to="/proovable-fair-onchain-game"
           class="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-gray-800 hover:text-white"
         >
-          Rules
+          {{ $t('common.rules') }}
         </RouterLink>
         <RouterLink
           to="/create-game"
           class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:bg-gray-800 hover:text-white"
         >
-          Create Game
+          {{ $t('common.createGame') }}
         </RouterLink>
       </div>
       <div class="pt-4 pb-3 border-t border-gray-700">
+        <div class="flex items-center px-5 mb-3">
+          <LanguageSwitcher />
+        </div>
         <div class="flex items-center px-5">
           <div v-if="activeAddress" class="w-full">
             <div class="text-base font-medium leading-none text-white mb-2">
               <AbbrText :text="activeAddress"></AbbrText>
             </div>
-            <AppButton @click="disconnectClick" class="w-full"> Disconnect </AppButton>
+            <AppButton @click="disconnectClick" class="w-full">{{ $t('common.disconnect') }}</AppButton>
           </div>
         </div>
       </div>

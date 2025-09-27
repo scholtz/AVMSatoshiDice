@@ -47,10 +47,10 @@ onMounted(async () => {
       <h1
         class="text-4xl sm:text-5xl font-bold mb-4 bg-gradient-to-r from-primary-400 via-secondary-400 to-accent-400 text-transparent bg-clip-text"
       >
-        AVM Satoshi Dice
+        {{ $t('home.title') }}
       </h1>
       <p class="text-xl text-gray-300 max-w-3xl mx-auto">
-        Play proovable fair random onchain games for a chance to win big with your favorite tokens.
+        {{ $t('home.subtitle') }}
       </p>
     </div>
 

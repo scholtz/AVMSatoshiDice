@@ -102,7 +102,7 @@ startRefreshListChecker();
 <template>
   <div class="w-full mb-6">
     <div class="flex justify-between items-center mb-6">
-      <h2 class="text-2xl font-bold text-white">Recent plays</h2>
+      <h2 class="text-2xl font-bold text-white">{{ $t('game.recentPlays') }}</h2>
     </div>
 
     <div v-if="state.isLoading" class="flex justify-center py-12">
@@ -110,8 +110,8 @@ startRefreshListChecker();
     </div>
 
     <MainPanel v-else-if="state.plays.length === 0" class="p-8 text-center">
-      <div class="text-gray-400 mb-2">No game plays found</div>
-      <p class="text-gray-500">You might have a connection issues to all AVM indexer providers.</p>
+      <div class="text-gray-400 mb-2">{{ $t('game.noPlaysFound') }}</div>
+      <p class="text-gray-500">{{ $t('game.connectionIssues') }}</p>
     </MainPanel>
     <div v-else>
       <div class="overflow-hidden rounded-lg border border-primary-900 hidden md:block">

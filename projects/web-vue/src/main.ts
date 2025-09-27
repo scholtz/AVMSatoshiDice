@@ -6,6 +6,7 @@ import DialogService from "primevue/dialogservice";
 import ToastService from "primevue/toastservice";
 import { createApp } from "vue";
 import App from "./App.vue";
+import { i18n } from "./i18n";
 import Noir from "./presets/Noir";
 import router from "./router";
 import "./style.css";
@@ -102,6 +103,7 @@ app.use(PrimeVue, {
 });
 app.use(createPinia());
 app.use(router);
+app.use(i18n);
 app.use(ConfirmationService);
 app.use(ToastService);
 app.use(DialogService);
