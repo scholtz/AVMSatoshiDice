@@ -4,7 +4,7 @@ import H1 from "../components/H1.vue";
 import MainButton from "../components/MainButton.vue";
 import MainPanel from "../components/MainPanel.vue";
 
-const { t } = useI18n();
+useI18n(); // Initialize i18n for this component
 </script>
 
 <template>

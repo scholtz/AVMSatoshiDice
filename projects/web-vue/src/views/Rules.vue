@@ -3,7 +3,7 @@ import { useI18n } from "vue-i18n";
 import MainButton from "../components/MainButton.vue";
 import MainPanel from "../components/MainPanel.vue";
 
-const { t } = useI18n();
+useI18n(); // Initialize i18n for this component
 </script>
 
 <template>
