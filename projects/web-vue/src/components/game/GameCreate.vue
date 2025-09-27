@@ -283,7 +283,7 @@ const handleSubmit = async () => {
 
         <div class="grid grid-cols-1 md:grid-cols-1 gap-6">
           <div>
-            <label class="label" for="winRatio">Win Ratio ({{ state.winRatio }}%)</label>
+            <label class="label" for="winRatio">{{ $t('common.winRatio') }} ({{ state.winRatio }}%)</label>
             <input
               id="winRatio"
               v-model.number="state.winRatio"
@@ -314,39 +314,39 @@ const handleSubmit = async () => {
         </div>
 
         <div class="bg-background-dark rounded-lg p-4 mb-4">
-          <h4 class="font-medium text-white mb-3">Game Configuration Summary</h4>
+          <h4 class="font-medium text-white mb-3">{{ $t('game.gameConfigurationSummary') }}</h4>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="flex justify-between">
-              <span class="text-gray-400">Token type:</span>
+              <span class="text-gray-400">{{ $t('game.tokenType') }}:</span>
               <span class="text-white" v-if="state.tokenType == 'arc200'">ARC200</span>
               <span class="text-white" v-if="state.tokenType == 'asa'">ASA</span>
               <span class="text-white" v-if="state.tokenType == 'native'">{{ appStore.state.tokenName }}</span>
             </div>
 
             <div class="flex justify-between">
-              <span class="text-gray-400">Token:</span>
+              <span class="text-gray-400">{{ $t('admin.token') }}:</span>
               <span class="text-white">{{ appStore.state.tokenName }}</span>
             </div>
 
             <div class="flex justify-between">
-              <span class="text-gray-400">Initial Balance:</span>
+              <span class="text-gray-400">{{ $t('game.initialBalance') }}:</span>
               <span class="text-white">{{ state.initialDeposit.toLocaleString() }} {{ appStore.state.tokenName }}</span>
             </div>
 
             <div class="flex justify-between">
-              <span class="text-gray-400">Win Ratio:</span>
+              <span class="text-gray-400">{{ $t('common.winRatio') }}:</span>
               <span class="text-white">{{ state.winRatio.toFixed(4) }}%</span>
             </div>
           </div>
         </div>
 
         <div class="flex justify-end space-x-4">
-          <AppButton type="button" variant="outline" @click="router.push('/')"> Cancel </AppButton>
+          <AppButton type="button" variant="outline" @click="router.push('/')">{{ $t('common.cancel') }}</AppButton>
 
           <AppButton type="submit" variant="primary" :disabled="!canCreateGame || state.isCreating">
             <AppLoader v-if="state.isCreating" size="sm" color="white" class="mr-2" />
-            {{ state.isCreating ? "Creating Game..." : "Create Game" }}
+            {{ state.isCreating ? $t('game.creatingGame') : $t('game.createGame') }}
           </AppButton>
         </div>
       </form>

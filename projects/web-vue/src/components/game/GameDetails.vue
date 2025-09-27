@@ -6,6 +6,7 @@ import { AvmSatoshiDiceClient } from "avm-satoshi-dice";
 import { useToast } from "primevue";
 import { computed, onMounted, reactive } from "vue";
 import { useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
 import { useAppStore } from "../../stores/app";
 import { IGameStruct, useGameStore } from "../../stores/game";
 import AppButton from "../common/AppButton.vue";
@@ -13,6 +14,7 @@ const props = defineProps<{
   game: IGameStruct;
 }>();
 
+const { t } = useI18n();
 const toast = useToast();
 const router = useRouter();
 const appStore = useAppStore();
@@ -127,7 +129,7 @@ const handleWithdraw = async () => {
 
     toast.add({
       severity: "info",
-      detail: "Withdraw successful",
+      detail: t('errors.withdrawalSuccessful'),
       life: 10000,
     });
 
@@ -177,64 +179,64 @@ const handleWithdraw = async () => {
 
           <div class="bg-background-dark rounded-lg p-4 space-y-4">
             <div class="flex justify-between items-center">
-              <span class="text-gray-400">Balance:</span>
+              <span class="text-gray-400">{{ $t('common.balance') }}:</span>
               <span class="font-semibold text-white">{{ formattedBalance }} {{ game.token.unitName }}</span>
             </div>
             <div class="flex justify-between items-center">
-              <span class="text-gray-400">Maximum win amount:</span>
+              <span class="text-gray-400">{{ $t('game.maximumWinAmount') }}:</span>
               <span class="font-semibold text-white">{{ formattedMaxWinBalance }} {{ game.token.unitName }}</span>
             </div>
 
             <div class="flex justify-between items-center">
-              <span class="text-gray-400">Blockchain:</span>
+              <span class="text-gray-400">{{ $t('game.blockchain') }}:</span>
               <span class="font-semibold text-white">{{ game.chain }}</span>
             </div>
 
             <div class="flex justify-between items-center">
-              <span class="text-gray-400">Token type:</span>
+              <span class="text-gray-400">{{ $t('game.tokenType') }}:</span>
               <span class="font-semibold text-white">{{ appStore.tokenTypeToText(game.token.type) }}</span>
             </div>
 
             <div class="flex justify-between items-center">
-              <span class="text-gray-400">Created By:</span>
+              <span class="text-gray-400">{{ $t('game.createdBy') }}:</span>
               <span class="font-semibold text-white"><AbbrText :text="game.idObj.owner"></AbbrText> </span>
             </div>
 
             <div class="flex justify-between items-center">
-              <span class="text-gray-400">Created At:</span>
+              <span class="text-gray-400">{{ $t('game.createdAt') }}:</span>
               <span class="font-semibold text-white">{{ new Date(Number(game.game.createdAtTime * 1000n)).toLocaleDateString() }}</span>
             </div>
           </div>
         </div>
 
         <div>
-          <h3 class="text-lg font-semibold text-white mb-4">Activity</h3>
+          <h3 class="text-lg font-semibold text-white mb-4">{{ $t('game.activity') }}</h3>
 
           <div class="bg-background-dark rounded-lg p-4 space-y-4">
             <div class="flex justify-between items-center">
-              <span class="text-gray-400">Last Played:</span>
+              <span class="text-gray-400">{{ $t('game.lastPlayed') }}:</span>
               <span class="font-semibold text-white">{{ formattedLastPlayTime }}</span>
             </div>
             <div class="flex justify-between items-center">
-              <span class="text-gray-400">Last Play Deposit:</span>
+              <span class="text-gray-400">{{ $t('game.lastPlayDeposit') }}:</span>
               <span class="font-semibold text-white">{{ formattedLastPlayAmount }} {{ game.token.unitName }}</span>
             </div>
 
             <div class="flex justify-between items-center">
-              <span class="text-gray-400">Last Win Time:</span>
+              <span class="text-gray-400">{{ $t('game.lastWinTime') }}:</span>
               <span class="font-semibold text-white">{{ formattedLastWinTime }}</span>
             </div>
             <div class="flex justify-between items-center">
-              <span class="text-gray-400">Last Net Win:</span>
+              <span class="text-gray-400">{{ $t('game.lastNetWin') }}:</span>
               <span class="font-semibold text-white">{{ formattedLastWinAmount }} {{ game.token.unitName }}</span>
             </div>
             <div class="flex justify-between items-center">
-              <span class="text-gray-400">Biggest Net Win Time:</span>
+              <span class="text-gray-400">{{ $t('game.biggestNetWinTime') }}:</span>
               <span class="font-semibold text-white">{{ formattedBiggestWinTime }}</span>
             </div>
 
             <div class="flex justify-between items-center">
-              <span class="text-gray-400">Biggest Net Win:</span>
+              <span class="text-gray-400">{{ $t('game.biggestNetWin') }}:</span>
               <span class="font-semibold text-white">{{ formattedBiggestWinAmount }} {{ game.token.unitName }}</span>
             </div>
           </div>
@@ -242,11 +244,9 @@ const handleWithdraw = async () => {
       </div>
       <div class="grid grid-cols-1gap-6 mb-8" v-if="isGameCreator">
         <div>
-          <h3 class="text-lg font-semibold text-white mb-4">Manage Game</h3>
+          <h3 class="text-lg font-semibold text-white mb-4">{{ $t('game.manageGame') }}</h3>
           <p class="my-2">
-            As game creator you can deposit or withdraw funds from this game. When withdrawing when you set the amount to 0, it will
-            withdraw all available funds. The protocol withdrawl fee 2.5% applies. To deposit more funds please go to create game where you
-            select the same token and you have option to change also the win ratio.
+            {{ $t('game.manageGameDescription') }}
           </p>
           <div class="bg-background-dark rounded-lg p-4 space-y-4">
             <form @submit.prevent="handleWithdraw" class="space-y-6">
@@ -263,7 +263,7 @@ const handleWithdraw = async () => {
               </div>
               <AppButton type="submit" variant="primary" :disabled="state.transfering || state.toSign">
                 <AppLoader v-if="state.transfering || state.toSign" size="sm" color="white" class="mr-2" />
-                Withdraw
+                {{ $t('game.withdraw') }}
               </AppButton>
             </form>
           </div>
@@ -271,9 +271,9 @@ const handleWithdraw = async () => {
       </div>
 
       <div class="flex justify-end space-x-4">
-        <AppButton v-if="isLatestGame" variant="outline" @click="goToLastGameOverviewClick"> Your last game overview </AppButton>
+        <AppButton v-if="isLatestGame" variant="outline" @click="goToLastGameOverviewClick">{{ $t('game.yourLastGameOverview') }}</AppButton>
 
-        <AppButton @click="playGame" variant="primary"> Play Game </AppButton>
+        <AppButton @click="playGame" variant="primary">{{ $t('game.playTheGame') }}</AppButton>
       </div>
     </div>
   </MainPanel>
