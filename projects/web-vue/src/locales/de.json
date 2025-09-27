@@ -71,7 +71,10 @@
     "noPlaysFound": "Keine Spiele gefunden",
     "noGamesFound": "Keine Spiele gefunden",
     "connectionIssues": "Möglicherweise haben Sie Verbindungsprobleme zu allen AVM-Indexer-Anbietern.",
-    "tryDifferentFilter": "Versuchen Sie einen anderen Token-Filter auszuwählen oder schauen Sie später wieder vorbei."
+    "tryDifferentFilter": "Versuchen Sie einen anderen Token-Filter auszuwählen oder schauen Sie später wieder vorbei.",
+    "winUpTo": "Gewinne bis zu",
+    "lastPlayed": "Zuletzt gespielt",
+    "neverPlayed": "Nie gespielt"
   },
   "wallet": {
     "connect": "Wallet verbinden",

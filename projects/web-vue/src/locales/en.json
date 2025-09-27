@@ -20,7 +20,9 @@
     "copied": "Copied!",
     "balance": "Balance",
     "amount": "Amount",
-    "probability": "Probability"
+    "probability": "Probability",
+    "details": "Details",
+    "goHome": "Go home"
   },
   "navigation": {
     "home": "Home",
@@ -71,7 +73,13 @@
     "noPlaysFound": "No game plays found",
     "noGamesFound": "No games found",
     "connectionIssues": "You might have a connection issues to all AVM indexer providers.",
-    "tryDifferentFilter": "Try selecting a different token filter or check back later."
+    "tryDifferentFilter": "Try selecting a different token filter or check back later.",
+    "winUpTo": "Win Up To",
+    "lastPlayed": "Last Played",
+    "neverPlayed": "Never played",
+    "gameNotFound": "Game Not Found",
+    "gameNotFoundMessage": "The game you're looking for doesn't exist or has been removed.",
+    "backToGames": "Back to Games"
   },
   "wallet": {
     "connect": "Connect Wallet",
@@ -89,7 +97,10 @@
     "fairnessGuarantee": "Fairness Guarantee",
     "howToPlay": "How to Play",
     "payouts": "Payouts",
-    "fees": "Fees"
+    "fees": "Fees",
+    "gameTitle": "AVM Satoshi Dice game",
+    "gameDescription": "AVM Satoshi Dice is proovable fair onchain game.",
+    "gameRules": "Game rules"
   },
   "admin": {
     "title": "Admin Panel",
@@ -105,7 +116,9 @@
     "transactionFailed": "Transaction failed",
     "gameNotFound": "Game not found",
     "invalidInput": "Invalid input",
-    "networkError": "Network error"
+    "networkError": "Network error",
+    "error404": "404 Error",
+    "error404Message": "We are trying to provide you with the page, however some error has occured and we could not find it."
   },
   "language": {
     "select": "Select Language",

@@ -50,9 +50,9 @@ onMounted(async () => {
     </div>
 
     <div v-else-if="!gameStore.currentGame" class="card p-6 text-center">
-      <div class="text-xl font-medium text-white mb-2">Game Not Found</div>
-      <p class="text-gray-400 mb-6">The game you're looking for doesn't exist or has been removed.</p>
-      <AppButton @click="router.push('/')" variant="primary"> Back to Games </AppButton>
+      <div class="text-xl font-medium text-white mb-2">{{ $t('game.gameNotFound') }}</div>
+      <p class="text-gray-400 mb-6">{{ $t('game.gameNotFoundMessage') }}</p>
+      <AppButton @click="router.push('/')" variant="primary">{{ $t('game.backToGames') }}</AppButton>
     </div>
 
     <GameDetails v-else :game="gameStore.currentGame" />

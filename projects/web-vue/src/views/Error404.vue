@@ -1,16 +1,19 @@
 <script setup lang="ts">
+import { useI18n } from "vue-i18n";
 import H1 from "../components/H1.vue";
 import MainButton from "../components/MainButton.vue";
 import MainPanel from "../components/MainPanel.vue";
+
+const { t } = useI18n();
 </script>
 
 <template>
   <div class="flex flex-col items-center justify-center w-full">
     <MainPanel class="w-200 text-white p-6">
-      <H1>404 Error</H1>
-      <p class="my-4">We are trying to provide you with the page, however some error has occured and we could not find it.</p>
+      <H1>{{ $t('errors.error404') }}</H1>
+      <p class="my-4">{{ $t('errors.error404Message') }}</p>
       <RouterLink to="/">
-        <MainButton>Go home</MainButton>
+        <MainButton>{{ $t('common.goHome') }}</MainButton>
       </RouterLink>
     </MainPanel>
   </div>

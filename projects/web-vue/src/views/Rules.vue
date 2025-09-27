@@ -1,17 +1,20 @@
 <script setup lang="ts">
+import { useI18n } from "vue-i18n";
 import MainButton from "../components/MainButton.vue";
 import MainPanel from "../components/MainPanel.vue";
+
+const { t } = useI18n();
 </script>
 
 <template>
   <div class="flex flex-col items-center justify-center w-full">
     <MainPanel class="">
       <div class="bg-gradient-to-r from-primary-900 to-background-dark p-4 border-b border-gray-800">
-        <h3 class="text-lg font-semibold text-white">AVM Satoshi Dice game</h3>
+        <h3 class="text-lg font-semibold text-white">{{ $t('rules.gameTitle') }}</h3>
       </div>
       <div class="p-6">
-        <p class="my-4">AVM Satoshi Dice is proovable fair onchain game.</p>
-        <H2>Game rules</H2>
+        <p class="my-4">{{ $t('rules.gameDescription') }}</p>
+        <H2>{{ $t('rules.gameRules') }}</H2>
         <img src="../assets/example-1.png" class="float-right ml-4 w-96" />
         <p class="my-4">
           First, select your probability of winning. For example, if you choose 50%, you can double your deposit. Combination of game win
@@ -72,7 +75,7 @@ import MainPanel from "../components/MainPanel.vue";
           <a href="/files/simulation.nlogo">AVM Satoshi Dice simulation here</a>.
         </p>
         <RouterLink to="/">
-          <MainButton>Go home</MainButton>
+          <MainButton>{{ $t('common.goHome') }}</MainButton>
         </RouterLink>
       </div>
     </MainPanel>

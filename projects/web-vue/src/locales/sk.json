@@ -71,7 +71,10 @@
     "noPlaysFound": "Nenašli sa žiadne hry",
     "noGamesFound": "Nenašli sa žiadne hry",
     "connectionIssues": "Možno máte problémy s pripojením ku všetkým AVM indexer poskytovateľom.",
-    "tryDifferentFilter": "Skúste vybrať iný filter tokenov alebo sa vráťte neskôr."
+    "tryDifferentFilter": "Skúste vybrať iný filter tokenov alebo sa vráťte neskôr.",
+    "winUpTo": "Vyhrať až",
+    "lastPlayed": "Naposledy hrané",
+    "neverPlayed": "Nikdy nehrané"
   },
   "wallet": {
     "connect": "Pripojiť peňaženku",
