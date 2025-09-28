@@ -650,7 +650,7 @@ const setBalance = (byButton: boolean = true) => {
         <!-- Step 3: Claim -->
         <div v-else-if="state.gamePlayStep === 3" class="text-center py-6 space-y-6">
           <div class="mb-6">
-            <div class="text-xl font-medium text-white mb-2">Check results</div>
+            <div class="text-xl font-medium text-white mb-2">{{ $t('game.checkResults') }}</div>
             <p class="text-gray-400">
               Try your luck! Click the button below to see if you've won. Make sure to check results within 100 rounds from the play start,
               otherwise the game will time out!

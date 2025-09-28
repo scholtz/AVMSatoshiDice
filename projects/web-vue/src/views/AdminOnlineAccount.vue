@@ -6,6 +6,7 @@ import { onMounted, reactive } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import H1 from "../components/H1.vue";
 import MainPanel from "../components/MainPanel.vue";
+import { useI18n } from "vue-i18n";
 import { useAppStore } from "../stores/app";
 const toast = useToast();
 

@@ -37,7 +37,7 @@ const disconnectClick = () => {
                 </svg>
               </div>
               <span class="text-xl font-bold bg-gradient-to-r from-primary-400 to-secondary-400 text-transparent bg-clip-text"
-                >AVM Satoshi Dice</span
+                >{{ $t('common.appTitle') }}</span
               >
             </div>
           </RouterLink>

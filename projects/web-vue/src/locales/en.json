@@ -121,6 +121,7 @@
     "gameRound": "Game Round",
     "asset": "Asset",
     "status": "Status",
+    "appTitle": "AVM Satoshi Dice",
     "checkGameProof": "Check game proof",
     "multiplier": "Multiplier",
     "maximumWinAmount": "Maximum win amount",
@@ -136,7 +137,9 @@
     "manageGameDescription": "As game creator you can deposit or withdraw funds from this game. When withdrawing when you set the amount to 0, it will withdraw all available funds. The protocol withdrawl fee 2.5% applies. To deposit more funds please go to create game where you select the same token and you have option to change also the win ratio.",
     "withdraw": "Withdraw",
     "yourLastGameOverview": "Your last game overview",
-    "playTheGame": "Play the game"
+    "playTheGame": "Play the game",
+    "checkResults": "Check results",
+    "enterAmountToWithdraw": "Enter amount to withdraw"
   },
   "wallet": {
     "connect": "Connect Wallet",
@@ -205,7 +208,16 @@
     "token": "Token",
     "withdrawable": "Withdrawable",
     "allDeposits": "All deposits",
-    "onlineState": "Online state"
+    "onlineState": "Online state",
+    "makeScAccountOnline": "Make SC account online",
+    "firstVoteRound": "First Vote Round",
+    "lastVoteRound": "Last Vote Round",
+    "voteKeyDilution": "Vote Key Dilution",
+    "selectionKey": "Selection Key",
+    "voteKey": "Vote Key",
+    "stateProofKey": "Stateproof Key",
+    "networkFees": "Network fees in micro units",
+    "makeAccountOnline": "Make account online"
   },
   "errors": {
     "pageNotFound": "Page Not Found",
@@ -217,7 +229,8 @@
     "invalidInput": "Invalid input",
     "networkError": "Network error",
     "error404": "404 Error",
-    "error404Message": "We are trying to provide you with the page, however some error has occured and we could not find it."
+    "error404Message": "We are trying to provide you with the page, however some error has occured and we could not find it.",
+    "withdrawalSuccessful": "Withdraw successful"
   },
   "language": {
     "select": "Select Language",

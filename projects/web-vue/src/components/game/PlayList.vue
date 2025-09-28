@@ -130,7 +130,7 @@ startRefreshListChecker();
           <tbody style="background: linear-gradient(to right, rgba(67, 56, 203, 0.5), rgba(59, 130, 246, 0.1))">
             <tr v-for="play in state.plays" class="hover:bg-gray-900">
               <td class="px-4 py-2">
-                <Button size="small" class="w-full" @click="router.push(`/proof/${play.chain}/${play.txId}`)">Check game proof</Button>
+                <Button size="small" class="w-full" @click="router.push(`/proof/${play.chain}/${play.txId}`)">{{ $t('game.checkGameProof') }}</Button>
               </td>
               <td class="px-4 py-2">{{ new Date(Number(play.play.update) * 1000).toLocaleString() }}</td>
               <td class="px-4 py-2">{{ play.chain }}</td>
@@ -149,15 +149,15 @@ startRefreshListChecker();
         <table class="min-w-full table-auto text-left text-sm">
           <thead style="background: linear-gradient(to right, rgba(67, 56, 203, 0.5), rgba(59, 130, 246, 0.5))">
             <tr>
-              <th class="px-4 py-2 font-medium">Proof</th>
-              <th class="px-4 py-2 font-medium">Time</th>
-              <th class="px-4 py-2 font-medium">Status</th>
+              <th class="px-4 py-2 font-medium">{{ $t('game.proof') }}</th>
+              <th class="px-4 py-2 font-medium">{{ $t('game.time') }}</th>
+              <th class="px-4 py-2 font-medium">{{ $t('common.status') }}</th>
             </tr>
           </thead>
           <tbody style="background: linear-gradient(to right, rgba(67, 56, 203, 0.5), rgba(59, 130, 246, 0.1))">
             <tr v-for="play in state.plays" class="hover:bg-gray-900">
               <td class="px-4 py-2">
-                <Button size="small" class="w-full" @click="router.push(`/proof/${play.chain}/${play.txId}`)">Check game proof</Button>
+                <Button size="small" class="w-full" @click="router.push(`/proof/${play.chain}/${play.txId}`)">{{ $t('game.checkGameProof') }}</Button>
               </td>
               <td class="px-4 py-2">{{ new Date(Number(play.play.update) * 1000).toLocaleString() }}</td>
               <td class="px-4 py-2">{{ gameStore.playState2Text(play.play.state) }}</td>
