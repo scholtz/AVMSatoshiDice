@@ -23,7 +23,8 @@
     "probability": "Probability",
     "details": "Details",
     "goHome": "Go home",
-    "winRatio": "Win Ratio"
+    "winRatio": "Win Ratio",
+    "appTitle": "AVM Satoshi Dice"
   },
   "navigation": {
     "home": "Home",
@@ -34,7 +35,7 @@
   },
   "home": {
     "title": "AVM Satoshi Dice",
-    "subtitle": "Play proovable fair random onchain games for a chance to win big with your favorite tokens.",
+    "subtitle": "Play provably fair random onchain games for a chance to win big with your favorite tokens.",
     "welcomeMessage": "Welcome to the ultimate blockchain gaming experience"
   },
   "game": {
