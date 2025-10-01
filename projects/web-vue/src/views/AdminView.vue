@@ -89,18 +89,18 @@ onMounted(async () => {
 <template>
   <AuthScreen class="flex flex-col items-center justify-center w-full">
     <MainPanel class="w-200 text-white p-6">
-      <H1>Admin view</H1>
+      <H1>{{ $t('admin.adminView') }}</H1>
 
-      <H2>Balance</H2>
+      <H2>{{ $t('admin.balance') }}</H2>
       <div class="overflow-hidden rounded-lg border border-primary-900 hidden md:block">
         <table class="min-w-full table-auto text-left text-sm">
           <thead style="background: linear-gradient(to right, rgba(67, 56, 203, 0.5), rgba(59, 130, 246, 0.5))">
             <tr>
-              <th class="px-4 py-2 font-medium">Chain</th>
-              <th class="px-4 py-2 font-medium">Token</th>
-              <th class="px-4 py-2 font-medium">Withdrawable</th>
-              <th class="px-4 py-2 font-medium">All deposits</th>
-              <th class="px-4 py-2 font-medium">Online state</th>
+              <th class="px-4 py-2 font-medium">{{ $t('admin.chain') }}</th>
+              <th class="px-4 py-2 font-medium">{{ $t('admin.token') }}</th>
+              <th class="px-4 py-2 font-medium">{{ $t('admin.withdrawable') }}</th>
+              <th class="px-4 py-2 font-medium">{{ $t('admin.allDeposits') }}</th>
+              <th class="px-4 py-2 font-medium">{{ $t('admin.onlineState') }}</th>
             </tr>
           </thead>
 

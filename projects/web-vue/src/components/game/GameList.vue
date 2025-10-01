@@ -40,7 +40,7 @@ setTimeout(() => {
 <template>
   <div class="w-full">
     <div class="flex justify-between items-center mb-6">
-      <h2 class="text-2xl font-bold text-white">Available Games</h2>
+      <h2 class="text-2xl font-bold text-white">{{ $t('game.availableGames') }}</h2>
 
       <div class="flex items-center space-x-2">
         <button
@@ -50,7 +50,7 @@ setTimeout(() => {
             gameStore.selectedTokenFilter === null ? 'bg-primary-600 text-white' : 'bg-gray-800 text-gray-300 hover:bg-gray-700',
           ]"
         >
-          All Tokens
+          {{ $t('game.allTokens') }}
         </button>
 
         <button
@@ -77,8 +77,8 @@ setTimeout(() => {
     </div>
 
     <MainPanel v-else-if="filteredGames.length === 0" class="p-8 text-center">
-      <div class="text-gray-400 mb-2">No games found</div>
-      <p class="text-gray-500">Try selecting a different token filter or check back later.</p>
+      <div class="text-gray-400 mb-2">{{ $t('game.noGamesFound') }}</div>
+      <p class="text-gray-500">{{ $t('game.tryDifferentFilter') }}</p>
     </MainPanel>
 
     <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

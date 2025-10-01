@@ -102,7 +102,7 @@ startRefreshListChecker();
 <template>
   <div class="w-full mb-6">
     <div class="flex justify-between items-center mb-6">
-      <h2 class="text-2xl font-bold text-white">Recent plays</h2>
+      <h2 class="text-2xl font-bold text-white">{{ $t('game.recentPlays') }}</h2>
     </div>
 
     <div v-if="state.isLoading" class="flex justify-center py-12">
@@ -110,27 +110,27 @@ startRefreshListChecker();
     </div>
 
     <MainPanel v-else-if="state.plays.length === 0" class="p-8 text-center">
-      <div class="text-gray-400 mb-2">No game plays found</div>
-      <p class="text-gray-500">You might have a connection issues to all AVM indexer providers.</p>
+      <div class="text-gray-400 mb-2">{{ $t('game.noPlaysFound') }}</div>
+      <p class="text-gray-500">{{ $t('game.connectionIssues') }}</p>
     </MainPanel>
     <div v-else>
       <div class="overflow-hidden rounded-lg border border-primary-900 hidden md:block">
         <table class="min-w-full table-auto text-left text-sm">
           <thead style="background: linear-gradient(to right, rgba(67, 56, 203, 0.5), rgba(59, 130, 246, 0.5))">
             <tr>
-              <th class="px-4 py-2 font-medium">Proof</th>
-              <th class="px-4 py-2 font-medium">Time</th>
-              <th class="px-4 py-2 font-medium">Blockchain</th>
-              <th class="px-4 py-2 font-medium">Game Round</th>
-              <th class="px-4 py-2 font-medium">Asset</th>
-              <th class="px-4 py-2 font-medium">Amount</th>
-              <th class="px-4 py-2 font-medium">Status</th>
+              <th class="px-4 py-2 font-medium">{{ $t('game.proof') }}</th>
+              <th class="px-4 py-2 font-medium">{{ $t('game.time') }}</th>
+              <th class="px-4 py-2 font-medium">{{ $t('game.blockchain') }}</th>
+              <th class="px-4 py-2 font-medium">{{ $t('game.gameRound') }}</th>
+              <th class="px-4 py-2 font-medium">{{ $t('game.asset') }}</th>
+              <th class="px-4 py-2 font-medium">{{ $t('common.amount') }}</th>
+              <th class="px-4 py-2 font-medium">{{ $t('game.status') }}</th>
             </tr>
           </thead>
           <tbody style="background: linear-gradient(to right, rgba(67, 56, 203, 0.5), rgba(59, 130, 246, 0.1))">
             <tr v-for="play in state.plays" class="hover:bg-gray-900">
               <td class="px-4 py-2">
-                <Button size="small" class="w-full" @click="router.push(`/proof/${play.chain}/${play.txId}`)">Check game proof</Button>
+                <Button size="small" class="w-full" @click="router.push(`/proof/${play.chain}/${play.txId}`)">{{ $t('game.checkGameProof') }}</Button>
               </td>
               <td class="px-4 py-2">{{ new Date(Number(play.play.update) * 1000).toLocaleString() }}</td>
               <td class="px-4 py-2">{{ play.chain }}</td>
@@ -149,15 +149,15 @@ startRefreshListChecker();
         <table class="min-w-full table-auto text-left text-sm">
           <thead style="background: linear-gradient(to right, rgba(67, 56, 203, 0.5), rgba(59, 130, 246, 0.5))">
             <tr>
-              <th class="px-4 py-2 font-medium">Proof</th>
-              <th class="px-4 py-2 font-medium">Time</th>
-              <th class="px-4 py-2 font-medium">Status</th>
+              <th class="px-4 py-2 font-medium">{{ $t('game.proof') }}</th>
+              <th class="px-4 py-2 font-medium">{{ $t('game.time') }}</th>
+              <th class="px-4 py-2 font-medium">{{ $t('common.status') }}</th>
             </tr>
           </thead>
           <tbody style="background: linear-gradient(to right, rgba(67, 56, 203, 0.5), rgba(59, 130, 246, 0.1))">
             <tr v-for="play in state.plays" class="hover:bg-gray-900">
               <td class="px-4 py-2">
-                <Button size="small" class="w-full" @click="router.push(`/proof/${play.chain}/${play.txId}`)">Check game proof</Button>
+                <Button size="small" class="w-full" @click="router.push(`/proof/${play.chain}/${play.txId}`)">{{ $t('game.checkGameProof') }}</Button>
               </td>
               <td class="px-4 py-2">{{ new Date(Number(play.play.update) * 1000).toLocaleString() }}</td>
               <td class="px-4 py-2">{{ gameStore.playState2Text(play.play.state) }}</td>

@@ -2,6 +2,7 @@
 import { useMotion } from "@vueuse/motion";
 import { computed, ref, Ref } from "vue";
 import { useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
 import { IGameStruct } from "../../stores/game";
 import AppButton from "../common/AppButton.vue";
 
@@ -10,6 +11,7 @@ const props = defineProps<{
 }>();
 
 const router = useRouter();
+const { t } = useI18n();
 
 const gameCardRef: Ref<HTMLElement | null> = ref(null);
 useMotion(gameCardRef, {
@@ -36,7 +38,7 @@ const formattedWinRatio = computed(() => {
 });
 
 const lastPlayedFormatted = computed(() => {
-  if (!props.game.game.lastPlayTime) return "Never played";
+  if (!props.game.game.lastPlayTime) return t('game.neverPlayed');
   return new Date(Number(props.game.game.lastPlayTime * 1000n)).toLocaleString();
 });
 
@@ -64,20 +66,20 @@ const playGame = () => {
 
       <div class="grid grid-cols-2 gap-4 mb-6">
         <div class="bg-background-dark p-3 rounded-lg">
-          <div class="text-gray-400 text-xs mb-1">Win Up To</div>
+          <div class="text-gray-400 text-xs mb-1">{{ $t('game.winUpTo') }}</div>
           <div class="font-semibold text-white">{{ formattedWinUpToBalance }} {{ game.token.unitName }}</div>
         </div>
 
         <div class="bg-background-dark p-3 rounded-lg">
-          <div class="text-gray-400 text-xs mb-1">Last Played</div>
+          <div class="text-gray-400 text-xs mb-1">{{ $t('game.lastPlayed') }}</div>
           <div class="font-semibold text-white text-sm">{{ lastPlayedFormatted }}</div>
         </div>
       </div>
 
       <div class="flex space-x-3">
-        <AppButton @click="viewGameDetails" variant="outline" class="flex-1"> Details </AppButton>
+        <AppButton @click="viewGameDetails" variant="outline" class="flex-1">{{ $t('common.details') }}</AppButton>
 
-        <AppButton @click="playGame" variant="primary" class="flex-1"> Play </AppButton>
+        <AppButton @click="playGame" variant="primary" class="flex-1">{{ $t('game.play') }}</AppButton>
       </div>
     </div>
   </div>

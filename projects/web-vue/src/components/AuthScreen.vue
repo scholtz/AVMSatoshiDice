@@ -85,7 +85,7 @@ const selectChainClick = (chain: any) => {
   <div v-else class="flex flex-col items-center justify-center w-full">
     <div class="flex-1 w-full">
       <MainPanel class="w-200 text-white p-6">
-        <H2 class="text-center">Blockchain selection</H2>
+        <H2 class="text-center">{{ $t('wallet.blockchainSelection') }}</H2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 mb-4">
           <MainButton
             v-for="chain in Object.values(appStore.state.chains)"
@@ -98,7 +98,7 @@ const selectChainClick = (chain: any) => {
           </MainButton>
         </div>
 
-        <H2 v-if="state.wallets.length > 0" class="text-center">Wallet selection</H2>
+        <H2 v-if="state.wallets.length > 0" class="text-center">{{ $t('wallet.walletSelection') }}</H2>
         <div v-if="state.wallets.length > 0">
           <div class="bg-background-dark grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 rounded-lg p-10">
             <div v-for="wallet in state.wallets" :key="wallet.id">
@@ -109,7 +109,7 @@ const selectChainClick = (chain: any) => {
                 :disabled="!wallet.isConnected || wallet.isActive"
               >
                 <img :src="wallet.metadata.icon" width="40" class="rounded mx-2" />
-                {{ wallet.metadata.name }} Set Active
+                {{ wallet.metadata.name }} {{ $t('wallet.setActive') }}
               </MainButton>
               <MainButton
                 v-else
@@ -118,7 +118,7 @@ const selectChainClick = (chain: any) => {
                 :disabled="isConnectDisabled(wallet)"
               >
                 <img :src="wallet.metadata.icon" width="40" class="rounded mx-2" />
-                Connect {{ wallet.metadata.name }} <span v-if="wallet.isActive">[active]</span>
+                {{ $t('wallet.connect') }} {{ wallet.metadata.name }} <span v-if="wallet.isActive">{{ $t('wallet.active') }}</span>
               </MainButton>
               <MainButton
                 class="flex justify-center items-center w-full"
@@ -127,19 +127,19 @@ const selectChainClick = (chain: any) => {
                 v-if="wallet.isConnected"
               >
                 <img :src="wallet.metadata.icon" width="40" class="rounded mx-2" />
-                {{ wallet.metadata.name }} Disconnect <span v-if="wallet.isActive">[active]</span>
+                {{ wallet.metadata.name }} {{ $t('common.disconnect') }} <span v-if="wallet.isActive">{{ $t('wallet.active') }}</span>
               </MainButton>
               <!-- <button v-else @click="sendTransaction(wallet)" :disabled="isSending">
             {{ isSending ? 'Sending Transaction...' : 'Send Transaction' }}
           </button> -->
 
               <div v-if="isMagicLink(wallet)" class="input-group">
-                <label for="magic-email">Email:</label>
+                <label for="magic-email">{{ $t('wallet.email') }}</label>
                 <input
                   id="magic-email"
                   type="email"
                   v-model="magicEmail"
-                  placeholder="Enter email to connect..."
+                  :placeholder="$t('wallet.enterEmail')"
                   :disabled="wallet.isConnected"
                 />
               </div>

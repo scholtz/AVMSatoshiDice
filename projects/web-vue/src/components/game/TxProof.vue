@@ -131,16 +131,16 @@ watch(
         <!-- Step 4: Result -->
         <div class="text-center py-6 space-y-6">
           <div v-if="props.play.state == 2n" class="mb-6 bg-success-900 rounded-xl p-6 border border-success-700 neon-border-success">
-            <div class="text-2xl font-bold text-white mb-2">🎉 Congratulations! 🎉</div>
+            <div class="text-2xl font-bold text-white mb-2">{{ $t('game.congratulations') }}</div>
             <p class="text-success-300 text-lg">
-              You won
+              {{ $t('game.youWon') }}
               <!-- You won {{ play.winAmount?.toLocaleString() }} {{ game.token.unitName }}! -->
             </p>
           </div>
 
           <div v-else class="mb-6 bg-background-dark rounded-xl p-6 border border-gray-700">
-            <div class="text-xl font-medium text-white mb-2">Better luck next time!</div>
-            <p class="text-gray-400">Feel free to review the game proof below and try your luck again.</p>
+            <div class="text-xl font-medium text-white mb-2">{{ $t('game.betterLuckNextTime') }}</div>
+            <p class="text-gray-400">{{ $t('game.reviewGameProof') }}</p>
           </div>
 
           <div class="bg-background-dark rounded-lg p-4 mx-auto max-w-md">
